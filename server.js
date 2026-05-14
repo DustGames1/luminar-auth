@@ -152,10 +152,11 @@ app.post('/api/login', async (req, res) => {
     const isLoader = source === 'loader';
 
     if (isLoader && validHwid(hwid)) {
-      if (!user.hwid) {
+      const stored = (user.hwid || '').trim();
+      if (!stored) {
         // First loader launch — save HWID
         await pool.query('UPDATE users SET hwid = $1 WHERE id = $2', [hwid, user.id]);
-      } else if (user.hwid !== hwid) {
+      } else if (stored !== hwid) {
         return res.status(403).json({ error: 'HWID mismatch. Contact owner to reset.' });
       }
     }
@@ -173,6 +174,32 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// Loader compatibility: bind HWID by user id (called after login)
+app.post('/api/bind-hwid', async (req, res) => {
+  try {
+    const { hwid, userId } = req.body || {};
+    if (!validHwid(hwid) || !userId) return res.status(400).json({ success: false, message: 'Bad request' });
+
+    const result = await pool.query('SELECT id, hwid, banned FROM users WHERE id = $1', [userId]);
+    const user = result.rows[0];
+    if (!user) return res.status(404).json({ success: false, message: 'Пользователь не найден' });
+    if (user.banned) return res.status(403).json({ success: false, message: 'Доступ запрещён' });
+
+    const stored = (user.hwid || '').trim();
+    if (!stored) {
+      await pool.query('UPDATE users SET hwid = $1 WHERE id = $2', [hwid, user.id]);
+      return res.json({ success: true, message: 'HWID успешно привязан' });
+    }
+    if (stored === hwid) {
+      return res.json({ success: true, message: 'HWID уже привязан к этому устройству' });
+    }
+    return res.status(403).json({ success: false, message: 'HWID уже привязан' });
+  } catch (e) {
+    console.error('bind-hwid', e);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 app.post('/api/verify', async (req, res) => {
   try {
     const { token, hwid } = req.body || {};
@@ -186,8 +213,9 @@ app.post('/api/verify', async (req, res) => {
       return res.status(403).json({ error: 'Token invalid' });
 
     // Only check HWID if token was issued for a loader session AND user has HWID locked
-    if (payload.hwid && user.hwid) {
-      if (!validHwid(hwid) || user.hwid !== hwid) return res.status(403).json({ error: 'HWID mismatch' });
+    const stored = (user.hwid || '').trim();
+    if (payload.hwid && stored) {
+      if (!validHwid(hwid) || stored !== hwid) return res.status(403).json({ error: 'HWID mismatch' });
     }
 
     const sub = getSubscription(user);
