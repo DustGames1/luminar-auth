@@ -46,12 +46,14 @@ db.exec(`
     created_at INTEGER NOT NULL,
     last_login INTEGER,
     banned INTEGER DEFAULT 0,
-    sub_until INTEGER DEFAULT 0
+    sub_until INTEGER DEFAULT 0,
+    role TEXT DEFAULT NULL
   );
 `);
 
 // Migration: add sub_until if missing (for existing DBs)
 try { db.exec('ALTER TABLE users ADD COLUMN sub_until INTEGER DEFAULT 0'); } catch(e) {}
+try { db.exec('ALTER TABLE users ADD COLUMN role TEXT DEFAULT NULL'); } catch(e) {}
 
 // ---- App ----
 const app = express();
@@ -158,7 +160,7 @@ app.post('/api/verify', (req, res) => {
     const sub = getSubscription(user);
     if (!sub.active) return res.status(403).json({ error: 'Subscription expired' });
 
-    return res.json({ ok: true, username: user.username, uid: user.id, expiresAt: payload.exp * 1000, subscription: sub });
+    return res.json({ ok: true, username: user.username, uid: user.id, role: user.role || null, expiresAt: payload.exp * 1000, subscription: sub });
   } catch (e) {
     return res.status(401).json({ error: 'Token expired or invalid' });
   }
@@ -224,6 +226,13 @@ app.post('/api/admin/subscribe/:id', adminOnly, (req, res) => {
 // REMOVE SUBSCRIPTION
 app.post('/api/admin/unsubscribe/:id', adminOnly, (req, res) => {
   db.prepare('UPDATE users SET sub_until = 0 WHERE id = ?').run(req.params.id);
+  res.json({ ok: true });
+});
+
+// SET ROLE (custom UID label like "Coder", "Admin", etc.)
+app.post('/api/admin/role/:id', adminOnly, (req, res) => {
+  const { role } = req.body || {};
+  db.prepare('UPDATE users SET role = ? WHERE id = ?').run(role || null, req.params.id);
   res.json({ ok: true });
 });
 
