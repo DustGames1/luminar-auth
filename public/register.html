@@ -11,22 +11,25 @@
   <a href="/" class="logo">Luminar</a>
   <div class="links">
     <a href="/">Главная</a>
-    <a href="/buy">Купить</a>
+    <a href="/buy">Продукты</a>
   </div>
   <div class="auth-btns">
     <a href="/login" class="btn btn-secondary">Войти</a>
+    <a href="/register" class="btn btn-white">Регистрация</a>
   </div>
 </nav>
 
 <div class="auth-container">
   <div class="auth-card">
-    <h2>Регистрация</h2>
-    <p class="subtitle">Создайте аккаунт Luminar</p>
+    <div class="auth-tabs">
+      <a href="/login" class="auth-tab">📕 Вход</a>
+      <a href="/register" class="auth-tab active">⊕ Регистрация</a>
+    </div>
 
     <form id="registerForm">
       <div class="form-group">
         <label>Юзернейм</label>
-        <input type="text" id="username" placeholder="Ваш логин (3-16 символов)" required>
+        <input type="text" id="username" placeholder="3-16 символов, латиница/цифры" required>
       </div>
       <div class="form-group">
         <label>Пароль</label>
@@ -36,13 +39,9 @@
         <label>Повтор пароля</label>
         <input type="password" id="password2" placeholder="••••••••" required>
       </div>
-      <button type="submit" class="btn btn-primary">Создать аккаунт</button>
+      <button type="submit" class="btn btn-primary">⊕ Создать аккаунт</button>
       <div id="msg" class="error-msg"></div>
     </form>
-
-    <div class="footer">
-      Уже есть аккаунт? <a href="/login">Войти</a>
-    </div>
   </div>
 </div>
 
@@ -76,8 +75,8 @@ document.getElementById('registerForm').addEventListener('submit', async e => {
     if (r.ok) {
       localStorage.setItem('luminar_token', data.token);
       msg.className = 'success-msg';
-      msg.textContent = 'Аккаунт создан! Перенаправление...';
-      setTimeout(() => location.href = '/buy', 800);
+      msg.textContent = 'Аккаунт создан!';
+      setTimeout(() => location.href = '/buy', 600);
     } else {
       msg.textContent = data.error || 'Ошибка регистрации';
     }

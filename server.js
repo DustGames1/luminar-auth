@@ -322,6 +322,28 @@ app.get('/api/avatar/:username', async (req, res) => {
   res.json({ avatar_url: result.rows[0].avatar_url });
 });
 
+// Download loader — only for active subscribers
+const LOADER_DOWNLOAD_URL = process.env.LOADER_URL || 'https://github.com/DustGames1/luminar-auth/releases/download/luminar/LuminarLoader.exe';
+
+app.get('/api/download/loader', async (req, res) => {
+  try {
+    const token = req.query.token;
+    if (!token) return res.status(401).json({ error: 'No token' });
+    const payload = jwt.verify(token, JWT_SECRET);
+    const result = await pool.query('SELECT * FROM users WHERE username = $1', [payload.username]);
+    const user = result.rows[0];
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (user.banned) return res.status(403).json({ error: 'Banned' });
+    const sub = getSubscription(user);
+    if (!sub.active) return res.status(403).json({ error: 'No active subscription' });
+
+    // Redirect to actual loader file
+    res.redirect(LOADER_DOWNLOAD_URL);
+  } catch (e) {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+});
+
 // ---- Site routes ----
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));

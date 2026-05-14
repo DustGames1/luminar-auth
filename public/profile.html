@@ -11,81 +11,177 @@
   <a href="/" class="logo">Luminar</a>
   <div class="links">
     <a href="/">Главная</a>
-    <a href="/buy">Купить</a>
-    <a href="/profile" class="active">Профиль</a>
+    <a href="/buy">Продукты</a>
   </div>
   <div class="auth-btns">
-    <a href="#" onclick="logout()" class="btn btn-secondary">Выйти</a>
+    <a href="/profile" class="btn btn-white">👤 Профиль</a>
   </div>
 </nav>
 
-<div class="profile-container">
-  <div class="profile-header">
-    <img id="avatar" class="profile-avatar" src="https://api.dicebear.com/7.x/identicon/svg?seed=default" alt="avatar">
-    <div class="profile-info">
-      <h2 id="username">...</h2>
-      <div class="role" id="role"></div>
-      <div class="meta" id="meta"></div>
+<div class="profile-grid">
+  <div class="profile-side">
+    <div class="profile-card">
+      <img id="avatar" class="profile-avatar" src="" alt="">
+      <div class="profile-info-side">
+        <h3 id="username">...</h3>
+        <div class="uid" id="uidLine"></div>
+        <div class="sub-text" id="subText">Подписка до: ...</div>
+      </div>
+      <button class="logout-btn" onclick="logout()" title="Выйти">⏻</button>
     </div>
+    <button class="ticket-btn" onclick="window.open('https://t.me/offersheart','_blank')">🎫 Тикеты</button>
   </div>
 
-  <div class="profile-section">
-    <h3>Подписка</h3>
-    <div id="subInfo" style="color:#aaa; font-size:14px;">Загрузка...</div>
-    <a href="/buy" class="btn btn-primary" style="margin-top:14px;">Продлить подписку</a>
-  </div>
-
-  <div class="profile-section">
-    <h3>Аватарка</h3>
-    <p style="color:#888; font-size:13px; margin-bottom:14px;">Вставьте URL картинки (любой публичный JPG/PNG)</p>
-    <div class="form-group" style="display:flex; gap:10px;">
-      <input type="text" id="avatarUrl" placeholder="https://..." style="flex:1;">
-      <button class="btn btn-primary" onclick="updateAvatar()">Сохранить</button>
+  <div>
+    <div class="profile-tabs">
+      <div class="profile-tab active" data-tab="account">👤 Аккаунт</div>
+      <div class="profile-tab" data-tab="settings">⚙ Настройки</div>
+      <div class="profile-tab" data-tab="launcher">✈ Лаунчер</div>
     </div>
-    <div id="avatarMsg" class="error-msg"></div>
-  </div>
 
-  <div class="profile-section">
-    <h3>Скачать клиент</h3>
-    <p style="color:#888; font-size:13px; margin-bottom:14px;">Скачайте лоадер и войдите со своими данными</p>
-    <a id="downloadBtn" href="#" class="btn btn-primary">⬇ Скачать LuminarLoader.exe</a>
+    <div class="profile-content">
+      <!-- Account tab -->
+      <div id="tab-account">
+        <div class="info-row">
+          <div class="info-item">
+            <div class="label">📅 Регистрация</div>
+            <div class="value" id="regDate">—</div>
+          </div>
+          <div class="info-item">
+            <div class="label">🆔 UID</div>
+            <div class="value" id="uidVal">—</div>
+          </div>
+          <div class="info-item">
+            <div class="label">🔒 HWID</div>
+            <div class="value" id="hwidVal">—</div>
+          </div>
+        </div>
+        <div class="activate-row">
+          <input type="text" id="licenseKey" placeholder="🔑 Введите лицензионный ключ...">
+          <button class="btn btn-primary" onclick="activate()">⚡ Активировать</button>
+        </div>
+        <div id="activateMsg" class="error-msg"></div>
+      </div>
+
+      <!-- Settings tab -->
+      <div id="tab-settings" style="display:none;">
+        <div class="settings-section" style="margin-bottom:18px;">
+          <h4>Аватарка</h4>
+          <div class="settings-row" style="grid-template-columns: 1fr auto;">
+            <input type="text" id="avatarUrl" placeholder="🖼 URL картинки (https://...)">
+            <button class="btn btn-primary" onclick="updateAvatar()">✎ Сохранить</button>
+          </div>
+          <div id="avatarMsg" class="error-msg"></div>
+        </div>
+
+        <div class="settings-section">
+          <h4>Безопасность</h4>
+          <button class="btn btn-secondary" onclick="alert('Скоро')">📱 Настроить 2FA в Telegram</button>
+        </div>
+      </div>
+
+      <!-- Launcher tab -->
+      <div id="tab-launcher" style="display:none;">
+        <div class="info-row">
+          <div class="info-item">
+            <div class="label">💻 ОС</div>
+            <div class="value">Windows 10/11 (x64)</div>
+          </div>
+          <div class="info-item">
+            <div class="label">🎮 RAM</div>
+            <div class="value">4+ GB</div>
+          </div>
+          <div class="info-item">
+            <div class="label">📅 Обновлено</div>
+            <div class="value" id="versionVal">—</div>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; margin-top:14px;">
+          <button id="downloadBtn" class="btn btn-primary" onclick="downloadLoader()">⬇ Скачать</button>
+        </div>
+        <div id="downloadMsg" style="text-align:right; font-size:12px; color:#f87171; margin-top:8px;"></div>
+      </div>
+    </div>
   </div>
 </div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h4>📄 Страницы</h4>
+      <a href="/">Главная</a>
+      <a href="/buy">Продукты</a>
+    </div>
+    <div class="footer-col">
+      <h4>💬 Связь</h4>
+      <a href="https://t.me/offersheart" target="_blank">Telegram</a>
+    </div>
+    <div class="footer-col">
+      <h4>👤 Аккаунт</h4>
+      <a href="#" onclick="logout()">Выйти</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span><strong style="color:#fff;">Luminar</strong></span>
+    <span>© Luminar 2026.</span>
+  </div>
+</footer>
 
 <script>
 const token = localStorage.getItem('luminar_token');
 if (!token) location.href = '/login';
 
+let userData = null;
+
 async function loadProfile() {
   const r = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
   if (!r.ok) { localStorage.removeItem('luminar_token'); location.href = '/login'; return; }
   const data = await r.json();
-  const u = data.user;
+  userData = data.user;
+  const u = userData;
 
   document.getElementById('username').textContent = u.username;
-  document.getElementById('role').textContent = u.role || 'USER';
-  document.getElementById('meta').textContent = 'ID: ' + u.id + ' · С нами с ' + new Date(Number(u.created_at)).toLocaleDateString();
+  document.getElementById('uidLine').textContent = `[${u.id}]${u.role ? ' · ' + u.role : ''}`;
+  document.getElementById('uidVal').textContent = u.id;
+  document.getElementById('regDate').textContent = new Date(Number(u.created_at)).toLocaleDateString();
 
-  if (u.avatar_url) {
-    document.getElementById('avatar').src = u.avatar_url;
-    document.getElementById('avatarUrl').value = u.avatar_url;
-  } else {
-    document.getElementById('avatar').src = 'https://api.dicebear.com/7.x/identicon/svg?seed=' + u.username;
-  }
+  document.getElementById('avatar').src = u.avatar_url || `https://api.dicebear.com/7.x/identicon/svg?seed=${u.username}`;
+  if (u.avatar_url) document.getElementById('avatarUrl').value = u.avatar_url;
 
+  // HWID display
+  const hwidVal = document.getElementById('hwidVal');
+  hwidVal.textContent = 'Привязан';
+  hwidVal.style.color = '#4ade80';
+
+  // Subscription
   const sub = u.subscription;
-  const subDiv = document.getElementById('subInfo');
+  const subText = document.getElementById('subText');
   if (sub.active) {
-    subDiv.innerHTML = `<span style="color:#4ade80; font-weight:600;">✓ Активна</span> · до ${new Date(Number(sub.until)).toLocaleDateString()} (${sub.daysLeft} дн.)`;
+    subText.innerHTML = `Подписка до: <span style="color:#4ade80;">${new Date(Number(sub.until)).toLocaleDateString()}</span>`;
   } else {
-    subDiv.innerHTML = '<span style="color:#f87171;">✗ Подписка не активна</span>';
+    subText.innerHTML = 'Подписка до: <span style="color:#f87171;">Нет</span>';
   }
+
+  // Version
+  fetch('/api/version').then(r => r.text()).then(v => {
+    document.getElementById('versionVal').textContent = v;
+  });
 }
+
+// Tabs
+document.querySelectorAll('.profile-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+    document.getElementById('tab-' + tab.dataset.tab).style.display = 'block';
+  });
+});
 
 async function updateAvatar() {
   const url = document.getElementById('avatarUrl').value.trim();
   const msg = document.getElementById('avatarMsg');
-  if (!url) return;
+  if (!url) { msg.textContent = 'Введите URL'; return; }
 
   const r = await fetch('/api/me/avatar', {
     method: 'POST',
@@ -94,7 +190,7 @@ async function updateAvatar() {
   });
   if (r.ok) {
     msg.className = 'success-msg';
-    msg.textContent = 'Аватарка обновлена!';
+    msg.textContent = 'Аватарка обновлена';
     document.getElementById('avatar').src = url;
   } else {
     const data = await r.json();
@@ -103,15 +199,27 @@ async function updateAvatar() {
   }
 }
 
+function activate() {
+  alert('Свяжитесь с @offersheart для активации лицензионного ключа');
+}
+
+function downloadLoader() {
+  const msg = document.getElementById('downloadMsg');
+  if (!userData || !userData.subscription || !userData.subscription.active) {
+    msg.textContent = '✗ Купите подписку для скачивания лоадера';
+    setTimeout(() => location.href = '/buy', 1500);
+    return;
+  }
+  msg.style.color = '#4ade80';
+  msg.textContent = '✓ Скачивание начнётся...';
+  // Замени URL на свой LuminarLoader.exe
+  window.location.href = '/api/download/loader?token=' + encodeURIComponent(token);
+}
+
 function logout() {
   localStorage.removeItem('luminar_token');
   location.href = '/';
 }
-
-document.getElementById('downloadBtn').addEventListener('click', e => {
-  e.preventDefault();
-  alert('Лоадер пока в разработке. Свяжитесь с @offersheart в Telegram');
-});
 
 loadProfile();
 </script>

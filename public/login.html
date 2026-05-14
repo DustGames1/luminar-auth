@@ -11,17 +11,20 @@
   <a href="/" class="logo">Luminar</a>
   <div class="links">
     <a href="/">Главная</a>
-    <a href="/buy">Купить</a>
+    <a href="/buy">Продукты</a>
   </div>
   <div class="auth-btns">
-    <a href="/register" class="btn btn-primary">Регистрация</a>
+    <a href="/login" class="btn btn-secondary">Войти</a>
+    <a href="/register" class="btn btn-white">Регистрация</a>
   </div>
 </nav>
 
 <div class="auth-container">
   <div class="auth-card">
-    <h2>Вход</h2>
-    <p class="subtitle">Войдите в свой аккаунт Luminar</p>
+    <div class="auth-tabs">
+      <a href="/login" class="auth-tab active">📕 Вход</a>
+      <a href="/register" class="auth-tab">⊕ Регистрация</a>
+    </div>
 
     <form id="loginForm">
       <div class="form-group">
@@ -32,13 +35,9 @@
         <label>Пароль</label>
         <input type="password" id="password" placeholder="••••••••" required>
       </div>
-      <button type="submit" class="btn btn-primary">Войти</button>
+      <button type="submit" class="btn btn-primary">📕 Войти</button>
       <div id="msg" class="error-msg"></div>
     </form>
-
-    <div class="footer">
-      Нет аккаунта? <a href="/register">Зарегистрироваться</a>
-    </div>
   </div>
 </div>
 
@@ -71,7 +70,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       localStorage.setItem('luminar_token', data.token);
       msg.className = 'success-msg';
       msg.textContent = 'Успешно! Перенаправление...';
-      setTimeout(() => location.href = '/profile', 800);
+      setTimeout(() => location.href = '/profile', 600);
     } else {
       msg.textContent = data.error || 'Ошибка входа';
     }
