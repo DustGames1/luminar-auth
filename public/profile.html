@@ -85,22 +85,26 @@
 
       <!-- Launcher tab -->
       <div id="tab-launcher" style="display:none;">
-        <div class="info-row">
+        <div class="info-row" style="grid-template-columns: 1fr 1fr 1fr;">
           <div class="info-item">
-            <div class="label">💻 ОС</div>
+            <div class="label">💻 Операционная система</div>
             <div class="value">Windows 10/11 (x64)</div>
           </div>
           <div class="info-item">
             <div class="label">🎮 RAM</div>
-            <div class="value">4+ GB</div>
+            <div class="value">4 GB</div>
           </div>
           <div class="info-item">
-            <div class="label">📅 Обновлено</div>
-            <div class="value" id="versionVal">—</div>
+            <div class="label">🖥 Видеокарта</div>
+            <div class="value">Nvidia / Amd / Intel</div>
           </div>
         </div>
-        <div style="display:flex; justify-content:flex-end; margin-top:14px;">
-          <button id="downloadBtn" class="btn btn-primary" onclick="downloadLoader()">⬇ Скачать</button>
+        <div style="display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center;">
+          <div class="info-item" style="margin:0;">
+            <div class="label">⏱ Последнее обновление</div>
+            <div class="value" id="versionVal">—</div>
+          </div>
+          <button id="downloadBtn" class="btn btn-primary" onclick="downloadLoader()" style="height:100%; padding:14px 24px;">⬇ Скачать</button>
         </div>
         <div id="downloadMsg" style="text-align:right; font-size:12px; color:#f87171; margin-top:8px;"></div>
       </div>
