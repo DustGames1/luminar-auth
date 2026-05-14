@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Luminar Admin</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+body { background: #0d0d0f; color: #e8e8ec; min-height: 100vh; padding: 20px; }
+.container { max-width: 1200px; margin: 0 auto; }
+h1 { color: #e84040; margin-bottom: 20px; font-size: 28px; }
+h2 { color: #fff; margin: 20px 0 12px; font-size: 18px; }
+.card { background: #161619; border: 1px solid #2a2a30; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+input, button, select { padding: 10px 14px; border-radius: 6px; border: 1px solid #333; background: #1e1e24; color: #e8e8ec; font-size: 14px; outline: none; }
+input:focus { border-color: #e84040; }
+button { background: #e84040; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
+button:hover { background: #f04848; }
+button.gray { background: #2a2a30; }
+button.gray:hover { background: #3a3a40; }
+button.green { background: #2ea043; }
+button.green:hover { background: #34c252; }
+.row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.row input, .row select { flex: 1; min-width: 150px; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th, td { text-align: left; padding: 12px; border-bottom: 1px solid #2a2a30; font-size: 13px; }
+th { color: #888; font-weight: 600; text-transform: uppercase; font-size: 11px; }
+td .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+td .actions button { padding: 5px 10px; font-size: 12px; }
+.badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+.badge.active { background: #1a4d2e; color: #4ade80; }
+.badge.banned { background: #4d1a1a; color: #f87171; }
+.badge.expired { background: #4d3a1a; color: #fbbf24; }
+.error { color: #f87171; font-size: 12px; margin-top: 8px; }
+.success { color: #4ade80; font-size: 12px; margin-top: 8px; }
+#login-screen { max-width: 400px; margin: 100px auto; }
+#login-screen h1 { text-align: center; }
+.hide { display: none; }
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="card">
+    <h1>Luminar Admin</h1>
+    <input type="password" id="adminKey" placeholder="Admin Key" style="width:100%; margin-bottom:12px;">
+    <button onclick="login()" style="width:100%;">Войти</button>
+    <div id="loginError" class="error"></div>
+  </div>
+</div>
+
+<div id="main-screen" class="hide container">
+  <h1>Luminar Admin Panel</h1>
+
+  <div class="card">
+    <h2>Создать пользователя</h2>
+    <div class="row">
+      <input type="text" id="newUser" placeholder="Username">
+      <input type="password" id="newPass" placeholder="Password">
+      <input type="number" id="newDays" placeholder="Дней подписки" value="30">
+      <button onclick="createUser()">Создать</button>
+    </div>
+    <div id="createMsg"></div>
+  </div>
+
+  <div class="card">
+    <h2>Версия клиента</h2>
+    <div class="row">
+      <input type="text" id="versionInput" placeholder="1.0.0">
+      <button onclick="updateVersion()">Обновить версию</button>
+    </div>
+    <div id="versionMsg"></div>
+  </div>
+
+  <div class="card">
+    <h2>Пользователи</h2>
+    <button onclick="loadUsers()" class="gray" style="margin-bottom:12px;">Обновить</button>
+    <table id="usersTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Роль</th>
+          <th>Подписка</th>
+          <th>HWID</th>
+          <th>Статус</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody id="usersBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+let ADMIN_KEY = localStorage.getItem('adminKey') || '';
+const API = '';
+
+async function api(method, path, body) {
+  const opts = {
+    method,
+    headers: { 'x-admin-key': ADMIN_KEY }
+  };
+  if (body) {
+    opts.headers['Content-Type'] = 'application/json';
+    opts.body = JSON.stringify(body);
+  }
+  const r = await fetch(API + path, opts);
+  return { ok: r.ok, status: r.status, data: await r.json().catch(() => ({})) };
+}
+
+function login() {
+  const key = document.getElementById('adminKey').value.trim();
+  if (!key) { document.getElementById('loginError').textContent = 'Введите ключ'; return; }
+  ADMIN_KEY = key;
+  localStorage.setItem('adminKey', key);
+  checkAuth();
+}
+
+async function checkAuth() {
+  if (!ADMIN_KEY) return;
+  const r = await api('GET', '/api/admin/users');
+  if (!r.ok) {
+    document.getElementById('loginError').textContent = 'Неверный ключ';
+    ADMIN_KEY = '';
+    localStorage.removeItem('adminKey');
+    return;
+  }
+  document.getElementById('login-screen').classList.add('hide');
+  document.getElementById('main-screen').classList.remove('hide');
+  loadUsers();
+}
+
+async function loadUsers() {
+  const r = await api('GET', '/api/admin/users');
+  if (!r.ok) return;
+  const tbody = document.getElementById('usersBody');
+  tbody.innerHTML = '';
+  for (const u of r.data.users) {
+    const sub = u.subscription;
+    const tr = document.createElement('tr');
+    let status, until;
+    if (u.banned) { status = '<span class="badge banned">BANNED</span>'; }
+    else if (sub.active) {
+      status = '<span class="badge active">ACTIVE</span>';
+      until = new Date(Number(sub.until)).toLocaleDateString() + ' (' + sub.daysLeft + ' дн)';
+    }
+    else { status = '<span class="badge expired">EXPIRED</span>'; until = '—'; }
+
+    tr.innerHTML = `
+      <td>${u.id}</td>
+      <td>${u.username}</td>
+      <td>${u.role || '—'}</td>
+      <td>${until || '—'}</td>
+      <td title="${u.hwid || ''}">${u.hwid ? u.hwid.substring(0, 12) + '...' : '—'}</td>
+      <td>${status}</td>
+      <td class="actions">
+        <button onclick="giveSub(${u.id})" class="green">+30 дней</button>
+        <button onclick="setRole(${u.id})" class="gray">Роль</button>
+        <button onclick="resetHwid(${u.id})" class="gray">Сброс HWID</button>
+        ${u.banned
+          ? `<button onclick="unbanUser(${u.id})" class="green">Разбан</button>`
+          : `<button onclick="banUser(${u.id})">Бан</button>`}
+        <button onclick="deleteUser(${u.id})">Удалить</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+async function createUser() {
+  const username = document.getElementById('newUser').value.trim();
+  const password = document.getElementById('newPass').value;
+  const days = parseInt(document.getElementById('newDays').value) || 0;
+  const msg = document.getElementById('createMsg');
+  if (!username || !password) { msg.className = 'error'; msg.textContent = 'Заполните все поля'; return; }
+
+  const r = await api('POST', '/api/admin/users', { username, password, days });
+  if (r.ok) {
+    msg.className = 'success';
+    msg.textContent = 'Пользователь создан!';
+    document.getElementById('newUser').value = '';
+    document.getElementById('newPass').value = '';
+    loadUsers();
+  } else {
+    msg.className = 'error';
+    msg.textContent = r.data.error || 'Ошибка';
+  }
+}
+
+async function giveSub(id) {
+  const days = prompt('На сколько дней?', '30');
+  if (!days) return;
+  await api('POST', '/api/admin/subscribe/' + id, { days: parseInt(days) });
+  loadUsers();
+}
+
+async function setRole(id) {
+  const role = prompt('Роль (Coder, Admin, VIP, или пусто для удаления):');
+  if (role === null) return;
+  await api('POST', '/api/admin/role/' + id, { role });
+  loadUsers();
+}
+
+async function resetHwid(id) {
+  if (!confirm('Сбросить HWID?')) return;
+  await api('POST', '/api/admin/reset-hwid/' + id);
+  loadUsers();
+}
+
+async function banUser(id) {
+  if (!confirm('Забанить?')) return;
+  await api('POST', '/api/admin/ban/' + id);
+  loadUsers();
+}
+
+async function unbanUser(id) {
+  await api('POST', '/api/admin/unban/' + id);
+  loadUsers();
+}
+
+async function deleteUser(id) {
+  if (!confirm('Удалить пользователя НАВСЕГДА?')) return;
+  await api('DELETE', '/api/admin/users/' + id);
+  loadUsers();
+}
+
+async function updateVersion() {
+  const version = document.getElementById('versionInput').value.trim();
+  const msg = document.getElementById('versionMsg');
+  if (!version) { msg.className = 'error'; msg.textContent = 'Введите версию'; return; }
+  const r = await api('POST', '/api/admin/version', { version });
+  if (r.ok) { msg.className = 'success'; msg.textContent = 'Версия обновлена: ' + version; }
+  else { msg.className = 'error'; msg.textContent = r.data.error || 'Ошибка'; }
+}
+
+document.getElementById('adminKey').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+checkAuth();
+</script>
+
+</body>
+</html>
