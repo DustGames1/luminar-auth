@@ -307,7 +307,7 @@ app.get('/api/me', async (req, res) => {
     if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'No token' });
     const token = auth.substring(7);
     const payload = jwt.verify(token, JWT_SECRET);
-    const result = await pool.query('SELECT id, username, role, sub_until, avatar_url, created_at FROM users WHERE username = $1', [payload.username]);
+    const result = await pool.query('SELECT id, username, role, sub_until, avatar_url, created_at, hwid FROM users WHERE username = $1', [payload.username]);
     const user = result.rows[0];
     if (!user) return res.status(404).json({ error: 'User not found' });
     res.json({ user: { ...user, subscription: getSubscription(user) } });
@@ -445,9 +445,27 @@ app.get('/buy', (req, res) => res.sendFile(path.join(__dirname, 'public', 'buy.h
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 
 // ---- Start ----
-initDB().then(() => {
-  app.listen(PORT, () => console.log(`Luminar auth v3 (PostgreSQL) listening on :${PORT}`));
-}).catch(err => {
-  console.error('Failed to init DB:', err);
-  process.exit(1);
+let dbInitialized = false;
+async function ensureDB() {
+  if (!dbInitialized) {
+    await initDB();
+    dbInitialized = true;
+  }
+}
+
+// Init DB on first request (Vercel) or directly (local/Render)
+app.use(async (req, res, next) => {
+  try { await ensureDB(); } catch (e) { console.error('DB init error', e); }
+  next();
 });
+
+if (!process.env.VERCEL) {
+  initDB().then(() => {
+    app.listen(PORT, () => console.log(`Luminar auth listening on :${PORT}`));
+  }).catch(err => {
+    console.error('Failed to init DB:', err);
+    process.exit(1);
+  });
+}
+
+module.exports = app;
