@@ -1,140 +1,141 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Продукты — Luminar</title>
-<link rel="stylesheet" href="/style.css">
+    <meta charset="UTF-8">
+    <title>Продукты — Luminar</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
 <nav>
-  <a href="/" class="logo">
-    <span class="logo-icon">✦</span>
-    Luminar
-  </a>
-  <div class="links">
-    <a href="/">Главная</a>
-    <a href="/buy" class="active">Продукты</a>
-    <a href="https://t.me/offersheart" target="_blank">Telegram</a>
-  </div>
-  <div class="auth-btns" id="navAuth">
-    <a href="/login" class="btn btn-secondary">Войти</a>
-    <a href="/register" class="btn btn-white">Регистрация</a>
-  </div>
+    <a href="/" class="logo">
+        <span class="logo-icon">✦</span>
+        Luminar
+    </a>
+    <div class="links">
+        <a href="/">Главная</a>
+        <a href="/buy" class="active">Продукты</a>
+        <a href="https://t.me/offersheart" target="_blank">Telegram</a>
+    </div>
+    <div class="auth-btns" id="navAuth">
+        <a href="/login" class="btn btn-secondary">Войти</a>
+        <a href="/register" class="btn btn-white">Регистрация</a>
+    </div>
 </nav>
 
 <section class="section" style="text-align:center;">
-  <span class="section-tag">📦 Продукты</span>
-  <h2 style="font-size:42px; margin-bottom:14px;">Выберите тариф</h2>
-  <p style="color:var(--text-dim); font-size:14px; margin-bottom:30px;">Прозрачные цены и мгновенная активация. Сравните тарифы и выберите подходящий.</p>
+    <span class="section-tag">📦 Продукты</span>
+    <h2 style="font-size:42px; margin-bottom:14px;">Выберите тариф</h2>
+    <p style="color:var(--text-dim); font-size:14px; margin-bottom:30px;">Прозрачные цены и мгновенная активация.
+        Сравните тарифы и выберите подходящий.</p>
 
-  <div class="pricing-tabs">
-    <div class="tab active" onclick="switchTab('subs')">📦 Подписки</div>
-    <div class="tab" onclick="switchTab('other')">⚙ Другое</div>
-  </div>
+    <div class="pricing-tabs">
+        <div class="tab active" onclick="switchTab('subs')">📦 Подписки</div>
+        <div class="tab" onclick="switchTab('other')">⚙ Другое</div>
+    </div>
 
-  <div id="subs-tab" class="pricing">
-    <div class="price-card">
-      <div class="icon">📦</div>
-      <h3>Подписка на 30 дней</h3>
-      <div class="desc">Подписка на клиент Luminar сроком на 30 дней.</div>
-      <div class="price">349 RUB <small>≈ $4.79</small></div>
-      <button class="btn btn-primary" onclick="buyPlan(30, 349)">⊕ Купить</button>
+    <div id="subs-tab" class="pricing">
+        <div class="price-card">
+            <div class="icon">📦</div>
+            <h3>Подписка на 30 дней</h3>
+            <div class="desc">Подписка на клиент Luminar сроком на 30 дней.</div>
+            <div class="price">349 RUB <small>≈ $4.79</small></div>
+            <button class="btn btn-primary" onclick="buyPlan(30, 349)">⊕ Купить</button>
+        </div>
+        <div class="price-card">
+            <div class="icon">📦</div>
+            <h3>Подписка на 365 дней</h3>
+            <div class="desc">Подписка на клиент Luminar сроком на 365 дней.</div>
+            <div class="price">499 RUB <small>≈ $34.50</small></div>
+            <button class="btn btn-primary" onclick="buyPlan(365, 2499)">⊕ Купить</button>
+        </div>
+        <div class="price-card">
+            <div class="icon">📦</div>
+            <h3>Подписка на 9999 дней</h3>
+            <div class="desc">Lifetime подписка на клиент Luminar.</div>
+            <div class="price">599 RUB <small>≈ $82.85</small></div>
+            <button class="btn btn-primary" onclick="buyPlan(9999, 5999)">⊕ Купить</button>
+        </div>
     </div>
-    <div class="price-card">
-      <div class="icon">📦</div>
-      <h3>Подписка на 365 дней</h3>
-      <div class="desc">Подписка на клиент Luminar сроком на 365 дней.</div>
-      <div class="price">2499 RUB <small>≈ $34.50</small></div>
-      <button class="btn btn-primary" onclick="buyPlan(365, 2499)">⊕ Купить</button>
-    </div>
-    <div class="price-card">
-      <div class="icon">📦</div>
-      <h3>Подписка на 9999 дней</h3>
-      <div class="desc">Lifetime подписка на клиент Luminar.</div>
-      <div class="price">5999 RUB <small>≈ $82.85</small></div>
-      <button class="btn btn-primary" onclick="buyPlan(9999, 5999)">⊕ Купить</button>
-    </div>
-  </div>
 
-  <div id="other-tab" class="pricing" style="display:none;">
-    <div class="price-card">
-      <div class="icon">🔄</div>
-      <h3>Сброс HWID</h3>
-      <div class="desc">Сброс привязки оборудования к аккаунту.</div>
-      <div class="price">149 RUB <small>≈ $2.05</small></div>
-      <button class="btn btn-primary" onclick="buyHwidReset()">⊕ Купить</button>
+    <div id="other-tab" class="pricing" style="display:none;">
+        <div class="price-card">
+            <div class="icon">🔄</div>
+            <h3>Сброс HWID</h3>
+            <div class="desc">Сброс привязки оборудования к аккаунту.</div>
+            <div class="price">149 RUB <small>≈ $2.05</small></div>
+            <button class="btn btn-primary" onclick="buyHwidReset()">⊕ Купить</button>
+        </div>
     </div>
-  </div>
 </section>
 
 <footer>
-  <div class="footer-grid">
-    <div class="footer-col">
-      <h4>📄 Страницы</h4>
-      <a href="/">Главная</a>
-      <a href="/buy">Продукты</a>
+    <div class="footer-grid">
+        <div class="footer-col">
+            <h4>📄 Страницы</h4>
+            <a href="/">Главная</a>
+            <a href="/buy">Продукты</a>
+        </div>
+        <div class="footer-col">
+            <h4>💬 Связь</h4>
+            <a href="https://t.me/offersheart" target="_blank">Telegram</a>
+        </div>
+        <div class="footer-col">
+            <h4>👤 Аккаунт</h4>
+            <a href="/login">Войти</a>
+            <a href="/register">Регистрация</a>
+        </div>
     </div>
-    <div class="footer-col">
-      <h4>💬 Связь</h4>
-      <a href="https://t.me/offersheart" target="_blank">Telegram</a>
+    <div class="footer-bottom">
+        <span><strong style="color:#fff;">Luminar</strong></span>
+        <span>© Luminar 2026. Все права защищены.</span>
     </div>
-    <div class="footer-col">
-      <h4>👤 Аккаунт</h4>
-      <a href="/login">Войти</a>
-      <a href="/register">Регистрация</a>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <span><strong style="color:#fff;">Luminar</strong></span>
-    <span>© Luminar 2026. Все права защищены.</span>
-  </div>
 </footer>
 
 <script>
-const PAYMENT_URL = 'https://t.me/offersheart';
+    const PAYMENT_URL = 'https://t.me/offersheart';
 
-const token = localStorage.getItem('luminar_token');
-if (token) {
-  fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } })
-    .then(r => r.ok ? r.json() : null)
-    .then(data => {
-      if (data && data.user) {
-        document.getElementById('navAuth').innerHTML = `
+    const token = localStorage.getItem('luminar_token');
+    if (token) {
+        fetch('/api/me', {headers: {'Authorization': 'Bearer ' + token}})
+            .then(r => r.ok ? r.json() : null)
+            .then(data => {
+                if (data && data.user) {
+                    document.getElementById('navAuth').innerHTML = `
           <a href="/profile" class="btn btn-white">👤 ${data.user.username}</a>
         `;
-      }
-    });
-}
+                }
+            });
+    }
 
-function switchTab(tab) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('subs-tab').style.display = tab === 'subs' ? 'grid' : 'none';
-  document.getElementById('other-tab').style.display = tab === 'other' ? 'grid' : 'none';
-}
+    function switchTab(tab) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('subs-tab').style.display = tab === 'subs' ? 'grid' : 'none';
+        document.getElementById('other-tab').style.display = tab === 'other' ? 'grid' : 'none';
+    }
 
-function buyPlan(days, price) {
-  if (!token) {
-    alert('Сначала зарегистрируйтесь или войдите');
-    location.href = '/login';
-    return;
-  }
-  if (confirm(`Купить ${days} дней за ${price}₽?\n\nПосле оплаты свяжитесь с @offersheart для активации.`)) {
-    window.open(PAYMENT_URL, '_blank');
-  }
-}
+    function buyPlan(days, price) {
+        if (!token) {
+            alert('Сначала зарегистрируйтесь или войдите');
+            location.href = '/login';
+            return;
+        }
+        if (confirm(`Купить ${days} дней за ${price}₽?\n\nПосле оплаты свяжитесь с @offersheart для активации.`)) {
+            window.open(PAYMENT_URL, '_blank');
+        }
+    }
 
-function buyHwidReset() {
-  if (!token) {
-    alert('Сначала зарегистрируйтесь или войдите');
-    location.href = '/login';
-    return;
-  }
-  if (confirm('Купить сброс HWID за 149₽?')) {
-    window.open(PAYMENT_URL, '_blank');
-  }
-}
+    function buyHwidReset() {
+        if (!token) {
+            alert('Сначала зарегистрируйтесь или войдите');
+            location.href = '/login';
+            return;
+        }
+        if (confirm('Купить сброс HWID за 149₽?')) {
+            window.open(PAYMENT_URL, '_blank');
+        }
+    }
 </script>
 
 </body>
