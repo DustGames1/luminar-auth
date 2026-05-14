@@ -52,6 +52,12 @@ async function initDB() {
       text TEXT NOT NULL
     );
   `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    );
+  `);
   console.log('Database initialized');
 }
 
@@ -250,6 +256,23 @@ app.post('/api/admin/changelog', adminOnly, async (req, res) => {
 app.delete('/api/admin/changelog/:id', adminOnly, async (req, res) => {
   await pool.query('DELETE FROM changelog WHERE id = $1', [req.params.id]);
   res.json({ ok: true });
+});
+
+// ---- Version ----
+app.get('/api/version', async (req, res) => {
+  const result = await pool.query("SELECT value FROM settings WHERE key = 'client_version'");
+  if (result.rows.length > 0) {
+    res.send(result.rows[0].value);
+  } else {
+    res.send('1.0.0');
+  }
+});
+
+app.post('/api/admin/version', adminOnly, async (req, res) => {
+  const { version } = req.body || {};
+  if (!version) return res.status(400).json({ error: 'version required' });
+  await pool.query("INSERT INTO settings (key, value) VALUES ('client_version', $1) ON CONFLICT (key) DO UPDATE SET value = $1", [version]);
+  res.json({ ok: true, version });
 });
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
