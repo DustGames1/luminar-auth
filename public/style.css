@@ -586,6 +586,48 @@ nav .auth-btns { display: flex; gap: 8px; align-items: center; }
   box-shadow: 0 6px 20px var(--accent-glow);
 }
 
+.profile-side .admin-btn {
+  width: 100%;
+  margin-top: 10px;
+  background: rgba(255, 149, 0, 0.04);
+  border: 1px solid var(--border-light);
+  color: var(--accent-light);
+  padding: 13px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  letter-spacing: 0.2px;
+  transition: 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.profile-side .admin-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent-3));
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: 0;
+}
+.profile-side .admin-btn:hover {
+  border-color: transparent;
+  color: #1a0f00;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px var(--accent-glow);
+}
+.profile-side .admin-btn:hover::before { opacity: 1; }
+.profile-side .admin-btn svg,
+.profile-side .admin-btn span,
+.profile-side .admin-btn { z-index: 1; }
+.profile-side .admin-btn > * { position: relative; z-index: 1; }
+
 .profile-tabs {
   display: flex;
   gap: 4px;

@@ -33,6 +33,10 @@
       <button class="logout-btn" onclick="logout()" title="Выйти">⏻</button>
     </div>
     <button class="ticket-btn" onclick="window.open('https://t.me/offersheart','_blank')">🎫 Тикеты</button>
+    <a id="adminBtn" href="/admin" class="admin-btn" style="display:none;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+      Admin Panel
+    </a>
   </div>
 
   <div>
@@ -151,6 +155,12 @@ async function loadProfile() {
   document.getElementById('uidLine').textContent = `[${u.id}]${u.role ? ' · ' + u.role : ''}`;
   document.getElementById('uidVal').textContent = u.id;
   document.getElementById('regDate').textContent = new Date(Number(u.created_at)).toLocaleDateString();
+
+  // Admin button — DustGames only (or role admin)
+  const isAdmin = u.username && u.username.toLowerCase() === 'dustgames';
+  if (isAdmin || (u.role && u.role.toLowerCase() === 'admin')) {
+    document.getElementById('adminBtn').style.display = 'flex';
+  }
 
   document.getElementById('avatar').src = u.avatar_url || `https://api.dicebear.com/7.x/identicon/svg?seed=${u.username}`;
   if (u.avatar_url) document.getElementById('avatarUrl').value = u.avatar_url;
