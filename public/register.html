@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Регистрация — Luminar</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">Luminar</a>
+  <div class="links">
+    <a href="/">Главная</a>
+    <a href="/buy">Купить</a>
+  </div>
+  <div class="auth-btns">
+    <a href="/login" class="btn btn-secondary">Войти</a>
+  </div>
+</nav>
+
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>Регистрация</h2>
+    <p class="subtitle">Создайте аккаунт Luminar</p>
+
+    <form id="registerForm">
+      <div class="form-group">
+        <label>Юзернейм</label>
+        <input type="text" id="username" placeholder="Ваш логин (3-16 символов)" required>
+      </div>
+      <div class="form-group">
+        <label>Пароль</label>
+        <input type="password" id="password" placeholder="Минимум 6 символов" required>
+      </div>
+      <div class="form-group">
+        <label>Повтор пароля</label>
+        <input type="password" id="password2" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Создать аккаунт</button>
+      <div id="msg" class="error-msg"></div>
+    </form>
+
+    <div class="footer">
+      Уже есть аккаунт? <a href="/login">Войти</a>
+    </div>
+  </div>
+</div>
+
+<script>
+async function generateBrowserHWID() {
+  const data = navigator.userAgent + navigator.language + screen.width + screen.height + (navigator.hardwareConcurrency || 4);
+  const buf = new TextEncoder().encode(data);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+document.getElementById('registerForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const msg = document.getElementById('msg');
+  msg.className = 'error-msg';
+
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  const password2 = document.getElementById('password2').value;
+  if (password !== password2) { msg.textContent = 'Пароли не совпадают'; return; }
+
+  const hwid = await generateBrowserHWID();
+
+  try {
+    const r = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password, hwid })
+    });
+    const data = await r.json();
+    if (r.ok) {
+      localStorage.setItem('luminar_token', data.token);
+      msg.className = 'success-msg';
+      msg.textContent = 'Аккаунт создан! Перенаправление...';
+      setTimeout(() => location.href = '/buy', 800);
+    } else {
+      msg.textContent = data.error || 'Ошибка регистрации';
+    }
+  } catch (err) {
+    msg.textContent = 'Ошибка сети';
+  }
+});
+</script>
+
+</body>
+</html>

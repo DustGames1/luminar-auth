@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luminar — Лучший клиент для Minecraft</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">Luminar</a>
+  <div class="links">
+    <a href="/" class="active">Главная</a>
+    <a href="/buy">Купить</a>
+    <a href="https://t.me/offersheart" target="_blank">Telegram</a>
+  </div>
+  <div class="auth-btns" id="navAuth">
+    <a href="/login" class="btn btn-secondary">Войти</a>
+    <a href="/register" class="btn btn-primary">Регистрация</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>Побеждай с Luminar</h1>
+  <p>Передовая модификация для Minecraft, известная своей способностью обходить античиты на популярных серверах. Полная защита, превосходство и красота визуала.</p>
+  <div class="hero-buttons">
+    <a href="/buy" class="btn btn-primary btn-large">Купить клиент</a>
+    <a id="downloadBtn" href="#" class="btn btn-secondary btn-large">⬇ Скачать лоадер</a>
+  </div>
+</section>
+
+<section class="cards">
+  <div class="feature-card">
+    <span class="icon">⚔️</span>
+    <h3>Killaura SpookyTime</h3>
+    <p>Ультра-быстрая аура с продвинутой системой ротации, обходящая все известные античиты.</p>
+  </div>
+  <div class="feature-card">
+    <span class="icon">🛡️</span>
+    <h3>Полная защита</h3>
+    <p>Anti-Debug, HWID привязка, обфускация и интеграция с обфускированной системой авторизации.</p>
+  </div>
+  <div class="feature-card">
+    <span class="icon">⚡</span>
+    <h3>SpookyTime Bypass</h3>
+    <p>Обход самых сложных античитов на популярных серверах FunTime и других.</p>
+  </div>
+  <div class="feature-card">
+    <span class="icon">🎨</span>
+    <h3>Красивый интерфейс</h3>
+    <p>Современный HUD с анимациями, тёмная тема, кастомные шрифты MSDF и плавный рендер.</p>
+  </div>
+  <div class="feature-card">
+    <span class="icon">🔄</span>
+    <h3>Авто-обновления</h3>
+    <p>Лоадер автоматически проверяет и устанавливает новые версии клиента.</p>
+  </div>
+  <div class="feature-card">
+    <span class="icon">💬</span>
+    <h3>Поддержка 24/7</h3>
+    <p>Активное сообщество в Telegram, регулярные обновления и быстрая помощь.</p>
+  </div>
+</section>
+
+<footer>
+  © 2026 Luminar by DustGames · <a href="https://t.me/offersheart" style="color:#e84040;">t.me/offersheart</a>
+</footer>
+
+<script>
+const token = localStorage.getItem('luminar_token');
+if (token) {
+  fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } })
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if (data && data.user) {
+        document.getElementById('navAuth').innerHTML = `
+          <a href="/profile" class="btn btn-secondary">${data.user.username}</a>
+          <a href="#" onclick="logout()" class="btn btn-primary">Выйти</a>
+        `;
+      }
+    });
+}
+function logout() {
+  localStorage.removeItem('luminar_token');
+  location.reload();
+}
+
+document.getElementById('downloadBtn').addEventListener('click', e => {
+  e.preventDefault();
+  alert('Скачивание лоадера временно недоступно. Свяжитесь с нами в Telegram: @offersheart');
+});
+</script>
+
+</body>
+</html>

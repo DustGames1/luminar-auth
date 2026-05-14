@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Купить — Luminar</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">Luminar</a>
+  <div class="links">
+    <a href="/">Главная</a>
+    <a href="/buy" class="active">Купить</a>
+    <a href="https://t.me/offersheart" target="_blank">Telegram</a>
+  </div>
+  <div class="auth-btns" id="navAuth">
+    <a href="/login" class="btn btn-secondary">Войти</a>
+    <a href="/register" class="btn btn-primary">Регистрация</a>
+  </div>
+</nav>
+
+<section class="hero" style="padding-bottom:40px;">
+  <h1 style="font-size:42px;">Тарифы</h1>
+  <p>Выберите подходящий тариф и начните доминировать на серверах</p>
+</section>
+
+<section class="pricing">
+  <div class="price-card">
+    <h3>Неделя</h3>
+    <div class="price">199<small>₽</small></div>
+    <ul>
+      <li>Все функции клиента</li>
+      <li>Доступ к KillAura SpookyTime</li>
+      <li>Авто-обновления</li>
+      <li>Поддержка в Telegram</li>
+    </ul>
+    <button class="btn btn-secondary" style="width:100%;" onclick="buyPlan(7, 199)">Купить</button>
+  </div>
+
+  <div class="price-card featured">
+    <h3>Месяц</h3>
+    <div class="price">499<small>₽</small></div>
+    <ul>
+      <li>Все функции клиента</li>
+      <li>Доступ к KillAura SpookyTime</li>
+      <li>Авто-обновления</li>
+      <li>Приоритетная поддержка</li>
+      <li>Бонус: 30 дней + 5 в подарок</li>
+    </ul>
+    <button class="btn btn-primary" style="width:100%;" onclick="buyPlan(35, 499)">Купить</button>
+  </div>
+
+  <div class="price-card">
+    <h3>3 месяца</h3>
+    <div class="price">1199<small>₽</small></div>
+    <ul>
+      <li>Все функции клиента</li>
+      <li>Доступ к KillAura SpookyTime</li>
+      <li>Авто-обновления</li>
+      <li>VIP поддержка</li>
+      <li>Бонус: 90 дней + 15 в подарок</li>
+    </ul>
+    <button class="btn btn-secondary" style="width:100%;" onclick="buyPlan(105, 1199)">Купить</button>
+  </div>
+</section>
+
+<section style="max-width:600px; margin:40px auto; padding:0 20px;">
+  <div class="auth-card" style="text-align:center;">
+    <h3 style="color:#fff; margin-bottom:14px;">Как купить?</h3>
+    <p style="color:#aaa; line-height:1.7; font-size:14px;">
+      1. Зарегистрируйтесь на сайте<br>
+      2. Выберите тариф и нажмите "Купить"<br>
+      3. Оплатите по ссылке<br>
+      4. Свяжитесь в Telegram <a href="https://t.me/offersheart" style="color:#e84040;">@offersheart</a> для активации<br>
+      5. Скачайте лоадер из профиля и играйте!
+    </p>
+  </div>
+</section>
+
+<footer>
+  © 2026 Luminar by DustGames · <a href="https://t.me/offersheart" style="color:#e84040;">t.me/offersheart</a>
+</footer>
+
+<script>
+const token = localStorage.getItem('luminar_token');
+if (token) {
+  fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } })
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if (data && data.user) {
+        document.getElementById('navAuth').innerHTML = `
+          <a href="/profile" class="btn btn-secondary">${data.user.username}</a>
+        `;
+      }
+    });
+}
+
+function buyPlan(days, price) {
+  // Замени URL на свою ссылку оплаты (CryptoBot, YooMoney, etc.)
+  const PAYMENT_URL = 'https://t.me/offersheart';
+  if (!token) {
+    alert('Сначала зарегистрируйтесь или войдите');
+    location.href = '/login';
+    return;
+  }
+  if (confirm(`Купить ${days} дней за ${price}₽?\n\nВы будете перенаправлены на оплату.`)) {
+    window.open(PAYMENT_URL, '_blank');
+  }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Профиль — Luminar</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">Luminar</a>
+  <div class="links">
+    <a href="/">Главная</a>
+    <a href="/buy">Купить</a>
+    <a href="/profile" class="active">Профиль</a>
+  </div>
+  <div class="auth-btns">
+    <a href="#" onclick="logout()" class="btn btn-secondary">Выйти</a>
+  </div>
+</nav>
+
+<div class="profile-container">
+  <div class="profile-header">
+    <img id="avatar" class="profile-avatar" src="https://api.dicebear.com/7.x/identicon/svg?seed=default" alt="avatar">
+    <div class="profile-info">
+      <h2 id="username">...</h2>
+      <div class="role" id="role"></div>
+      <div class="meta" id="meta"></div>
+    </div>
+  </div>
+
+  <div class="profile-section">
+    <h3>Подписка</h3>
+    <div id="subInfo" style="color:#aaa; font-size:14px;">Загрузка...</div>
+    <a href="/buy" class="btn btn-primary" style="margin-top:14px;">Продлить подписку</a>
+  </div>
+
+  <div class="profile-section">
+    <h3>Аватарка</h3>
+    <p style="color:#888; font-size:13px; margin-bottom:14px;">Вставьте URL картинки (любой публичный JPG/PNG)</p>
+    <div class="form-group" style="display:flex; gap:10px;">
+      <input type="text" id="avatarUrl" placeholder="https://..." style="flex:1;">
+      <button class="btn btn-primary" onclick="updateAvatar()">Сохранить</button>
+    </div>
+    <div id="avatarMsg" class="error-msg"></div>
+  </div>
+
+  <div class="profile-section">
+    <h3>Скачать клиент</h3>
+    <p style="color:#888; font-size:13px; margin-bottom:14px;">Скачайте лоадер и войдите со своими данными</p>
+    <a id="downloadBtn" href="#" class="btn btn-primary">⬇ Скачать LuminarLoader.exe</a>
+  </div>
+</div>
+
+<script>
+const token = localStorage.getItem('luminar_token');
+if (!token) location.href = '/login';
+
+async function loadProfile() {
+  const r = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+  if (!r.ok) { localStorage.removeItem('luminar_token'); location.href = '/login'; return; }
+  const data = await r.json();
+  const u = data.user;
+
+  document.getElementById('username').textContent = u.username;
+  document.getElementById('role').textContent = u.role || 'USER';
+  document.getElementById('meta').textContent = 'ID: ' + u.id + ' · С нами с ' + new Date(Number(u.created_at)).toLocaleDateString();
+
+  if (u.avatar_url) {
+    document.getElementById('avatar').src = u.avatar_url;
+    document.getElementById('avatarUrl').value = u.avatar_url;
+  } else {
+    document.getElementById('avatar').src = 'https://api.dicebear.com/7.x/identicon/svg?seed=' + u.username;
+  }
+
+  const sub = u.subscription;
+  const subDiv = document.getElementById('subInfo');
+  if (sub.active) {
+    subDiv.innerHTML = `<span style="color:#4ade80; font-weight:600;">✓ Активна</span> · до ${new Date(Number(sub.until)).toLocaleDateString()} (${sub.daysLeft} дн.)`;
+  } else {
+    subDiv.innerHTML = '<span style="color:#f87171;">✗ Подписка не активна</span>';
+  }
+}
+
+async function updateAvatar() {
+  const url = document.getElementById('avatarUrl').value.trim();
+  const msg = document.getElementById('avatarMsg');
+  if (!url) return;
+
+  const r = await fetch('/api/me/avatar', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+    body: JSON.stringify({ avatar_url: url })
+  });
+  if (r.ok) {
+    msg.className = 'success-msg';
+    msg.textContent = 'Аватарка обновлена!';
+    document.getElementById('avatar').src = url;
+  } else {
+    const data = await r.json();
+    msg.className = 'error-msg';
+    msg.textContent = data.error || 'Ошибка';
+  }
+}
+
+function logout() {
+  localStorage.removeItem('luminar_token');
+  location.href = '/';
+}
+
+document.getElementById('downloadBtn').addEventListener('click', e => {
+  e.preventDefault();
+  alert('Лоадер пока в разработке. Свяжитесь с @offersheart в Telegram');
+});
+
+loadProfile();
+</script>
+
+</body>
+</html>

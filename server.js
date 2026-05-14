@@ -41,9 +41,12 @@ async function initDB() {
       last_login BIGINT,
       banned INTEGER DEFAULT 0,
       sub_until BIGINT DEFAULT 0,
-      role TEXT DEFAULT NULL
+      role TEXT DEFAULT NULL,
+      avatar_url TEXT DEFAULT NULL
     );
   `);
+  // Migration for existing tables
+  try { await pool.query('ALTER TABLE users ADD COLUMN avatar_url TEXT DEFAULT NULL'); } catch(e) {}
   await pool.query(`
     CREATE TABLE IF NOT EXISTS changelog (
       id SERIAL PRIMARY KEY,
@@ -279,6 +282,52 @@ app.post('/api/admin/version', adminOnly, async (req, res) => {
   await pool.query("INSERT INTO settings (key, value) VALUES ('client_version', $1) ON CONFLICT (key) DO UPDATE SET value = $1", [version]);
   res.json({ ok: true, version });
 });
+
+// ---- Profile ----
+app.get('/api/me', async (req, res) => {
+  try {
+    const auth = req.headers['authorization'];
+    if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'No token' });
+    const token = auth.substring(7);
+    const payload = jwt.verify(token, JWT_SECRET);
+    const result = await pool.query('SELECT id, username, role, sub_until, avatar_url, created_at FROM users WHERE username = $1', [payload.username]);
+    const user = result.rows[0];
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json({ user: { ...user, subscription: getSubscription(user) } });
+  } catch (e) {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+});
+
+app.post('/api/me/avatar', async (req, res) => {
+  try {
+    const auth = req.headers['authorization'];
+    if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'No token' });
+    const token = auth.substring(7);
+    const payload = jwt.verify(token, JWT_SECRET);
+    const { avatar_url } = req.body || {};
+    if (!avatar_url || typeof avatar_url !== 'string' || avatar_url.length > 500)
+      return res.status(400).json({ error: 'Invalid avatar URL' });
+    await pool.query('UPDATE users SET avatar_url = $1 WHERE username = $2', [avatar_url, payload.username]);
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+});
+
+// Public avatar lookup (for loader)
+app.get('/api/avatar/:username', async (req, res) => {
+  const result = await pool.query('SELECT avatar_url FROM users WHERE username = $1', [req.params.username]);
+  if (result.rows.length === 0) return res.status(404).json({ error: 'Not found' });
+  res.json({ avatar_url: result.rows[0].avatar_url });
+});
+
+// ---- Site routes ----
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
+app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'public', 'register.html')));
+app.get('/profile', (req, res) => res.sendFile(path.join(__dirname, 'public', 'profile.html')));
+app.get('/buy', (req, res) => res.sendFile(path.join(__dirname, 'public', 'buy.html')));
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 
