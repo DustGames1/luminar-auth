@@ -1,16 +1,23 @@
 /**
- * Luminar Auth Backend
- * --------------------
+ * Luminar Auth Backend v2
+ * -----------------------
+ * Now with SUBSCRIPTION system.
+ *
+ * Public:
  * - POST /api/register   { username, password, hwid }
- * - POST /api/login      { username, password, hwid } -> { token }
- * - POST /api/verify     { token, hwid }              -> { ok, username, expiresAt }
+ * - POST /api/login      { username, password, hwid } -> { token, subscription }
+ * - POST /api/verify     { token, hwid }              -> { ok, username, subscription }
  * - GET  /api/health
  *
- * Admin (uses ADMIN_KEY in header `x-admin-key`):
- * - POST /api/admin/users        -> create user manually { username, password, hwid? }
- * - GET  /api/admin/users        -> list users
- * - DELETE /api/admin/users/:id  -> remove user
- * - POST /api/admin/reset-hwid/:id -> clear HWID lock for that user
+ * Admin (header `x-admin-key`):
+ * - POST /api/admin/users              { username, password, hwid?, days? }
+ * - GET  /api/admin/users
+ * - DELETE /api/admin/users/:id
+ * - POST /api/admin/reset-hwid/:id
+ * - POST /api/admin/ban/:id
+ * - POST /api/admin/unban/:id
+ * - POST /api/admin/subscribe/:id      { days }  <- GIVE SUBSCRIPTION
+ * - POST /api/admin/unsubscribe/:id             <- REMOVE SUBSCRIPTION
  */
 
 const express = require('express');
@@ -38,9 +45,13 @@ db.exec(`
     hwid TEXT,
     created_at INTEGER NOT NULL,
     last_login INTEGER,
-    banned INTEGER DEFAULT 0
+    banned INTEGER DEFAULT 0,
+    sub_until INTEGER DEFAULT 0
   );
 `);
+
+// Migration: add sub_until if missing (for existing DBs)
+try { db.exec('ALTER TABLE users ADD COLUMN sub_until INTEGER DEFAULT 0'); } catch(e) {}
 
 // ---- App ----
 const app = express();
@@ -49,12 +60,7 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: '64kb' }));
 
-const limiter = rateLimit({
-  windowMs: 60 * 1000,
-  limit: 30,
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+const limiter = rateLimit({ windowMs: 60000, limit: 30, standardHeaders: true, legacyHeaders: false });
 app.use('/api/', limiter);
 
 // ---- Helpers ----
@@ -63,21 +69,25 @@ const validPassword = (p) => typeof p === 'string' && p.length >= 6 && p.length 
 const validHwid = (h) => typeof h === 'string' && h.length >= 8 && h.length <= 128;
 
 function adminOnly(req, res, next) {
-  if (req.headers['x-admin-key'] !== ADMIN_KEY) {
-    return res.status(403).json({ error: 'Forbidden' });
-  }
+  if (req.headers['x-admin-key'] !== ADMIN_KEY) return res.status(403).json({ error: 'Forbidden' });
   next();
 }
 
-// ---- Public routes ----
-app.get('/api/health', (req, res) => {
-  res.json({ ok: true, ts: Date.now() });
-});
+function getSubscription(user) {
+  if (!user.sub_until || user.sub_until === 0) return { active: false, until: null, daysLeft: 0 };
+  const now = Date.now();
+  if (user.sub_until <= now) return { active: false, until: user.sub_until, daysLeft: 0 };
+  const daysLeft = Math.ceil((user.sub_until - now) / 86400000);
+  return { active: true, until: user.sub_until, daysLeft };
+}
+
+// ---- Public ----
+app.get('/api/health', (req, res) => res.json({ ok: true, ts: Date.now() }));
 
 app.post('/api/register', async (req, res) => {
   try {
     const { username, password, hwid } = req.body || {};
-    if (!validUsername(username)) return res.status(400).json({ error: 'Invalid username' });
+    if (!validUsername(username)) return res.status(400).json({ error: 'Invalid username (3-16, a-z 0-9 _)' });
     if (!validPassword(password)) return res.status(400).json({ error: 'Invalid password (6-64 chars)' });
     if (!validHwid(hwid)) return res.status(400).json({ error: 'Invalid HWID' });
 
@@ -85,13 +95,11 @@ app.post('/api/register', async (req, res) => {
     if (exists) return res.status(409).json({ error: 'Username already taken' });
 
     const hash = await bcrypt.hash(password, 12);
-    const now = Date.now();
-    db.prepare(
-      'INSERT INTO users (username, password_hash, hwid, created_at) VALUES (?, ?, ?, ?)'
-    ).run(username, hash, hwid, now);
+    db.prepare('INSERT INTO users (username, password_hash, hwid, created_at, sub_until) VALUES (?, ?, ?, ?, 0)')
+      .run(username, hash, hwid, Date.now());
 
     const token = jwt.sign({ username, hwid }, JWT_SECRET, { expiresIn: TOKEN_TTL });
-    return res.json({ ok: true, token });
+    return res.json({ ok: true, token, subscription: { active: false, until: null, daysLeft: 0 } });
   } catch (e) {
     console.error('register', e);
     return res.status(500).json({ error: 'Server error' });
@@ -101,9 +109,8 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/login', async (req, res) => {
   try {
     const { username, password, hwid } = req.body || {};
-    if (!validUsername(username) || !validPassword(password) || !validHwid(hwid)) {
+    if (!validUsername(username) || !validPassword(password) || !validHwid(hwid))
       return res.status(400).json({ error: 'Bad request' });
-    }
 
     const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username);
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
@@ -112,7 +119,7 @@ app.post('/api/login', async (req, res) => {
     const ok = await bcrypt.compare(password, user.password_hash);
     if (!ok) return res.status(401).json({ error: 'Invalid credentials' });
 
-    // HWID lock: if not yet bound, bind now. Otherwise must match.
+    // HWID lock
     if (!user.hwid) {
       db.prepare('UPDATE users SET hwid = ? WHERE id = ?').run(hwid, user.id);
     } else if (user.hwid !== hwid) {
@@ -121,8 +128,15 @@ app.post('/api/login', async (req, res) => {
 
     db.prepare('UPDATE users SET last_login = ? WHERE id = ?').run(Date.now(), user.id);
 
+    const sub = getSubscription(user);
+
+    // Check subscription — if not active, deny login
+    if (!sub.active) {
+      return res.status(403).json({ error: 'No active subscription. Contact owner.' });
+    }
+
     const token = jwt.sign({ username: user.username, hwid }, JWT_SECRET, { expiresIn: TOKEN_TTL });
-    return res.json({ ok: true, token, username: user.username });
+    return res.json({ ok: true, token, username: user.username, subscription: sub });
   } catch (e) {
     console.error('login', e);
     return res.status(500).json({ error: 'Server error' });
@@ -138,40 +152,36 @@ app.post('/api/verify', (req, res) => {
     if (payload.hwid !== hwid) return res.status(403).json({ error: 'HWID mismatch' });
 
     const user = db.prepare('SELECT * FROM users WHERE username = ?').get(payload.username);
-    if (!user || user.banned || user.hwid !== hwid) {
+    if (!user || user.banned || user.hwid !== hwid)
       return res.status(403).json({ error: 'Token invalid' });
-    }
 
-    return res.json({
-      ok: true,
-      username: user.username,
-      expiresAt: payload.exp * 1000,
-    });
+    const sub = getSubscription(user);
+    if (!sub.active) return res.status(403).json({ error: 'Subscription expired' });
+
+    return res.json({ ok: true, username: user.username, expiresAt: payload.exp * 1000, subscription: sub });
   } catch (e) {
     return res.status(401).json({ error: 'Token expired or invalid' });
   }
 });
 
-// ---- Admin routes ----
+// ---- Admin ----
 app.post('/api/admin/users', adminOnly, async (req, res) => {
-  const { username, password, hwid } = req.body || {};
-  if (!validUsername(username) || !validPassword(password)) {
+  const { username, password, hwid, days } = req.body || {};
+  if (!validUsername(username) || !validPassword(password))
     return res.status(400).json({ error: 'Bad request' });
-  }
   const exists = db.prepare('SELECT 1 FROM users WHERE username = ?').get(username);
   if (exists) return res.status(409).json({ error: 'Already exists' });
   const hash = await bcrypt.hash(password, 12);
-  db.prepare(
-    'INSERT INTO users (username, password_hash, hwid, created_at) VALUES (?, ?, ?, ?)'
-  ).run(username, hash, hwid || null, Date.now());
+  const subUntil = days ? Date.now() + days * 86400000 : 0;
+  db.prepare('INSERT INTO users (username, password_hash, hwid, created_at, sub_until) VALUES (?, ?, ?, ?, ?)')
+    .run(username, hash, hwid || null, Date.now(), subUntil);
   res.json({ ok: true });
 });
 
 app.get('/api/admin/users', adminOnly, (req, res) => {
-  const rows = db
-    .prepare('SELECT id, username, hwid, created_at, last_login, banned FROM users ORDER BY id DESC')
-    .all();
-  res.json({ users: rows });
+  const rows = db.prepare('SELECT id, username, hwid, created_at, last_login, banned, sub_until FROM users ORDER BY id DESC').all();
+  const users = rows.map(u => ({ ...u, subscription: getSubscription(u) }));
+  res.json({ users });
 });
 
 app.delete('/api/admin/users/:id', adminOnly, (req, res) => {
@@ -194,8 +204,29 @@ app.post('/api/admin/unban/:id', adminOnly, (req, res) => {
   res.json({ ok: true });
 });
 
+// GIVE SUBSCRIPTION: POST /api/admin/subscribe/:id { days: 30 }
+app.post('/api/admin/subscribe/:id', adminOnly, (req, res) => {
+  const { days } = req.body || {};
+  if (!days || days < 1 || days > 3650) return res.status(400).json({ error: 'days must be 1-3650' });
+
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.params.id);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+
+  // If already has active sub, extend from current end. Otherwise from now.
+  const now = Date.now();
+  const base = (user.sub_until && user.sub_until > now) ? user.sub_until : now;
+  const newUntil = base + days * 86400000;
+
+  db.prepare('UPDATE users SET sub_until = ? WHERE id = ?').run(newUntil, user.id);
+  res.json({ ok: true, sub_until: newUntil, days_total: Math.ceil((newUntil - now) / 86400000) });
+});
+
+// REMOVE SUBSCRIPTION
+app.post('/api/admin/unsubscribe/:id', adminOnly, (req, res) => {
+  db.prepare('UPDATE users SET sub_until = 0 WHERE id = ?').run(req.params.id);
+  res.json({ ok: true });
+});
+
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 
-app.listen(PORT, () => {
-  console.log(`Luminar auth backend listening on :${PORT}`);
-});
+app.listen(PORT, () => console.log(`Luminar auth v2 listening on :${PORT}`));
