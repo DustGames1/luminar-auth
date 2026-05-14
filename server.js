@@ -227,6 +227,38 @@ app.post('/api/admin/unsubscribe/:id', adminOnly, (req, res) => {
   res.json({ ok: true });
 });
 
+// ---- Changelog ----
+db.exec(`
+  CREATE TABLE IF NOT EXISTS changelog (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    version TEXT NOT NULL,
+    date TEXT NOT NULL,
+    tag TEXT DEFAULT 'ОБНОВЛЕНО',
+    text TEXT NOT NULL
+  );
+`);
+
+// Public: get changelog
+app.get('/api/changelog', (req, res) => {
+  const rows = db.prepare('SELECT * FROM changelog ORDER BY id DESC LIMIT 20').all();
+  res.json({ entries: rows });
+});
+
+// Admin: add changelog entry
+app.post('/api/admin/changelog', adminOnly, (req, res) => {
+  const { version, date, tag, text } = req.body || {};
+  if (!version || !text) return res.status(400).json({ error: 'version and text required' });
+  db.prepare('INSERT INTO changelog (version, date, tag, text) VALUES (?, ?, ?, ?)')
+    .run(version, date || new Date().toISOString().slice(0, 10), tag || 'ОБНОВЛЕНО', text);
+  res.json({ ok: true });
+});
+
+// Admin: delete changelog entry
+app.delete('/api/admin/changelog/:id', adminOnly, (req, res) => {
+  db.prepare('DELETE FROM changelog WHERE id = ?').run(req.params.id);
+  res.json({ ok: true });
+});
+
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 
 app.listen(PORT, () => console.log(`Luminar auth v2 listening on :${PORT}`));
