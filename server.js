@@ -158,7 +158,7 @@ app.post('/api/verify', (req, res) => {
     const sub = getSubscription(user);
     if (!sub.active) return res.status(403).json({ error: 'Subscription expired' });
 
-    return res.json({ ok: true, username: user.username, expiresAt: payload.exp * 1000, subscription: sub });
+    return res.json({ ok: true, username: user.username, uid: user.id, expiresAt: payload.exp * 1000, subscription: sub });
   } catch (e) {
     return res.status(401).json({ error: 'Token expired or invalid' });
   }
