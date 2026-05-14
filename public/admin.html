@@ -180,7 +180,8 @@ async function loadUsers() {
       <td title="${u.hwid || ''}">${u.hwid ? u.hwid.substring(0, 12) + '...' : '—'}</td>
       <td>${status}</td>
       <td class="actions">
-        <button onclick="giveSub(${u.id})" class="green">+30 дней</button>
+        <button onclick="giveSub(${u.id})" class="green">+ Подписка</button>
+        <button onclick="removeSub(${u.id})" class="gray">− Подписка</button>
         <button onclick="setRole(${u.id})" class="gray">Роль</button>
         <button onclick="resetHwid(${u.id})" class="gray">Сброс HWID</button>
         ${u.banned
@@ -217,6 +218,12 @@ async function giveSub(id) {
   const days = prompt('На сколько дней?', '30');
   if (!days) return;
   await api('POST', '/api/admin/subscribe/' + id, { days: parseInt(days) });
+  loadUsers();
+}
+
+async function removeSub(id) {
+  if (!confirm('Полностью забрать подписку?')) return;
+  await api('POST', '/api/admin/unsubscribe/' + id);
   loadUsers();
 }
 

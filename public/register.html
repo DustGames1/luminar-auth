@@ -66,13 +66,11 @@ document.getElementById('registerForm').addEventListener('submit', async e => {
   const password2 = document.getElementById('password2').value;
   if (password !== password2) { msg.textContent = 'Пароли не совпадают'; return; }
 
-  const hwid = await generateBrowserHWID();
-
   try {
     const r = await fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password, hwid })
+      body: JSON.stringify({ username, password })
     });
     const data = await r.json();
     if (r.ok) {

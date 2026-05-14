@@ -113,19 +113,19 @@ app.get('/api/health', (req, res) => res.json({ ok: true, ts: Date.now() }));
 
 app.post('/api/register', async (req, res) => {
   try {
-    const { username, password, hwid } = req.body || {};
+    const { username, password } = req.body || {};
     if (!validUsername(username)) return res.status(400).json({ error: 'Invalid username (3-16, a-z 0-9 _)' });
     if (!validPassword(password)) return res.status(400).json({ error: 'Invalid password (6-64 chars)' });
-    if (!validHwid(hwid)) return res.status(400).json({ error: 'Invalid HWID' });
 
     const exists = await pool.query('SELECT 1 FROM users WHERE username = $1', [username]);
     if (exists.rows.length > 0) return res.status(409).json({ error: 'Username already taken' });
 
     const hash = await bcrypt.hash(password, 12);
-    await pool.query('INSERT INTO users (username, password_hash, hwid, created_at, sub_until) VALUES ($1, $2, $3, $4, 0)',
-      [username, hash, hwid, Date.now()]);
+    // HWID is NOT saved on registration — will be set on first loader launch
+    await pool.query('INSERT INTO users (username, password_hash, hwid, created_at, sub_until) VALUES ($1, $2, NULL, $3, 0)',
+      [username, hash, Date.now()]);
 
-    const token = jwt.sign({ username, hwid }, JWT_SECRET, { expiresIn: TOKEN_TTL });
+    const token = jwt.sign({ username, hwid: null }, JWT_SECRET, { expiresIn: TOKEN_TTL });
     return res.json({ ok: true, token, subscription: { active: false, until: null, daysLeft: 0 } });
   } catch (e) {
     console.error('register', e);
@@ -135,8 +135,8 @@ app.post('/api/register', async (req, res) => {
 
 app.post('/api/login', async (req, res) => {
   try {
-    const { username, password, hwid } = req.body || {};
-    if (!validUsername(username) || !validPassword(password) || !validHwid(hwid))
+    const { username, password, hwid, source } = req.body || {};
+    if (!validUsername(username) || !validPassword(password))
       return res.status(400).json({ error: 'Bad request' });
 
     const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
@@ -147,11 +147,17 @@ app.post('/api/login', async (req, res) => {
     const ok = await bcrypt.compare(password, user.password_hash);
     if (!ok) return res.status(401).json({ error: 'Invalid credentials' });
 
-    // HWID lock
-    if (!user.hwid) {
-      await pool.query('UPDATE users SET hwid = $1 WHERE id = $2', [hwid, user.id]);
-    } else if (user.hwid !== hwid) {
-      return res.status(403).json({ error: 'HWID mismatch. Contact owner to reset.' });
+    // HWID lock — only enforced when source is 'loader' (real hardware HWID)
+    // Website login (source='web' or no source) doesn't check or set HWID
+    const isLoader = source === 'loader';
+
+    if (isLoader && validHwid(hwid)) {
+      if (!user.hwid) {
+        // First loader launch — save HWID
+        await pool.query('UPDATE users SET hwid = $1 WHERE id = $2', [hwid, user.id]);
+      } else if (user.hwid !== hwid) {
+        return res.status(403).json({ error: 'HWID mismatch. Contact owner to reset.' });
+      }
     }
 
     await pool.query('UPDATE users SET last_login = $1 WHERE id = $2', [Date.now(), user.id]);
@@ -159,7 +165,7 @@ app.post('/api/login', async (req, res) => {
     const sub = getSubscription(user);
     // Note: subscription not required for login — only for loader download
 
-    const token = jwt.sign({ username: user.username, hwid }, JWT_SECRET, { expiresIn: TOKEN_TTL });
+    const token = jwt.sign({ username: user.username, hwid: isLoader ? hwid : null }, JWT_SECRET, { expiresIn: TOKEN_TTL });
     return res.json({ ok: true, token, username: user.username, subscription: sub });
   } catch (e) {
     console.error('login', e);
@@ -170,19 +176,21 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/verify', async (req, res) => {
   try {
     const { token, hwid } = req.body || {};
-    if (!token || !validHwid(hwid)) return res.status(400).json({ error: 'Bad request' });
+    if (!token) return res.status(400).json({ error: 'Bad request' });
 
     const payload = jwt.verify(token, JWT_SECRET);
-    if (payload.hwid !== hwid) return res.status(403).json({ error: 'HWID mismatch' });
 
     const result = await pool.query('SELECT * FROM users WHERE username = $1', [payload.username]);
     const user = result.rows[0];
-    if (!user || user.banned || user.hwid !== hwid)
+    if (!user || user.banned)
       return res.status(403).json({ error: 'Token invalid' });
 
-    const sub = getSubscription(user);
-    // Subscription not required for token verification — frontend handles UI
+    // Only check HWID if token was issued for a loader session AND user has HWID locked
+    if (payload.hwid && user.hwid) {
+      if (!validHwid(hwid) || user.hwid !== hwid) return res.status(403).json({ error: 'HWID mismatch' });
+    }
 
+    const sub = getSubscription(user);
     return res.json({ ok: true, username: user.username, uid: user.id, role: user.role || null, subscription: sub });
   } catch (e) {
     return res.status(401).json({ error: 'Token expired or invalid' });

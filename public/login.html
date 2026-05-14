@@ -60,13 +60,12 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
 
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
-  const hwid = await generateBrowserHWID();
 
   try {
     const r = await fetch('/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password, hwid })
+      body: JSON.stringify({ username, password, source: 'web' })
     });
     const data = await r.json();
     if (r.ok) {
