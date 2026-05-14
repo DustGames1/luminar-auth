@@ -2,134 +2,336 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Luminar Admin</title>
+<title>Admin — Luminar</title>
+<link rel="stylesheet" href="/style.css">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-body { background: #0d0d0f; color: #e8e8ec; min-height: 100vh; padding: 20px; }
-.container { max-width: 1200px; margin: 0 auto; }
-h1 { color: #e84040; margin-bottom: 20px; font-size: 28px; }
-h2 { color: #fff; margin: 20px 0 12px; font-size: 18px; }
-.card { background: #161619; border: 1px solid #2a2a30; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
-input, button, select { padding: 10px 14px; border-radius: 6px; border: 1px solid #333; background: #1e1e24; color: #e8e8ec; font-size: 14px; outline: none; }
-input:focus { border-color: #e84040; }
-button { background: #e84040; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
-button:hover { background: #f04848; }
-button.gray { background: #2a2a30; }
-button.gray:hover { background: #3a3a40; }
-button.green { background: #2ea043; }
-button.green:hover { background: #34c252; }
-.row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-.row input, .row select { flex: 1; min-width: 150px; }
-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-th, td { text-align: left; padding: 12px; border-bottom: 1px solid #2a2a30; font-size: 13px; }
-th { color: #888; font-weight: 600; text-transform: uppercase; font-size: 11px; }
-td .actions { display: flex; gap: 6px; flex-wrap: wrap; }
-td .actions button { padding: 5px 10px; font-size: 12px; }
-.badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
-.badge.active { background: #1a4d2e; color: #4ade80; }
-.badge.banned { background: #4d1a1a; color: #f87171; }
-.badge.expired { background: #4d3a1a; color: #fbbf24; }
-.error { color: #f87171; font-size: 12px; margin-top: 8px; }
-.success { color: #4ade80; font-size: 12px; margin-top: 8px; }
-#login-screen { max-width: 400px; margin: 100px auto; }
-#login-screen h1 { text-align: center; }
-.hide { display: none; }
+.admin-grid {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 14px;
+  max-width: 1280px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.admin-side {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+  height: fit-content;
+  position: sticky;
+  top: 100px;
+}
+.admin-side .menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--text-dim);
+  font-size: 13px;
+  font-weight: 500;
+  transition: 0.2s;
+  margin-bottom: 4px;
+}
+.admin-side .menu-item:hover { background: rgba(255, 149, 0, 0.06); color: var(--accent-light); }
+.admin-side .menu-item.active {
+  background: linear-gradient(135deg, var(--accent-2), var(--accent-3));
+  color: #1a0f00;
+  font-weight: 700;
+}
+
+.admin-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.admin-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+}
+.admin-card h2 {
+  font-size: 18px;
+  color: #fff;
+  margin-bottom: 16px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) auto;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.toolbar input {
+  background: rgba(255, 149, 0, 0.03);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 11px 14px;
+  color: #fff;
+  font-size: 13px;
+  outline: none;
+  transition: 0.2s;
+}
+.toolbar input:focus { border-color: var(--accent); }
+.toolbar input::placeholder { color: var(--text-muted); }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+th, td {
+  text-align: left;
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--border);
+}
+th {
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+tbody tr:hover { background: rgba(255, 149, 0, 0.02); }
+td .actions { display: flex; gap: 4px; flex-wrap: wrap; }
+td .actions button {
+  padding: 5px 10px;
+  font-size: 11px;
+  border-radius: 7px;
+  border: 1px solid var(--border-light);
+  background: rgba(255, 255, 255, 0.04);
+  color: #ccc;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.15s;
+}
+td .actions button:hover { background: rgba(255, 149, 0, 0.1); border-color: var(--accent); color: var(--accent-light); }
+td .actions button.green { background: rgba(74, 222, 128, 0.1); border-color: rgba(74, 222, 128, 0.3); color: #4ade80; }
+td .actions button.red { background: rgba(248, 113, 113, 0.1); border-color: rgba(248, 113, 113, 0.3); color: #f87171; }
+td .actions button.accent {
+  background: linear-gradient(135deg, var(--accent-2), var(--accent-3));
+  color: #1a0f00;
+  border: none;
+  font-weight: 700;
+}
+
+.badge-status {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.badge-status.active { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+.badge-status.banned { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+.badge-status.expired { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+.badge-status.used { background: rgba(120, 120, 130, 0.15); color: #9a9aa0; }
+
+.keys-output {
+  margin-top: 12px;
+  padding: 14px;
+  background: rgba(74, 222, 128, 0.05);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  border-radius: 10px;
+}
+.keys-output pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #4ade80;
+  margin-top: 8px;
+  user-select: all;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.error-box { color: #f87171; font-size: 12px; margin-top: 10px; }
+.success-box { color: #4ade80; font-size: 12px; margin-top: 10px; }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.stat-box {
+  background: rgba(255, 149, 0, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+}
+.stat-box .num {
+  font-size: 22px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent-3));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stat-box .lbl { color: var(--text-dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; font-weight: 600; }
+
+.hidden { display: none !important; }
 </style>
 </head>
 <body>
 
-<div id="login-screen">
-  <div class="card">
-    <h1>Luminar Admin</h1>
-    <input type="password" id="adminKey" placeholder="Admin Key" style="width:100%; margin-bottom:12px;">
-    <button onclick="login()" style="width:100%;">Войти</button>
-    <div id="loginError" class="error"></div>
+<nav>
+  <a href="/" class="logo">
+    <span class="logo-icon">⚡</span>
+    Luminar
+  </a>
+  <div class="links">
+    <a href="/">Главная</a>
+    <a href="/buy">Тарифы</a>
+    <a href="/admin" class="active">Admin</a>
+  </div>
+  <div class="auth-btns">
+    <a href="#" onclick="logout()" class="btn btn-secondary">⏻ Выйти</a>
+  </div>
+</nav>
+
+<!-- Login Screen -->
+<div id="login-screen" class="auth-container">
+  <div class="auth-card">
+    <h2 style="font-size:22px; margin-bottom:6px; color:#fff; text-align:center;">🔐 Admin Panel</h2>
+    <p style="color:var(--text-dim); font-size:13px; margin-bottom:24px; text-align:center;">Введите admin key для доступа</p>
+    <div class="form-group">
+      <label>Admin Key</label>
+      <input type="password" id="adminKey" placeholder="Введите ключ">
+    </div>
+    <button onclick="login()" class="btn btn-primary">⚡ Войти</button>
+    <div id="loginError" class="error-msg"></div>
   </div>
 </div>
 
-<div id="main-screen" class="hide container">
-  <h1>Luminar Admin Panel</h1>
+<!-- Main Screen -->
+<div id="main-screen" class="hidden">
+  <div class="admin-grid">
+    <aside class="admin-side">
+      <div class="menu-item active" data-section="dashboard">📊 Обзор</div>
+      <div class="menu-item" data-section="users">👥 Пользователи</div>
+      <div class="menu-item" data-section="keys">🔑 Ключи</div>
+      <div class="menu-item" data-section="version">🚀 Версия</div>
+    </aside>
 
-  <div class="card">
-    <h2>Создать пользователя</h2>
-    <div class="row">
-      <input type="text" id="newUser" placeholder="Username">
-      <input type="password" id="newPass" placeholder="Password">
-      <input type="number" id="newDays" placeholder="Дней подписки" value="30">
-      <button onclick="createUser()">Создать</button>
+    <div class="admin-content">
+
+      <!-- Dashboard -->
+      <div id="section-dashboard" class="section-block">
+        <div class="admin-card">
+          <h2>📊 Статистика</h2>
+          <div class="stats-grid">
+            <div class="stat-box"><div class="num" id="statTotal">—</div><div class="lbl">Всего</div></div>
+            <div class="stat-box"><div class="num" id="statActive">—</div><div class="lbl">Активных</div></div>
+            <div class="stat-box"><div class="num" id="statBanned">—</div><div class="lbl">Забанено</div></div>
+            <div class="stat-box"><div class="num" id="statKeys">—</div><div class="lbl">Свободных ключей</div></div>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <h2>➕ Создать пользователя</h2>
+          <div class="toolbar">
+            <input type="text" id="newUser" placeholder="Username">
+            <input type="password" id="newPass" placeholder="Password">
+            <input type="number" id="newDays" placeholder="Дней" value="30">
+            <button onclick="createUser()" class="btn btn-primary">Создать</button>
+          </div>
+          <div id="createMsg"></div>
+        </div>
+      </div>
+
+      <!-- Users -->
+      <div id="section-users" class="section-block hidden">
+        <div class="admin-card">
+          <h2>👥 Пользователи <button onclick="loadUsers()" class="btn btn-secondary" style="margin-left:auto; font-size:11px; padding:6px 12px;">🔄 Обновить</button></h2>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Роль</th>
+                <th>Подписка</th>
+                <th>HWID</th>
+                <th>Статус</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody id="usersBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Keys -->
+      <div id="section-keys" class="section-block hidden">
+        <div class="admin-card">
+          <h2>🔑 Создать ключи активации</h2>
+          <div class="toolbar">
+            <input type="number" id="keyDays" placeholder="Дней" value="30">
+            <input type="number" id="keyCount" placeholder="Количество" value="1">
+            <input type="text" id="keyNote" placeholder="Заметка (опционально)">
+            <button onclick="createKeys()" class="btn btn-primary">Создать</button>
+          </div>
+          <div id="keysOutput"></div>
+        </div>
+
+        <div class="admin-card">
+          <h2>🗝 Все ключи <button onclick="loadKeys()" class="btn btn-secondary" style="margin-left:auto; font-size:11px; padding:6px 12px;">🔄 Обновить</button></h2>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Ключ</th>
+                <th>Дней</th>
+                <th>Статус</th>
+                <th>Использован</th>
+                <th>Заметка</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="keysBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Version -->
+      <div id="section-version" class="section-block hidden">
+        <div class="admin-card">
+          <h2>🚀 Версия клиента</h2>
+          <p style="color:var(--text-dim); font-size:13px; margin-bottom:14px;">Лоадер сравнивает эту версию с локальной и автоматически обновляет клиент при изменении</p>
+          <div class="toolbar">
+            <input type="text" id="versionInput" placeholder="1.0.0">
+            <button onclick="updateVersion()" class="btn btn-primary">Обновить версию</button>
+          </div>
+          <div id="versionMsg"></div>
+        </div>
+      </div>
+
     </div>
-    <div id="createMsg"></div>
-  </div>
-
-  <div class="card">
-    <h2>Ключи активации</h2>
-    <div class="row">
-      <input type="number" id="keyDays" placeholder="Дней" value="30">
-      <input type="number" id="keyCount" placeholder="Кол-во" value="1">
-      <input type="text" id="keyNote" placeholder="Заметка (опционально)">
-      <button onclick="createKeys()">Создать ключи</button>
-    </div>
-    <div id="keysOutput" style="margin-top:12px;"></div>
-    <table style="margin-top:16px;" id="keysTable">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Ключ</th>
-          <th>Дней</th>
-          <th>Статус</th>
-          <th>Использован</th>
-          <th>Заметка</th>
-          <th>Действия</th>
-        </tr>
-      </thead>
-      <tbody id="keysBody"></tbody>
-    </table>
-    <button onclick="loadKeys()" class="gray" style="margin-top:10px;">Обновить</button>
-  </div>
-
-  <div class="card">
-    <h2>Версия клиента</h2>
-    <div class="row">
-      <input type="text" id="versionInput" placeholder="1.0.0">
-      <button onclick="updateVersion()">Обновить версию</button>
-    </div>
-    <div id="versionMsg"></div>
-  </div>
-
-  <div class="card">
-    <h2>Пользователи</h2>
-    <button onclick="loadUsers()" class="gray" style="margin-bottom:12px;">Обновить</button>
-    <table id="usersTable">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Username</th>
-          <th>Роль</th>
-          <th>Подписка</th>
-          <th>HWID</th>
-          <th>Статус</th>
-          <th>Действия</th>
-        </tr>
-      </thead>
-      <tbody id="usersBody"></tbody>
-    </table>
   </div>
 </div>
 
 <script>
 let ADMIN_KEY = localStorage.getItem('adminKey') || '';
-const API = '';
+let allUsers = [];
+let allKeys = [];
 
 async function api(method, path, body) {
-  const opts = {
-    method,
-    headers: { 'x-admin-key': ADMIN_KEY }
-  };
+  const opts = { method, headers: { 'x-admin-key': ADMIN_KEY } };
   if (body) {
     opts.headers['Content-Type'] = 'application/json';
     opts.body = JSON.stringify(body);
   }
-  const r = await fetch(API + path, opts);
+  const r = await fetch(path, opts);
   return { ok: r.ok, status: r.status, data: await r.json().catch(() => ({})) };
 }
 
@@ -150,48 +352,79 @@ async function checkAuth() {
     localStorage.removeItem('adminKey');
     return;
   }
-  document.getElementById('login-screen').classList.add('hide');
-  document.getElementById('main-screen').classList.remove('hide');
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('main-screen').classList.remove('hidden');
   loadUsers();
   loadKeys();
 }
 
+function logout() {
+  localStorage.removeItem('adminKey');
+  ADMIN_KEY = '';
+  location.reload();
+}
+
+// === Sidebar Navigation ===
+document.querySelectorAll('.menu-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+    item.classList.add('active');
+    document.querySelectorAll('.section-block').forEach(s => s.classList.add('hidden'));
+    document.getElementById('section-' + item.dataset.section).classList.remove('hidden');
+  });
+});
+
+// === Users ===
 async function loadUsers() {
   const r = await api('GET', '/api/admin/users');
   if (!r.ok) return;
+  allUsers = r.data.users;
+  renderUsers();
+  updateStats();
+}
+
+function renderUsers() {
   const tbody = document.getElementById('usersBody');
   tbody.innerHTML = '';
-  for (const u of r.data.users) {
+  for (const u of allUsers) {
     const sub = u.subscription;
     const tr = document.createElement('tr');
     let status, until;
-    if (u.banned) { status = '<span class="badge banned">BANNED</span>'; }
+    if (u.banned) status = '<span class="badge-status banned">BANNED</span>';
     else if (sub.active) {
-      status = '<span class="badge active">ACTIVE</span>';
-      until = new Date(Number(sub.until)).toLocaleDateString() + ' (' + sub.daysLeft + ' дн)';
-    }
-    else { status = '<span class="badge expired">EXPIRED</span>'; until = '—'; }
+      status = '<span class="badge-status active">ACTIVE</span>';
+      until = new Date(Number(sub.until)).toLocaleDateString() + ' (' + sub.daysLeft + 'd)';
+    } else { status = '<span class="badge-status expired">EXPIRED</span>'; until = '—'; }
 
     tr.innerHTML = `
       <td>${u.id}</td>
-      <td>${u.username}</td>
+      <td><strong style="color:#fff;">${u.username}</strong></td>
       <td>${u.role || '—'}</td>
       <td>${until || '—'}</td>
-      <td title="${u.hwid || ''}">${u.hwid ? u.hwid.substring(0, 12) + '...' : '—'}</td>
+      <td title="${u.hwid || ''}">${u.hwid ? u.hwid.substring(0, 8) + '...' : '<span style="color:#f87171;">—</span>'}</td>
       <td>${status}</td>
       <td class="actions">
-        <button onclick="giveSub(${u.id})" class="green">+ Подписка</button>
-        <button onclick="removeSub(${u.id})" class="gray">− Подписка</button>
-        <button onclick="setRole(${u.id})" class="gray">Роль</button>
-        <button onclick="resetHwid(${u.id})" class="gray">Сброс HWID</button>
-        ${u.banned
-          ? `<button onclick="unbanUser(${u.id})" class="green">Разбан</button>`
-          : `<button onclick="banUser(${u.id})">Бан</button>`}
-        <button onclick="deleteUser(${u.id})">Удалить</button>
+        <button onclick="giveSub(${u.id})" class="green">+Sub</button>
+        <button onclick="removeSub(${u.id})" class="red">−Sub</button>
+        <button onclick="setRole(${u.id})">Role</button>
+        <button onclick="resetHwid(${u.id})">Reset HWID</button>
+        ${u.banned ? `<button onclick="unbanUser(${u.id})" class="green">Unban</button>` : `<button onclick="banUser(${u.id})" class="red">Ban</button>`}
+        <button onclick="deleteUser(${u.id})" class="red">Del</button>
       </td>
     `;
     tbody.appendChild(tr);
   }
+}
+
+function updateStats() {
+  const total = allUsers.length;
+  const active = allUsers.filter(u => u.subscription && u.subscription.active && !u.banned).length;
+  const banned = allUsers.filter(u => u.banned).length;
+  const freeKeys = allKeys.filter(k => !k.used_at).length;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statActive').textContent = active;
+  document.getElementById('statBanned').textContent = banned;
+  document.getElementById('statKeys').textContent = freeKeys;
 }
 
 async function createUser() {
@@ -199,23 +432,23 @@ async function createUser() {
   const password = document.getElementById('newPass').value;
   const days = parseInt(document.getElementById('newDays').value) || 0;
   const msg = document.getElementById('createMsg');
-  if (!username || !password) { msg.className = 'error'; msg.textContent = 'Заполните все поля'; return; }
+  if (!username || !password) { msg.className = 'error-box'; msg.textContent = 'Заполните все поля'; return; }
 
   const r = await api('POST', '/api/admin/users', { username, password, days });
   if (r.ok) {
-    msg.className = 'success';
-    msg.textContent = 'Пользователь создан!';
+    msg.className = 'success-box';
+    msg.textContent = '✓ Пользователь создан';
     document.getElementById('newUser').value = '';
     document.getElementById('newPass').value = '';
     loadUsers();
   } else {
-    msg.className = 'error';
-    msg.textContent = r.data.error || 'Ошибка';
+    msg.className = 'error-box';
+    msg.textContent = '✗ ' + (r.data.error || 'Ошибка');
   }
 }
 
 async function giveSub(id) {
-  const days = prompt('На сколько дней?', '30');
+  const days = prompt('Сколько дней добавить?', '30');
   if (!days) return;
   await api('POST', '/api/admin/subscribe/' + id, { days: parseInt(days) });
   loadUsers();
@@ -252,59 +485,50 @@ async function unbanUser(id) {
 }
 
 async function deleteUser(id) {
-  if (!confirm('Удалить пользователя НАВСЕГДА?')) return;
+  if (!confirm('Удалить НАВСЕГДА?')) return;
   await api('DELETE', '/api/admin/users/' + id);
   loadUsers();
 }
 
-async function updateVersion() {
-  const version = document.getElementById('versionInput').value.trim();
-  const msg = document.getElementById('versionMsg');
-  if (!version) { msg.className = 'error'; msg.textContent = 'Введите версию'; return; }
-  const r = await api('POST', '/api/admin/version', { version });
-  if (r.ok) { msg.className = 'success'; msg.textContent = 'Версия обновлена: ' + version; }
-  else { msg.className = 'error'; msg.textContent = r.data.error || 'Ошибка'; }
-}
-
-document.getElementById('adminKey').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
-checkAuth();
-
+// === Keys ===
 async function createKeys() {
   const days = parseInt(document.getElementById('keyDays').value);
   const count = parseInt(document.getElementById('keyCount').value);
   const note = document.getElementById('keyNote').value.trim();
   const out = document.getElementById('keysOutput');
 
-  if (!days || days < 1) { out.innerHTML = '<div class="error">Укажите дни</div>'; return; }
+  if (!days || days < 1) { out.innerHTML = '<div class="error-box">Укажите дни</div>'; return; }
 
   const r = await api('POST', '/api/admin/keys', { days, count, note });
   if (r.ok) {
-    out.innerHTML = '<div class="success">Создано ключей: ' + r.data.keys.length + '</div><pre style="background:#1a1a1e; padding:12px; border-radius:6px; margin-top:8px; color:#4ade80; font-size:12px; user-select:all;">' + r.data.keys.join('\n') + '</pre>';
+    out.innerHTML = `<div class="keys-output"><strong style="color:#4ade80;">✓ Создано: ${r.data.keys.length}</strong><pre>${r.data.keys.join('\n')}</pre></div>`;
     loadKeys();
   } else {
-    out.innerHTML = '<div class="error">' + (r.data.error || 'Ошибка') + '</div>';
+    out.innerHTML = '<div class="error-box">✗ ' + (r.data.error || 'Ошибка') + '</div>';
   }
 }
 
 async function loadKeys() {
   const r = await api('GET', '/api/admin/keys');
   if (!r.ok) return;
+  allKeys = r.data.keys;
   const tbody = document.getElementById('keysBody');
   tbody.innerHTML = '';
-  for (const k of r.data.keys) {
+  for (const k of allKeys) {
     const used = k.used_at;
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${k.id}</td>
-      <td style="font-family:monospace; font-size:11px;">${k.key}</td>
+      <td style="font-family:'JetBrains Mono', monospace; font-size:11px; color:${used ? '#9a9aa0' : '#fbbf24'};">${k.key}</td>
       <td>${k.days}</td>
-      <td>${used ? '<span class="badge banned">USED</span>' : '<span class="badge active">FREE</span>'}</td>
-      <td>${used ? k.used_by + ' (' + new Date(Number(used)).toLocaleDateString() + ')' : '—'}</td>
+      <td>${used ? '<span class="badge-status used">USED</span>' : '<span class="badge-status active">FREE</span>'}</td>
+      <td>${used ? k.used_by + ' • ' + new Date(Number(used)).toLocaleDateString() : '—'}</td>
       <td>${k.note || '—'}</td>
-      <td class="actions"><button onclick="deleteKey(${k.id})">Удалить</button></td>
+      <td class="actions"><button onclick="deleteKey(${k.id})" class="red">Del</button></td>
     `;
     tbody.appendChild(tr);
   }
+  updateStats();
 }
 
 async function deleteKey(id) {
@@ -312,6 +536,24 @@ async function deleteKey(id) {
   await api('DELETE', '/api/admin/keys/' + id);
   loadKeys();
 }
+
+// === Version ===
+async function updateVersion() {
+  const version = document.getElementById('versionInput').value.trim();
+  const msg = document.getElementById('versionMsg');
+  if (!version) { msg.className = 'error-box'; msg.textContent = 'Введите версию'; return; }
+  const r = await api('POST', '/api/admin/version', { version });
+  if (r.ok) { msg.className = 'success-box'; msg.textContent = '✓ Версия обновлена: ' + version; }
+  else { msg.className = 'error-box'; msg.textContent = '✗ ' + (r.data.error || 'Ошибка'); }
+}
+
+// Load current version
+fetch('/api/version').then(r => r.text()).then(v => {
+  document.getElementById('versionInput').value = v;
+});
+
+document.getElementById('adminKey').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+checkAuth();
 </script>
 
 </body>
