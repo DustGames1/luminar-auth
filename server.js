@@ -62,6 +62,17 @@ async function initDB() {
       value TEXT NOT NULL
     );
   `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS license_keys (
+      id SERIAL PRIMARY KEY,
+      key TEXT UNIQUE NOT NULL,
+      days INTEGER NOT NULL,
+      created_at BIGINT NOT NULL,
+      used_at BIGINT,
+      used_by TEXT,
+      note TEXT
+    );
+  `);
   console.log('Database initialized');
 }
 
@@ -338,6 +349,80 @@ app.get('/api/download/loader', async (req, res) => {
     // Redirect to actual loader file
     res.redirect(LOADER_DOWNLOAD_URL);
   } catch (e) {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+});
+
+// ---- License Keys ----
+function generateKey() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let key = 'LMR-';
+  for (let block = 0; block < 4; block++) {
+    for (let i = 0; i < 4; i++) {
+      key += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    if (block < 3) key += '-';
+  }
+  return key;
+}
+
+// Admin: create license keys
+app.post('/api/admin/keys', adminOnly, async (req, res) => {
+  const { days, count, note } = req.body || {};
+  if (!days || days < 1 || days > 9999) return res.status(400).json({ error: 'days must be 1-9999' });
+  const keyCount = Math.min(parseInt(count) || 1, 100);
+  const keys = [];
+  for (let i = 0; i < keyCount; i++) {
+    const key = generateKey();
+    await pool.query('INSERT INTO license_keys (key, days, created_at, note) VALUES ($1, $2, $3, $4)',
+      [key, days, Date.now(), note || null]);
+    keys.push(key);
+  }
+  res.json({ ok: true, keys });
+});
+
+// Admin: list keys
+app.get('/api/admin/keys', adminOnly, async (req, res) => {
+  const result = await pool.query('SELECT * FROM license_keys ORDER BY id DESC LIMIT 200');
+  res.json({ keys: result.rows });
+});
+
+// Admin: delete key
+app.delete('/api/admin/keys/:id', adminOnly, async (req, res) => {
+  await pool.query('DELETE FROM license_keys WHERE id = $1', [req.params.id]);
+  res.json({ ok: true });
+});
+
+// User: activate key
+app.post('/api/me/activate', async (req, res) => {
+  try {
+    const auth = req.headers['authorization'];
+    if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'No token' });
+    const token = auth.substring(7);
+    const payload = jwt.verify(token, JWT_SECRET);
+    const { key } = req.body || {};
+    if (!key || typeof key !== 'string') return res.status(400).json({ error: 'Invalid key' });
+
+    const keyResult = await pool.query('SELECT * FROM license_keys WHERE key = $1', [key.trim().toUpperCase()]);
+    const licenseKey = keyResult.rows[0];
+    if (!licenseKey) return res.status(404).json({ error: 'Ключ не найден' });
+    if (licenseKey.used_at) return res.status(409).json({ error: 'Ключ уже использован' });
+
+    const userResult = await pool.query('SELECT * FROM users WHERE username = $1', [payload.username]);
+    const user = userResult.rows[0];
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    // Add days to subscription (extend if active, else from now)
+    const now = Date.now();
+    const base = (user.sub_until && user.sub_until > now) ? Number(user.sub_until) : now;
+    const newUntil = base + licenseKey.days * 86400000;
+
+    await pool.query('UPDATE users SET sub_until = $1 WHERE id = $2', [newUntil, user.id]);
+    await pool.query('UPDATE license_keys SET used_at = $1, used_by = $2 WHERE id = $3', [now, user.username, licenseKey.id]);
+
+    res.json({ ok: true, days: licenseKey.days, sub_until: newUntil });
+  } catch (e) {
+    console.error('activate', e);
     res.status(401).json({ error: 'Invalid token' });
   }
 });

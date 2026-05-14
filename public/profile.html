@@ -206,8 +206,26 @@ async function updateAvatar() {
   }
 }
 
-function activate() {
-  alert('Свяжитесь с @offersheart для активации лицензионного ключа');
+async function activate() {
+  const key = document.getElementById('licenseKey').value.trim();
+  const msg = document.getElementById('activateMsg');
+  if (!key) { msg.className = 'error-msg'; msg.textContent = 'Введите ключ'; return; }
+
+  const r = await fetch('/api/me/activate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+    body: JSON.stringify({ key })
+  });
+  const data = await r.json();
+  if (r.ok) {
+    msg.className = 'success-msg';
+    msg.textContent = '✓ Активировано! Добавлено ' + data.days + ' дней';
+    document.getElementById('licenseKey').value = '';
+    setTimeout(loadProfile, 600);
+  } else {
+    msg.className = 'error-msg';
+    msg.textContent = data.error || 'Ошибка';
+  }
 }
 
 function downloadLoader() {

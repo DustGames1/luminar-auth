@@ -62,6 +62,32 @@ td .actions button { padding: 5px 10px; font-size: 12px; }
   </div>
 
   <div class="card">
+    <h2>Ключи активации</h2>
+    <div class="row">
+      <input type="number" id="keyDays" placeholder="Дней" value="30">
+      <input type="number" id="keyCount" placeholder="Кол-во" value="1">
+      <input type="text" id="keyNote" placeholder="Заметка (опционально)">
+      <button onclick="createKeys()">Создать ключи</button>
+    </div>
+    <div id="keysOutput" style="margin-top:12px;"></div>
+    <table style="margin-top:16px;" id="keysTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Ключ</th>
+          <th>Дней</th>
+          <th>Статус</th>
+          <th>Использован</th>
+          <th>Заметка</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody id="keysBody"></tbody>
+    </table>
+    <button onclick="loadKeys()" class="gray" style="margin-top:10px;">Обновить</button>
+  </div>
+
+  <div class="card">
     <h2>Версия клиента</h2>
     <div class="row">
       <input type="text" id="versionInput" placeholder="1.0.0">
@@ -127,6 +153,7 @@ async function checkAuth() {
   document.getElementById('login-screen').classList.add('hide');
   document.getElementById('main-screen').classList.remove('hide');
   loadUsers();
+  loadKeys();
 }
 
 async function loadUsers() {
@@ -234,6 +261,50 @@ async function updateVersion() {
 
 document.getElementById('adminKey').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
 checkAuth();
+
+async function createKeys() {
+  const days = parseInt(document.getElementById('keyDays').value);
+  const count = parseInt(document.getElementById('keyCount').value);
+  const note = document.getElementById('keyNote').value.trim();
+  const out = document.getElementById('keysOutput');
+
+  if (!days || days < 1) { out.innerHTML = '<div class="error">Укажите дни</div>'; return; }
+
+  const r = await api('POST', '/api/admin/keys', { days, count, note });
+  if (r.ok) {
+    out.innerHTML = '<div class="success">Создано ключей: ' + r.data.keys.length + '</div><pre style="background:#1a1a1e; padding:12px; border-radius:6px; margin-top:8px; color:#4ade80; font-size:12px; user-select:all;">' + r.data.keys.join('\n') + '</pre>';
+    loadKeys();
+  } else {
+    out.innerHTML = '<div class="error">' + (r.data.error || 'Ошибка') + '</div>';
+  }
+}
+
+async function loadKeys() {
+  const r = await api('GET', '/api/admin/keys');
+  if (!r.ok) return;
+  const tbody = document.getElementById('keysBody');
+  tbody.innerHTML = '';
+  for (const k of r.data.keys) {
+    const used = k.used_at;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${k.id}</td>
+      <td style="font-family:monospace; font-size:11px;">${k.key}</td>
+      <td>${k.days}</td>
+      <td>${used ? '<span class="badge banned">USED</span>' : '<span class="badge active">FREE</span>'}</td>
+      <td>${used ? k.used_by + ' (' + new Date(Number(used)).toLocaleDateString() + ')' : '—'}</td>
+      <td>${k.note || '—'}</td>
+      <td class="actions"><button onclick="deleteKey(${k.id})">Удалить</button></td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+async function deleteKey(id) {
+  if (!confirm('Удалить ключ?')) return;
+  await api('DELETE', '/api/admin/keys/' + id);
+  loadKeys();
+}
 </script>
 
 </body>
