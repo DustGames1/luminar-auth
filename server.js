@@ -146,9 +146,7 @@ app.post('/api/login', async (req, res) => {
     await pool.query('UPDATE users SET last_login = $1 WHERE id = $2', [Date.now(), user.id]);
 
     const sub = getSubscription(user);
-    if (!sub.active) {
-      return res.status(403).json({ error: 'No active subscription. Contact owner.' });
-    }
+    // Note: subscription not required for login — only for loader download
 
     const token = jwt.sign({ username: user.username, hwid }, JWT_SECRET, { expiresIn: TOKEN_TTL });
     return res.json({ ok: true, token, username: user.username, subscription: sub });
@@ -172,7 +170,7 @@ app.post('/api/verify', async (req, res) => {
       return res.status(403).json({ error: 'Token invalid' });
 
     const sub = getSubscription(user);
-    if (!sub.active) return res.status(403).json({ error: 'Subscription expired' });
+    // Subscription not required for token verification — frontend handles UI
 
     return res.json({ ok: true, username: user.username, uid: user.id, role: user.role || null, subscription: sub });
   } catch (e) {
