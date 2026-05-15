@@ -167,7 +167,7 @@ app.post('/api/login', async (req, res) => {
     // Note: subscription not required for login — only for loader download
 
     const token = jwt.sign({ username: user.username, hwid: isLoader ? hwid : null }, JWT_SECRET, { expiresIn: TOKEN_TTL });
-    return res.json({ ok: true, token, username: user.username, subscription: sub });
+    return res.json({ ok: true, token, username: user.username, uid: user.id, role: user.role || null, subscription: sub });
   } catch (e) {
     console.error('login', e);
     return res.status(500).json({ error: 'Server error' });
