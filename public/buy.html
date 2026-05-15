@@ -93,7 +93,7 @@
 </footer>
 
 <script>
-    const PAYMENT_URL = 'https://t.me/offersheart';
+    const PAYMENT_URL = 'https://funpay.com/users/19926313/';
 
     const token = localStorage.getItem('luminar_token');
     if (token) {
@@ -121,7 +121,7 @@
             location.href = '/login';
             return;
         }
-        if (confirm(`Купить ${days} дней за ${price}₽?\n\nПосле оплаты свяжитесь с @offersheart для активации.`)) {
+        if (confirm(`Купить ${days} дней за ${price}₽?\n\nПосле оплаты подписка активируется автоматически.`)) {
             window.open(PAYMENT_URL, '_blank');
         }
     }
