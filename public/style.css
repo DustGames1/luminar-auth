@@ -32,13 +32,18 @@
   --bg: #ffffff;
   --surface: #f4f4f5;
   --surface-2: #e4e4e7;
-  --border: #e4e4e7;
-  --border-light: #d4d4d8;
+  --border: #d4d4d8;
+  --border-light: #a1a1aa;
   --text: #18181b;
-  --text-2: #52525b;
-  --text-3: #a1a1aa;
-  --purple-bg: rgba(167, 139, 250, 0.1);
-  --purple-border: rgba(167, 139, 250, 0.3);
+  --text-2: #3f3f46;
+  --text-3: #71717a;
+  --purple: #7c3aed;
+  --purple-dark: #6d28d9;
+  --purple-bg: rgba(124, 58, 237, 0.08);
+  --purple-border: rgba(124, 58, 237, 0.2);
+  --green: #16a34a;
+  --red: #dc2626;
+  --yellow: #d97706;
 }
 
 html { scroll-behavior: smooth; }
