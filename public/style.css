@@ -377,7 +377,7 @@ button { font-family: inherit; cursor: pointer; }
 .form-input:focus { border-color: var(--purple); }
 .form-input::placeholder { color: var(--text-3); }
 
-.form-msg { font-size: 12px; text-align: center; margin-top: 16px; min-height: 18px; }
+.form-msg { font-size: 12px; text-align: center; margin-top: 8px; min-height: 0; }
 .form-msg.err { color: var(--red); }
 .form-msg.ok { color: var(--green); }
 
