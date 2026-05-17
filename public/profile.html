@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Профиль — Luminar</title>
 <link rel="stylesheet" href="/style.css">
 </head>
@@ -9,41 +10,38 @@
 
 <nav>
   <a href="/" class="logo">
-    <span class="logo-icon">✦</span>
+    <span class="logo-icon">L</span>
     Luminar
   </a>
   <div class="links">
     <a href="/">Главная</a>
-    <a href="/buy">Продукты</a>
+    <a href="/buy">Тарифы</a>
   </div>
   <div class="auth-btns">
-    <a href="/profile" class="btn btn-white">👤 Профиль</a>
+    <a href="/profile" class="btn btn-primary" id="navUser">Профиль</a>
   </div>
 </nav>
 
 <div class="profile-grid">
   <div class="profile-side">
     <div class="profile-card">
-      <img id="avatar" class="profile-avatar" src="" alt="">
+      <img id="avatar" class="profile-avatar" src="" alt="avatar">
       <div class="profile-info-side">
         <h3 id="username">...</h3>
         <div class="uid" id="uidLine"></div>
-        <div class="sub-text" id="subText">Подписка до: ...</div>
+        <div class="sub-text" id="subText">Подписка: загрузка...</div>
       </div>
       <button class="logout-btn" onclick="logout()" title="Выйти">⏻</button>
     </div>
-    <button class="ticket-btn" onclick="window.open('https://t.me/offersheart','_blank')">🎫 Тикеты</button>
-    <a id="adminBtn" href="/admin" class="admin-btn" style="display:none;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
-      Admin Panel
-    </a>
+    <button class="side-btn" onclick="window.open('https://t.me/offersheart','_blank')">Тикеты</button>
+    <a id="adminBtn" href="/admin" class="side-btn side-btn-secondary" style="display:none; text-decoration:none;">Admin Panel</a>
   </div>
 
   <div>
     <div class="profile-tabs">
-      <div class="profile-tab active" data-tab="account">👤 Аккаунт</div>
-      <div class="profile-tab" data-tab="settings">⚙ Настройки</div>
-      <div class="profile-tab" data-tab="launcher">✈ Лаунчер</div>
+      <div class="profile-tab active" data-tab="account">Аккаунт</div>
+      <div class="profile-tab" data-tab="settings">Настройки</div>
+      <div class="profile-tab" data-tab="launcher">Лаунчер</div>
     </div>
 
     <div class="profile-content">
@@ -51,21 +49,21 @@
       <div id="tab-account">
         <div class="info-row">
           <div class="info-item">
-            <div class="label">📅 Регистрация</div>
+            <div class="label">Регистрация</div>
             <div class="value" id="regDate">—</div>
           </div>
           <div class="info-item">
-            <div class="label">🆔 UID</div>
+            <div class="label">UID</div>
             <div class="value" id="uidVal">—</div>
           </div>
           <div class="info-item">
-            <div class="label">🔒 HWID</div>
+            <div class="label">HWID</div>
             <div class="value" id="hwidVal">—</div>
           </div>
         </div>
         <div class="activate-row">
-          <input type="text" id="licenseKey" placeholder="🔑 Введите лицензионный ключ...">
-          <button class="btn btn-primary" onclick="activate()">⚡ Активировать</button>
+          <input type="text" id="licenseKey" placeholder="Введите лицензионный ключ...">
+          <button class="btn btn-primary" onclick="activate()">Активировать</button>
         </div>
         <div id="activateMsg" class="error-msg"></div>
       </div>
@@ -74,41 +72,41 @@
       <div id="tab-settings" style="display:none;">
         <div class="settings-section" style="margin-bottom:18px;">
           <h4>Аватарка</h4>
-          <div class="settings-row" style="grid-template-columns: 1fr auto;">
-            <input type="text" id="avatarUrl" placeholder="🖼 URL картинки (https://...)">
-            <button class="btn btn-primary" onclick="updateAvatar()">✎ Сохранить</button>
+          <div class="settings-row">
+            <input type="text" id="avatarUrl" placeholder="URL картинки (https://...)">
+            <button class="btn btn-primary" onclick="updateAvatar()">Сохранить</button>
           </div>
           <div id="avatarMsg" class="error-msg"></div>
         </div>
 
         <div class="settings-section">
           <h4>Безопасность</h4>
-          <button class="btn btn-secondary" onclick="alert('Скоро')">📱 Настроить 2FA в Telegram</button>
+          <button class="btn btn-secondary" onclick="alert('Скоро')">Настроить 2FA в Telegram</button>
         </div>
       </div>
 
       <!-- Launcher tab -->
       <div id="tab-launcher" style="display:none;">
-        <div class="info-row" style="grid-template-columns: 1fr 1fr 1fr;">
+        <div class="info-row">
           <div class="info-item">
-            <div class="label">💻 Операционная система</div>
+            <div class="label">Операционная система</div>
             <div class="value">Windows 10/11 (x64)</div>
           </div>
           <div class="info-item">
-            <div class="label">🎮 RAM</div>
+            <div class="label">RAM</div>
             <div class="value">4 GB</div>
           </div>
           <div class="info-item">
-            <div class="label">🖥 Видеокарта</div>
-            <div class="value">Nvidia / Amd / Intel</div>
+            <div class="label">Видеокарта</div>
+            <div class="value">Nvidia / AMD / Intel</div>
           </div>
         </div>
         <div style="display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center;">
           <div class="info-item" style="margin:0;">
-            <div class="label">⏱ Последнее обновление</div>
+            <div class="label">Версия клиента</div>
             <div class="value" id="versionVal">—</div>
           </div>
-          <button id="downloadBtn" class="btn btn-primary" onclick="downloadLoader()" style="height:100%; padding:14px 24px;">⬇ Скачать</button>
+          <button id="downloadBtn" class="btn btn-primary" onclick="downloadLoader()" style="height:100%; padding:14px 24px;">Скачать</button>
         </div>
         <div id="downloadMsg" style="text-align:right; font-size:12px; color:#f87171; margin-top:8px;"></div>
       </div>
@@ -119,22 +117,29 @@
 <footer>
   <div class="footer-grid">
     <div class="footer-col">
-      <h4>📄 Страницы</h4>
-      <a href="/">Главная</a>
-      <a href="/buy">Продукты</a>
+      <div class="footer-brand">
+        <div class="logo-icon">L</div>
+        <h3>Luminar</h3>
+      </div>
+      <p style="color:var(--text-dim); font-size:13px; line-height:1.6;">Премиум клиент для Minecraft.</p>
     </div>
     <div class="footer-col">
-      <h4>💬 Связь</h4>
+      <h4>Ссылки</h4>
+      <a href="/">Главная</a>
+      <a href="/buy">Тарифы</a>
+    </div>
+    <div class="footer-col">
+      <h4>Связь</h4>
       <a href="https://t.me/offersheart" target="_blank">Telegram</a>
     </div>
     <div class="footer-col">
-      <h4>👤 Аккаунт</h4>
+      <h4>Аккаунт</h4>
       <a href="#" onclick="logout()">Выйти</a>
     </div>
   </div>
   <div class="footer-bottom">
-    <span><strong style="color:#fff;">Luminar</strong></span>
-    <span>© Luminar 2026.</span>
+    <span>© 2026 Luminar. Все права защищены.</span>
+    <span>Made by <strong style="color:#fff;">DustGames</strong></span>
   </div>
 </footer>
 
@@ -152,11 +157,12 @@ async function loadProfile() {
   const u = userData;
 
   document.getElementById('username').textContent = u.username;
+  document.getElementById('navUser').textContent = u.username;
   document.getElementById('uidLine').textContent = `[${u.id}]${u.role ? ' · ' + u.role : ''}`;
   document.getElementById('uidVal').textContent = u.id;
   document.getElementById('regDate').textContent = new Date(Number(u.created_at)).toLocaleDateString();
 
-  // Admin button — DustGames only (or role admin)
+  // Admin button
   const isAdmin = u.username && u.username.toLowerCase() === 'dustgames';
   if (isAdmin || (u.role && u.role.toLowerCase() === 'admin')) {
     document.getElementById('adminBtn').style.display = 'flex';
@@ -165,7 +171,7 @@ async function loadProfile() {
   document.getElementById('avatar').src = u.avatar_url || `https://api.dicebear.com/7.x/identicon/svg?seed=${u.username}`;
   if (u.avatar_url) document.getElementById('avatarUrl').value = u.avatar_url;
 
-  // HWID display
+  // HWID
   const hwidVal = document.getElementById('hwidVal');
   if (u.hwid) {
     hwidVal.textContent = 'Привязан';
@@ -181,7 +187,7 @@ async function loadProfile() {
   if (sub.active) {
     subText.innerHTML = `Подписка до: <span style="color:#4ade80;">${new Date(Number(sub.until)).toLocaleDateString()}</span>`;
   } else {
-    subText.innerHTML = 'Подписка до: <span style="color:#f87171;">Нет</span>';
+    subText.innerHTML = 'Подписка: <span style="color:#f87171;">Нет</span>';
   }
 
   // Version
@@ -234,7 +240,7 @@ async function activate() {
   const data = await r.json();
   if (r.ok) {
     msg.className = 'success-msg';
-    msg.textContent = '✓ Активировано! Добавлено ' + data.days + ' дней';
+    msg.textContent = 'Активировано! +' + data.days + ' дней';
     document.getElementById('licenseKey').value = '';
     setTimeout(loadProfile, 600);
   } else {
@@ -246,13 +252,13 @@ async function activate() {
 function downloadLoader() {
   const msg = document.getElementById('downloadMsg');
   if (!userData || !userData.subscription || !userData.subscription.active) {
-    msg.textContent = '✗ Купите подписку для скачивания лоадера';
+    msg.textContent = 'Купите подписку для скачивания лоадера';
+    msg.style.color = '#f87171';
     setTimeout(() => location.href = '/buy', 1500);
     return;
   }
   msg.style.color = '#4ade80';
-  msg.textContent = '✓ Скачивание начнётся...';
-  // Замени URL на свой LuminarLoader.exe
+  msg.textContent = 'Скачивание начнётся...';
   window.location.href = '/api/download/loader?token=' + encodeURIComponent(token);
 }
 

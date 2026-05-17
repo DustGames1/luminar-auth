@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Регистрация — Luminar</title>
 <link rel="stylesheet" href="/style.css">
 </head>
@@ -9,53 +10,49 @@
 
 <nav>
   <a href="/" class="logo">
-    <span class="logo-icon">✦</span>
+    <span class="logo-icon">L</span>
     Luminar
   </a>
   <div class="links">
     <a href="/">Главная</a>
-    <a href="/buy">Продукты</a>
+    <a href="/buy">Тарифы</a>
   </div>
   <div class="auth-btns">
     <a href="/login" class="btn btn-secondary">Войти</a>
-    <a href="/register" class="btn btn-white">Регистрация</a>
+    <a href="/register" class="btn btn-primary">Регистрация</a>
   </div>
 </nav>
 
 <div class="auth-container">
   <div class="auth-card">
+    <h2>Создать аккаунт</h2>
+    <p class="auth-subtitle">Зарегистрируйтесь для доступа к Luminar</p>
+
     <div class="auth-tabs">
-      <a href="/login" class="auth-tab">📕 Вход</a>
-      <a href="/register" class="auth-tab active">⊕ Регистрация</a>
+      <a href="/login" class="auth-tab">Вход</a>
+      <a href="/register" class="auth-tab active">Регистрация</a>
     </div>
 
     <form id="registerForm">
       <div class="form-group">
         <label>Юзернейм</label>
-        <input type="text" id="username" placeholder="3-16 символов, латиница/цифры" required>
+        <input type="text" id="username" placeholder="3-16 символов, латиница/цифры" required autocomplete="username">
       </div>
       <div class="form-group">
         <label>Пароль</label>
-        <input type="password" id="password" placeholder="Минимум 6 символов" required>
+        <input type="password" id="password" placeholder="Минимум 6 символов" required autocomplete="new-password">
       </div>
       <div class="form-group">
         <label>Повтор пароля</label>
-        <input type="password" id="password2" placeholder="••••••••" required>
+        <input type="password" id="password2" placeholder="••••••••" required autocomplete="new-password">
       </div>
-      <button type="submit" class="btn btn-primary">⊕ Создать аккаунт</button>
+      <button type="submit" class="btn btn-primary">Создать аккаунт</button>
       <div id="msg" class="error-msg"></div>
     </form>
   </div>
 </div>
 
 <script>
-async function generateBrowserHWID() {
-  const data = navigator.userAgent + navigator.language + screen.width + screen.height + (navigator.hardwareConcurrency || 4);
-  const buf = new TextEncoder().encode(data);
-  const hash = await crypto.subtle.digest('SHA-256', buf);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
 document.getElementById('registerForm').addEventListener('submit', async e => {
   e.preventDefault();
   const msg = document.getElementById('msg');

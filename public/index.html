@@ -10,7 +10,7 @@
 
 <nav>
   <a href="/" class="logo">
-    <span class="logo-icon">⚡</span>
+    <span class="logo-icon">L</span>
     Luminar
   </a>
   <div class="links">
@@ -20,20 +20,20 @@
   </div>
   <div class="auth-btns" id="navAuth">
     <a href="/login" class="btn btn-secondary">Войти</a>
-    <a href="/register" class="btn btn-primary">⚡ Начать</a>
+    <a href="/register" class="btn btn-primary">Начать</a>
   </div>
 </nav>
 
 <section class="hero">
-  <div class="badge-tag">Версия 1.0 — стабильный билд</div>
+  <div class="badge-tag">v1.0 — стабильный билд</div>
   <h1>
     Доминируй на сервере<br>
     с <span class="gradient">Luminar</span>
   </h1>
-  <p>Премиум клиент для Minecraft с продвинутыми обходами античитов, мощной KillAura SpookyTime и стильным интерфейсом. Для тех, кто играет на победу.</p>
+  <p>Премиум клиент для Minecraft с продвинутыми обходами античитов, мощной KillAura и стильным интерфейсом. Для тех, кто играет на победу.</p>
   <div class="hero-buttons">
-    <a href="/register" class="btn btn-primary btn-large">⚡ Начать бесплатно</a>
-    <a href="https://t.me/offersheart" class="btn btn-secondary btn-large">💬 Telegram</a>
+    <a href="/register" class="btn btn-primary btn-large">Начать бесплатно</a>
+    <a href="https://t.me/offersheart" class="btn btn-secondary btn-large">Telegram</a>
   </div>
 </section>
 
@@ -58,7 +58,7 @@
 
 <section class="section">
   <div class="section-title">
-    <span class="section-tag">⭐ Возможности</span>
+    <span class="section-tag">Возможности</span>
     <h2>Всё что нужно для победы</h2>
     <p>Современные функции, надёжная защита, частые обновления — всё в одном клиенте</p>
   </div>
@@ -98,7 +98,7 @@
 
 <section class="section">
   <div class="section-title">
-    <span class="section-tag">💰 Цены</span>
+    <span class="section-tag">Цены</span>
     <h2>Выбери свой тариф</h2>
     <p>Прозрачные цены и мгновенная активация подписки</p>
   </div>
@@ -131,7 +131,7 @@
   <div class="footer-grid">
     <div class="footer-col">
       <div class="footer-brand">
-        <div class="logo-icon">⚡</div>
+        <div class="logo-icon">L</div>
         <h3>Luminar</h3>
       </div>
       <p style="color:var(--text-dim); font-size:13px; line-height:1.6; max-width:320px;">Премиум клиент для Minecraft. Доминируй на серверах, обходи античиты и наслаждайся игрой.</p>
@@ -158,7 +158,7 @@
   </div>
   <div class="footer-bottom">
     <span>© 2026 Luminar. Все права защищены.</span>
-    <span>Made by <strong style="color:var(--accent-light);">DustGames</strong></span>
+    <span>Made by <strong style="color:#fff;">DustGames</strong></span>
   </div>
 </footer>
 
@@ -170,7 +170,7 @@ if (token) {
     .then(data => {
       if (data && data.user) {
         document.getElementById('navAuth').innerHTML = `
-          <a href="/profile" class="btn btn-primary">👤 ${data.user.username}</a>
+          <a href="/profile" class="btn btn-primary">${data.user.username}</a>
         `;
       }
     });

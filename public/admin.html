@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — Luminar</title>
 <link rel="stylesheet" href="/style.css">
 <style>
@@ -36,10 +37,10 @@
   transition: 0.2s;
   margin-bottom: 4px;
 }
-.admin-side .menu-item:hover { background: rgba(123, 204, 135, 0.06); color: var(--accent); }
+.admin-side .menu-item:hover { background: rgba(255, 255, 255, 0.04); color: #fff; }
 .admin-side .menu-item.active {
-  background: var(--accent);
-  color: var(--bg);
+  background: #fff;
+  color: #0d0d1a;
   font-weight: 700;
 }
 
@@ -73,16 +74,16 @@
   margin-bottom: 14px;
 }
 .toolbar input {
-  background: #1a1a1a;
-  border: 1.4px solid var(--border);
-  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
   padding: 11px 14px;
   color: #fff;
   font-size: 13px;
   outline: none;
   transition: 0.2s;
 }
-.toolbar input:focus { border-color: var(--accent); }
+.toolbar input:focus { border-color: rgba(255,255,255,0.25); }
 .toolbar input::placeholder { color: var(--text-muted); }
 
 table {
@@ -102,7 +103,7 @@ th {
   font-size: 10px;
   letter-spacing: 1px;
 }
-tbody tr:hover { background: rgba(123, 204, 135, 0.02); }
+tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
 
 td .actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 td .actions .act-btn {
@@ -125,10 +126,10 @@ td .actions .act-btn {
 }
 td .actions .act-btn:hover {
   transform: translateY(-1px);
-  background: rgba(123, 204, 135, 0.08);
-  border-color: var(--accent);
-  color: var(--accent);
-  box-shadow: 0 4px 12px rgba(123, 204, 135, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #fff;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
 }
 td .actions .act-btn:active { transform: translateY(0); }
 
@@ -156,17 +157,6 @@ td .actions .act-btn.red:hover {
   box-shadow: 0 4px 12px rgba(248, 113, 113, 0.2);
 }
 
-td .actions .act-btn.accent {
-  background: var(--accent);
-  border: none;
-  color: var(--bg);
-  font-weight: 700;
-}
-td .actions .act-btn.accent:hover {
-  filter: brightness(1.1);
-  box-shadow: 0 4px 14px rgba(123, 204, 135, 0.4);
-}
-
 /* Tooltip */
 td .actions .act-btn[data-tip]::after {
   content: attr(data-tip);
@@ -174,7 +164,7 @@ td .actions .act-btn[data-tip]::after {
   bottom: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%) translateY(4px);
-  background: #0d0a06;
+  background: #0d0d1a;
   color: #fff;
   padding: 5px 9px;
   border-radius: 6px;
@@ -242,7 +232,7 @@ td .actions .act-btn svg {
   margin-bottom: 14px;
 }
 .stat-box {
-  background: #1a1a1a;
+  background: rgba(255,255,255,0.03);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 14px;
@@ -250,19 +240,22 @@ td .actions .act-btn svg {
 .stat-box .num {
   font-size: 22px;
   font-weight: 700;
-  color: var(--accent);
-  font-family: 'Unbounded', sans-serif;
+  color: #fff;
 }
 .stat-box .lbl { color: var(--text-dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; font-weight: 600; }
 
-.hidden { display: none !important; }
+@media (max-width: 768px) {
+  .admin-grid { grid-template-columns: 1fr; }
+  .admin-side { position: static; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
 </style>
 </head>
 <body>
 
 <nav>
   <a href="/" class="logo">
-    <span class="logo-icon">⚡</span>
+    <span class="logo-icon">L</span>
     Luminar
   </a>
   <div class="links">
@@ -271,20 +264,20 @@ td .actions .act-btn svg {
     <a href="/admin" class="active">Admin</a>
   </div>
   <div class="auth-btns">
-    <a href="#" onclick="logout()" class="btn btn-secondary">⏻ Выйти</a>
+    <a href="#" onclick="logout()" class="btn btn-secondary">Выйти</a>
   </div>
 </nav>
 
 <!-- Login Screen -->
 <div id="login-screen" class="auth-container">
   <div class="auth-card">
-    <h2 style="font-size:22px; margin-bottom:6px; color:#fff; text-align:center;">🔐 Admin Panel</h2>
-    <p style="color:var(--text-dim); font-size:13px; margin-bottom:24px; text-align:center;">Введите admin key для доступа</p>
+    <h2>Admin Panel</h2>
+    <p class="auth-subtitle">Введите admin key для доступа</p>
     <div class="form-group">
       <label>Admin Key</label>
       <input type="password" id="adminKey" placeholder="Введите ключ">
     </div>
-    <button onclick="login()" class="btn btn-primary">⚡ Войти</button>
+    <button onclick="login()" class="btn btn-primary">Войти</button>
     <div id="loginError" class="error-msg"></div>
   </div>
 </div>
@@ -293,10 +286,10 @@ td .actions .act-btn svg {
 <div id="main-screen" class="hidden">
   <div class="admin-grid">
     <aside class="admin-side">
-      <div class="menu-item active" data-section="dashboard">📊 Обзор</div>
-      <div class="menu-item" data-section="users">👥 Пользователи</div>
-      <div class="menu-item" data-section="keys">🔑 Ключи</div>
-      <div class="menu-item" data-section="version">🚀 Версия</div>
+      <div class="menu-item active" data-section="dashboard">Обзор</div>
+      <div class="menu-item" data-section="users">Пользователи</div>
+      <div class="menu-item" data-section="keys">Ключи</div>
+      <div class="menu-item" data-section="version">Версия</div>
     </aside>
 
     <div class="admin-content">
@@ -304,7 +297,7 @@ td .actions .act-btn svg {
       <!-- Dashboard -->
       <div id="section-dashboard" class="section-block">
         <div class="admin-card">
-          <h2>📊 Статистика</h2>
+          <h2>Статистика</h2>
           <div class="stats-grid">
             <div class="stat-box"><div class="num" id="statTotal">—</div><div class="lbl">Всего</div></div>
             <div class="stat-box"><div class="num" id="statActive">—</div><div class="lbl">Активных</div></div>
@@ -314,7 +307,7 @@ td .actions .act-btn svg {
         </div>
 
         <div class="admin-card">
-          <h2>➕ Создать пользователя</h2>
+          <h2>Создать пользователя</h2>
           <div class="toolbar">
             <input type="text" id="newUser" placeholder="Username">
             <input type="password" id="newPass" placeholder="Password">
@@ -328,7 +321,7 @@ td .actions .act-btn svg {
       <!-- Users -->
       <div id="section-users" class="section-block hidden">
         <div class="admin-card">
-          <h2>👥 Пользователи <button onclick="loadUsers()" class="btn btn-secondary" style="margin-left:auto; font-size:11px; padding:6px 12px;">🔄 Обновить</button></h2>
+          <h2>Пользователи <button onclick="loadUsers()" class="btn btn-secondary" style="margin-left:auto; font-size:11px; padding:6px 12px;">Обновить</button></h2>
           <table>
             <thead>
               <tr>
@@ -349,7 +342,7 @@ td .actions .act-btn svg {
       <!-- Keys -->
       <div id="section-keys" class="section-block hidden">
         <div class="admin-card">
-          <h2>🔑 Создать ключи активации</h2>
+          <h2>Создать ключи активации</h2>
           <div class="toolbar">
             <input type="number" id="keyDays" placeholder="Дней" value="30">
             <input type="number" id="keyCount" placeholder="Количество" value="1">
@@ -360,7 +353,7 @@ td .actions .act-btn svg {
         </div>
 
         <div class="admin-card">
-          <h2>🗝 Все ключи <button onclick="loadKeys()" class="btn btn-secondary" style="margin-left:auto; font-size:11px; padding:6px 12px;">🔄 Обновить</button></h2>
+          <h2>Все ключи <button onclick="loadKeys()" class="btn btn-secondary" style="margin-left:auto; font-size:11px; padding:6px 12px;">Обновить</button></h2>
           <table>
             <thead>
               <tr>
@@ -381,7 +374,7 @@ td .actions .act-btn svg {
       <!-- Version -->
       <div id="section-version" class="section-block hidden">
         <div class="admin-card">
-          <h2>🚀 Версия клиента</h2>
+          <h2>Версия клиента</h2>
           <p style="color:var(--text-dim); font-size:13px; margin-bottom:14px;">Лоадер сравнивает эту версию с локальной и автоматически обновляет клиент при изменении</p>
           <div class="toolbar">
             <input type="text" id="versionInput" placeholder="1.0.0">
@@ -480,26 +473,26 @@ function renderUsers() {
       <td>${status}</td>
       <td class="actions">
         <button onclick="giveSub(${u.id})" class="act-btn green" data-tip="Выдать подписку">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
         <button onclick="removeSub(${u.id})" class="act-btn red" data-tip="Забрать подписку">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"><path d="M5 12h14"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
         </button>
         <button onclick="setRole(${u.id})" class="act-btn" data-tip="Сменить роль">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"><path d="M12 15a4 4 0 100-8 4 4 0 000 8z"/><path d="M5 21a7 7 0 0114 0"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a4 4 0 100-8 4 4 0 000 8z"/><path d="M5 21a7 7 0 0114 0"/></svg>
         </button>
         <button onclick="resetHwid(${u.id})" class="act-btn" data-tip="Сбросить HWID">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"><path d="M3 12a9 9 0 0115.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0115.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></svg>
         </button>
         ${u.banned
           ? `<button onclick="unbanUser(${u.id})" class="act-btn green" data-tip="Разбанить">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
             </button>`
           : `<button onclick="banUser(${u.id})" class="act-btn red" data-tip="Забанить">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>
             </button>`}
         <button onclick="deleteUser(${u.id})" class="act-btn red" data-tip="Удалить навсегда">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
         </button>
       </td>
     `;
@@ -528,13 +521,13 @@ async function createUser() {
   const r = await api('POST', '/api/admin/users', { username, password, days });
   if (r.ok) {
     msg.className = 'success-box';
-    msg.textContent = '✓ Пользователь создан';
+    msg.textContent = 'Пользователь создан';
     document.getElementById('newUser').value = '';
     document.getElementById('newPass').value = '';
     loadUsers();
   } else {
     msg.className = 'error-box';
-    msg.textContent = '✗ ' + (r.data.error || 'Ошибка');
+    msg.textContent = r.data.error || 'Ошибка';
   }
 }
 
@@ -592,10 +585,10 @@ async function createKeys() {
 
   const r = await api('POST', '/api/admin/keys', { days, count, note });
   if (r.ok) {
-    out.innerHTML = `<div class="keys-output"><strong style="color:#4ade80;">✓ Создано: ${r.data.keys.length}</strong><pre>${r.data.keys.join('\n')}</pre></div>`;
+    out.innerHTML = `<div class="keys-output"><strong style="color:#4ade80;">Создано: ${r.data.keys.length}</strong><pre>${r.data.keys.join('\n')}</pre></div>`;
     loadKeys();
   } else {
-    out.innerHTML = '<div class="error-box">✗ ' + (r.data.error || 'Ошибка') + '</div>';
+    out.innerHTML = '<div class="error-box">' + (r.data.error || 'Ошибка') + '</div>';
   }
 }
 
@@ -613,10 +606,10 @@ async function loadKeys() {
       <td style="font-family:'JetBrains Mono', monospace; font-size:11px; color:${used ? '#9a9aa0' : '#fbbf24'};">${k.key}</td>
       <td>${k.days}</td>
       <td>${used ? '<span class="badge-status used">USED</span>' : '<span class="badge-status active">FREE</span>'}</td>
-      <td>${used ? k.used_by + ' • ' + new Date(Number(used)).toLocaleDateString() : '—'}</td>
+      <td>${used ? k.used_by + ' · ' + new Date(Number(used)).toLocaleDateString() : '—'}</td>
       <td>${k.note || '—'}</td>
       <td class="actions"><button onclick="deleteKey(${k.id})" class="act-btn red" data-tip="Удалить ключ">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
       </button></td>
     `;
     tbody.appendChild(tr);
@@ -636,8 +629,8 @@ async function updateVersion() {
   const msg = document.getElementById('versionMsg');
   if (!version) { msg.className = 'error-box'; msg.textContent = 'Введите версию'; return; }
   const r = await api('POST', '/api/admin/version', { version });
-  if (r.ok) { msg.className = 'success-box'; msg.textContent = '✓ Версия обновлена: ' + version; }
-  else { msg.className = 'error-box'; msg.textContent = '✗ ' + (r.data.error || 'Ошибка'); }
+  if (r.ok) { msg.className = 'success-box'; msg.textContent = 'Версия обновлена: ' + version; }
+  else { msg.className = 'error-box'; msg.textContent = r.data.error || 'Ошибка'; }
 }
 
 // Load current version
