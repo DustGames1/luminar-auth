@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        
+        :root {
+            --bg-primary: #0d0d1a;
+            --bg-secondary: rgba(255, 255, 255, 0.05);
+            --bg-secondary-hover: rgba(255, 255, 255, 0.08);
+            --border-primary: rgba(255, 255, 255, 0.1);
+            --border-focus: rgba(255, 255, 255, 0.3);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-tertiary: rgba(255, 255, 255, 0.9);
+            --button-bg: #ffffff;
+            --button-text: #0d0d1a;
+            --button-hover: #e0e0e0;
+            --button-secondary: rgba(255, 255, 255, 0.1);
+            --button-secondary-hover: rgba(255, 255, 255, 0.15);
+            --hover-overlay: rgba(255, 255, 255, 0.1);
+            --shadow: rgba(0, 0, 0, 0.3);
+            --success-bg: rgba(34, 197, 94, 0.1);
+            --success-border: rgba(34, 197, 94, 0.3);
+            --success-text: #22c55e;
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            --danger-border: rgba(239, 68, 68, 0.3);
+            --danger-text: #ef4444;
+            --version-outline: rgba(255, 255, 255, 0.15);
+            --version-outline-hover: rgba(255, 255, 255, 0.25);
+            --version-outline-selected: rgba(255, 255, 255, 0.4);
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: rgba(0, 0, 0, 0.05);
+            --bg-secondary-hover: rgba(0, 0, 0, 0.08);
+            --border-primary: rgba(0, 0, 0, 0.1);
+            --border-focus: rgba(0, 0, 0, 0.3);
+            --text-primary: #1a1a1a;
+            --text-secondary: rgba(0, 0, 0, 0.6);
+            --text-tertiary: rgba(0, 0, 0, 0.9);
+            --button-bg: #1a1a1a;
+            --button-text: #ffffff;
+            --button-hover: #333333;
+            --button-secondary: rgba(0, 0, 0, 0.1);
+            --button-secondary-hover: rgba(0, 0, 0, 0.15);
+            --hover-overlay: rgba(0, 0, 0, 0.1);
+            --shadow: rgba(0, 0, 0, 0.1);
+            --success-bg: rgba(34, 197, 94, 0.1);
+            --success-border: rgba(34, 197, 94, 0.3);
+            --success-text: #16a34a;
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            --danger-border: rgba(239, 68, 68, 0.3);
+            --danger-text: #dc2626;
+            --version-outline: rgba(0, 0, 0, 0.15);
+            --version-outline-hover: rgba(0, 0, 0, 0.25);
+            --version-outline-selected: rgba(0, 0, 0, 0.4);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            -webkit-user-drag: none;
+            -moz-user-drag: none;
+            user-drag: none;
+            transition: all 0.3s ease;
+        }
+
+        .main-box {
+            background: var(--bg-primary);
+            width: 600px;
+            height: 700px;
+            padding: 20px;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 8px 32px var(--shadow);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            z-index: 10;
+            opacity: 1;
+            transition: all 0.5s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 20px;
+        }
+
+        .spinner img {
+            width: 100%;
+            height: 100%;
+            animation: spin 1s linear infinite;
+            filter: brightness(0) invert(1);
+        }
+
+        [data-theme="light"] .spinner img {
+            filter: brightness(0) invert(0);
+        }
+
+        .loading-text {
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .header-controls {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .language-selector {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .language-toggle {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+            position: relative;
+        }
+
+        .language-toggle:hover {
+            background: var(--hover-overlay);
+        }
+
+        .language-toggle img {
+            width: 16px;
+            height: 16px;
+            border-radius: 2px;
+        }
+
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            padding: 4px;
+            margin-top: 4px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .language-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .language-option {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+
+        .language-option:hover {
+            background: var(--hover-overlay);
+        }
+
+        .language-option img {
+            width: 16px;
+            height: 16px;
+            border-radius: 2px;
+        }
+
+        .logout-btn {
+            width: 48px;
+            height: 48px;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(220, 38, 38, 0.2);
+        }
+
+        .logout-btn img {
+            width: 20px;
+            height: 20px;
+            filter: brightness(0) saturate(100%) invert(21%) sepia(100%) saturate(2000%) hue-rotate(355deg) brightness(95%) contrast(95%);
+        }
+        
+        .theme-toggle, .close-btn {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .theme-toggle:hover, .close-btn:hover {
+            background: var(--hover-overlay);
+        }
+        
+        .theme-icon {
+            width: 16px;
+            height: 16px;
+            position: relative;
+        }
+        
+        .theme-icon img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 16px;
+            height: 16px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: brightness(0) invert(1);
+        }
+        
+        [data-theme="light"] .theme-icon img {
+            filter: brightness(0) invert(0);
+        }
+        
+        .moon-icon {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+        
+        .sun-icon {
+            opacity: 0;
+            transform: rotate(180deg) scale(0.5);
+        }
+        
+        [data-theme="light"] .moon-icon {
+            opacity: 0;
+            transform: rotate(-180deg) scale(0.5);
+        }
+        
+        [data-theme="light"] .sun-icon {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+        
+        .close-btn::before,
+        .close-btn::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 1px;
+        }
+        
+        .close-btn::before {
+            transform: rotate(45deg);
+        }
+        
+        .close-btn::after {
+            transform: rotate(-45deg);
+        }
+
+        .page-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-top: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-page {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: absolute;
+            width: 100%;
+            transform: translateX(0);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .settings-page {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: absolute;
+            width: 100%;
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .settings-page.active {
+            transform: translateX(0);
+        }
+
+        .main-page.hidden {
+            transform: translateX(-100%);
+        }
+
+        .navigation-panel {
+            display: flex;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 16px;
+            gap: 4px;
+        }
+
+        .nav-button {
+            flex: 1;
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .nav-button:hover {
+            background: var(--button-secondary-hover);
+            color: var(--text-primary);
+        }
+
+        .nav-button.active {
+            background: var(--button-bg);
+            color: var(--button-text);
+        }
+
+        .content-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .play-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .play-content.hidden {
+            display: none;
+        }
+
+        .version-list {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            padding-right: 4px;
+            margin-bottom: 16px;
+        }
+
+        .version-item {
+            background: var(--bg-secondary);
+            border: 2px solid var(--version-outline);
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .version-item:hover:not(.disabled):not(.selected) {
+            border-color: var(--version-outline-hover);
+            background: var(--bg-secondary-hover);
+        }
+
+        .version-item.selected {
+            border-color: var(--version-outline-selected);
+            background: var(--bg-secondary-hover);
+        }
+
+        .version-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .version-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .version-name {
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .version-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .version-status.unavailable {
+            background: var(--danger-bg);
+            border: 1px solid var(--danger-border);
+            color: var(--danger-text);
+        }
+
+        .version-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .changelog-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 16px;
+            flex: 1;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-primary) transparent;
+        }
+
+        .changelog-box::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .changelog-box::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .changelog-box::-webkit-scrollbar-thumb {
+            background: var(--border-primary);
+            border-radius: 3px;
+            transition: background 0.2s ease;
+        }
+
+        .changelog-box::-webkit-scrollbar-thumb:hover {
+            background: var(--border-focus);
+        }
+
+        .changelog-box.hidden {
+            display: none;
+        }
+
+        .changelog-title {
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .changelog-entry {
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .changelog-entry:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .changelog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .changelog-version {
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .changelog-date {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .changelog-item {
+            color: var(--text-tertiary);
+            font-size: 13px;
+            line-height: 1.4;
+            margin-bottom: 6px;
+            padding-left: 12px;
+            position: relative;
+        }
+
+        .changelog-item::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--text-secondary);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+            margin-top: 16px;
+            transform: translateY(0);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .action-buttons.changelog-mode {
+            transform: translateY(12px);
+        }
+
+        .settings-btn {
+            width: 48px;
+            height: 48px;
+            background: var(--button-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .settings-btn:hover {
+            background: var(--button-secondary-hover);
+        }
+
+        .settings-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-primary);
+        }
+
+        .launch-btn {
+            width: 200px;
+            padding: 12px 20px;
+            background: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .launch-btn:hover {
+            background: var(--button-hover);
+        }
+
+        .launch-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 20px;
+            overflow: hidden;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .uid {
+            color: var(--text-secondary);
+            font-size: 12px;
+            transition: color 0.3s ease;
+        }
+
+        .nickname {
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .subscription {
+            color: var(--text-secondary);
+            font-size: 12px;
+            transition: color 0.3s ease;
+        }
+
+        .version-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .version-label {
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .version-number {
+            color: var(--text-secondary);
+            font-size: 12px;
+            transition: color 0.3s ease;
+        }
+
+        .settings-title {
+            color: var(--text-primary);
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 18px;
+            transition: color 0.3s ease;
+        }
+
+        .settings-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: hidden;
+            margin-bottom: 16px;
+        }
+
+        .setting-group {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .setting-title {
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            transition: color 0.3s ease;
+        }
+
+        .setting-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 16px;
+            line-height: 1.4;
+            transition: color 0.3s ease;
+        }
+
+        .setting-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .setting-control:last-child {
+            margin-bottom: 0;
+        }
+
+        .resolution-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .resolution-input {
+            width: 80px;
+            padding: 8px 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s ease;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+            text-align: center;
+        }
+
+        .resolution-input:focus {
+            border-color: var(--border-focus);
+        }
+
+        .resolution-input::-webkit-outer-spin-button,
+        .resolution-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .resolution-input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .resolution-separator {
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .ram-input {
+            width: 100px;
+            padding: 8px 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s ease;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        .ram-input:focus {
+            border-color: var(--border-focus);
+        }
+
+        .ram-input:disabled {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: not-allowed;
+            opacity: 0.7;
+            border-color: var(--border-primary);
+        }
+
+        .ram-input::-webkit-outer-spin-button,
+        .ram-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .ram-input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .ram-unit {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .folder-display {
+            flex: 1;
+            padding: 8px 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: all 0.2s ease;
+        }
+
+        .browse-btn {
+            padding: 8px 16px;
+            background: var(--button-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .browse-btn:hover {
+            background: var(--button-secondary-hover);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border-primary);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox.checked {
+            background: var(--button-bg);
+            border-color: var(--button-bg);
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            color: var(--button-text);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .checkbox-label {
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .settings-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .save-btn {
+            padding: 12px 24px;
+            background: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .save-btn:hover {
+            background: var(--button-hover);
+        }
+
+        .back-btn {
+            width: 48px;
+            height: 48px;
+            background: var(--button-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--button-secondary-hover);
+        }
+
+        .back-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-primary);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 16px;
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+            border-radius: 8px;
+            color: var(--success-text);
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .launch-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .launch-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            min-width: 320px;
+            border: 1px solid var(--border-primary);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-spinner {
+            width: 48px;
+            height: 48px;
+            animation: spin 1s linear infinite;
+        }
+
+        .modal-spinner svg {
+            width: 100%;
+            height: 100%;
+            fill: var(--text-primary);
+        }
+
+        .modal-status {
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            min-height: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .file-name {
+            color: var(--text-secondary);
+            font-family: 'Courier New', monospace;
+        }
+
+        .logout-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            z-index: 15;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .logout-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .logout-text {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 600;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-box" id="mainBox">
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner">
+                <img src="loading.svg" alt="Loading">
+            </div>
+            <div class="loading-text" data-text="loading">Loading profile...</div>
+        </div>
+
+        <div class="logout-overlay" id="logoutOverlay">
+            <div class="logout-text" data-text="goodbye">Good bye!</div>
+        </div>
+
+        <div class="header-controls">
+            <div class="language-selector">
+                <div class="language-toggle" id="languageToggle">
+                    <img src="en.svg" alt="English" id="currentLanguageIcon">
+                </div>
+                <div class="language-dropdown" id="languageDropdown">
+                    <div class="language-option" data-lang="ru">
+                        <img src="ru.svg" alt="Русский">
+                    </div>
+                </div>
+            </div>
+            <div class="theme-toggle" id="themeToggle">
+                <div class="theme-icon">
+                    <img class="moon-icon" src="moon.svg" alt="moon">
+                    <img class="sun-icon" src="sun.svg" alt="sun">
+                </div>
+            </div>
+            <div class="close-btn"></div>
+        </div>
+        
+        <div class="page-content">
+            <div class="main-page" id="mainPage">
+                <div class="navigation-panel">
+                    <button class="nav-button active" id="playTab" data-text="play">Play</button>
+                    <button class="nav-button" id="changelogTab" data-text="changelogs">ChangeLogs</button>
+                </div>
+
+                <div class="content-panel">
+                    <div class="play-content" id="playContent">
+                        <div class="version-list">
+                            <div class="version-item selected" data-version="release">
+                                <div class="version-header">
+                                    <div class="version-name" data-text="version_release">YourClient Release</div>
+                                </div>
+                                <div class="version-description" data-text="version_release_desc">Stable version with optimized performance and all features tested. Recommended for most users who want reliable gameplay experience.</div>
+                            </div>
+                            
+                            <div class="version-item" data-version="beta" id="betaVersion">
+                                <div class="version-header">
+                                    <div class="version-name" data-text="version_beta">YourClient Beta</div>
+                                    <div class="version-status unavailable hidden" data-text="unavailable">Unavailable</div>
+                                </div>
+                                <div class="version-description" data-text="version_beta_desc">Beta version with latest features and improvements. May contain minor bugs but includes cutting-edge functionality for testing.</div>
+                            </div>
+                            
+                            <div class="version-item" data-version="alpha" id="alphaVersion">
+                                <div class="version-header">
+                                    <div class="version-name" data-text="version_alpha">YourClient Alpha</div>
+                                    <div class="version-status unavailable hidden" data-text="unavailable">Unavailable</div>
+                                </div>
+                                <div class="version-description" data-text="version_alpha_desc">Experimental alpha version with newest features in development. Expect frequent updates and possible instability.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="changelog-box hidden" id="changelogContent">
+                        <div class="changelog-title" data-text="client_changelog">Client Changelog</div>
+                        
+                        <div class="changelog-entry">
+                            <div class="changelog-header">
+                                <div class="changelog-version">YourClient Release v2.1.0</div>
+                                <div class="changelog-date">June 15, 2025</div>
+                            </div>
+                            <div class="changelog-item" data-text="release_210_1">Improved rendering performance by 30%</div>
+                            <div class="changelog-item" data-text="release_210_2">Fixed memory leaks in texture loading</div>
+                            <div class="changelog-item" data-text="release_210_3">Added support for 4K resolution displays</div>
+                            <div class="changelog-item" data-text="release_210_4">Enhanced anti-cheat system integration</div>
+                        </div>
+
+                        <div class="changelog-entry">
+                            <div class="changelog-header">
+                                <div class="changelog-version">YourClient Beta v2.2.0</div>
+                                <div class="changelog-date">June 10, 2025</div>
+                            </div>
+                            <div class="changelog-item" data-text="beta_220_1">Experimental ray tracing support</div>
+                            <div class="changelog-item" data-text="beta_220_2">New UI framework implementation</div>
+                            <div class="changelog-item" data-text="beta_220_3">Advanced shader compilation system</div>
+                            <div class="changelog-item" data-text="beta_220_4">Improved network protocol efficiency</div>
+                        </div>
+
+                        <div class="changelog-entry">
+                            <div class="changelog-header">
+                                <div class="changelog-version">YourClient Alpha v2.3.0</div>
+                                <div class="changelog-date">June 5, 2025</div>
+                            </div>
+                            <div class="changelog-item" data-text="alpha_230_1">Experimental AI-powered optimization</div>
+                            <div class="changelog-item" data-text="alpha_230_2">New plugin architecture framework</div>
+                            <div class="changelog-item" data-text="alpha_230_3">Advanced debugging tools integration</div>
+                            <div class="changelog-item" data-text="alpha_230_4">Prototype cloud synchronization</div>
+                        </div>
+
+                        <div class="changelog-entry">
+                            <div class="changelog-header">
+                                <div class="changelog-version">YourClient Release v2.0.5</div>
+                                <div class="changelog-date">May 28, 2025</div>
+                            </div>
+                            <div class="changelog-item" data-text="release_205_1">Critical security vulnerability patches</div>
+                            <div class="changelog-item" data-text="release_205_2">Fixed crash on startup for some configurations</div>
+                            <div class="changelog-item" data-text="release_205_3">Improved compatibility with older hardware</div>
+                            <div class="changelog-item" data-text="release_205_4">Enhanced error reporting system</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="logout-btn" id="logoutBtn">
+                        <img src="door.svg" alt="logout">
+                    </button>
+                    <button class="settings-btn" id="settingsBtn">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M10,22C9.75,22 9.54,21.82 9.5,21.58L9.13,18.93C8.5,18.68 7.96,18.34 7.44,17.94L4.95,18.95C4.73,19.03 4.46,18.95 4.34,18.73L2.34,15.27C2.21,15.05 2.27,14.78 2.46,14.63L4.57,12.97L4.5,12L4.57,11.03L2.46,9.37C2.27,9.22 2.21,8.95 2.34,8.73L4.34,5.27C4.46,5.05 4.73,4.96 4.95,5.05L7.44,6.05C7.96,5.66 8.5,5.32 9.13,5.07L9.5,2.42C9.54,2.18 9.75,2 10,2H14C14.25,2 14.46,2.18 14.5,2.42L14.87,5.07C15.5,5.32 16.04,5.66 16.56,6.05L19.05,5.05C19.27,4.96 19.54,5.05 19.66,5.27L21.66,8.73C21.79,8.95 21.73,9.22 21.54,9.37L19.43,11.03L19.5,12L19.43,12.97L21.54,14.63C21.73,14.78 21.79,15.05 21.66,15.27L19.66,18.73C19.54,18.95 19.27,19.04 19.05,18.95L16.56,17.95C16.04,18.34 15.5,18.68 14.87,18.93L14.5,21.58C14.46,21.82 14.25,22 14,22H10M11.25,4L10.88,6.61C9.68,6.86 8.62,7.5 7.85,8.39L5.44,7.35L4.69,8.65L6.8,10.2C6.4,11.37 6.4,12.64 6.8,13.8L4.68,15.36L5.43,16.66L7.86,15.62C8.63,16.5 9.68,17.14 10.87,17.38L11.24,20H12.76L13.13,17.39C14.32,17.14 15.37,16.5 16.14,15.62L18.57,16.66L19.32,15.36L17.2,13.81C17.6,12.64 17.6,11.37 17.2,10.2L19.31,8.65L18.56,7.35L16.15,8.39C15.38,7.5 14.32,6.86 13.12,6.62L12.75,4H11.25Z"/>
+                        </svg>
+                    </button>
+                    <button class="launch-btn" id="launchBtn" data-text="launch">Launch</button>
+                </div>
+
+                <div class="bottom-section">
+                    <div class="user-info">
+                        <div class="avatar">
+                            <img src="https://cdn.discordapp.com/avatars/1372859170965028944/5c1e1954cc92486465f84aa0623e1777.png?size=1024" alt="Avatar">
+                        </div>
+                        <div class="user-details">
+                            <div class="uid">uid: 1372859170965028944</div>
+                            <div class="nickname" id="userNickname">algorithm</div>
+                            <div class="subscription" data-text="subscription">Subscription until: Dec 12, 2025</div>
+                        </div>
+                    </div>
+
+                    <div class="version-info">
+                        <div class="version-label" data-text="version">Loader Version</div>
+                        <div class="version-number">development 0.1</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-page" id="settingsPage">
+                <h1 class="settings-title" data-text="settings">Settings</h1>
+                
+                <div class="settings-content">
+                    <div class="setting-group">
+                        <div class="setting-title" data-text="memory">Memory Allocation</div>
+                        <div class="setting-description" data-text="memory_desc">Configure RAM allocation for optimal performance</div>
+                        
+                        <div class="setting-control">
+                            <span style="color: var(--text-primary); font-size: 14px; font-weight: 500;" data-text="ram">RAM:</span>
+                            <input type="number" id="ramInput" class="ram-input" value="4096" min="1024" max="16384" step="512">
+                            <span class="ram-unit">MB</span>
+                        </div>
+                        
+                        <div class="setting-control">
+                            <div class="checkbox-container" id="adaptiveRam">
+                                <div class="checkbox" id="adaptiveCheckbox"></div>
+                                <span class="checkbox-label" data-text="adaptive_ram">Adaptive RAM allocation during gameplay</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <div class="setting-title" data-text="resolution">Screen Resolution</div>
+                        <div class="setting-description" data-text="resolution_desc">Set preferred screen resolution for games</div>
+                        
+                        <div class="setting-control">
+                            <span style="color: var(--text-primary); font-size: 14px; font-weight: 500;" data-text="resolution_label">Resolution:</span>
+                            <div class="resolution-controls">
+                                <input type="number" id="widthInput" class="resolution-input" value="1920" min="800" max="7680" step="1">
+                                <span class="resolution-separator">×</span>
+                                <input type="number" id="heightInput" class="resolution-input" value="1080" min="600" max="4320" step="1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <div class="setting-title" data-text="directory">Game Directory</div>
+                        <div class="setting-description" data-text="directory_desc">Select the folder where your game is installed</div>
+                        
+                        <div class="setting-control">
+                            <div class="folder-display" id="folderDisplay">C:\eclipsedlc</div>
+                            <button class="browse-btn" id="browseBtn" data-text="browse">Browse</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-bottom">
+                    <button class="save-btn" id="saveBtn" data-text="save">Save Configuration</button>
+                    <button class="back-btn" id="backBtn">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="launch-modal" id="launchModal">
+        <div class="modal-content">
+            <div class="modal-spinner">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <g fill-rule="evenodd" clip-rule="evenodd">
+                        <path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8z" opacity=".2"/>
+                        <path d="M7.25.75A.75.75 0 018 0a8 8 0 018 8 .75.75 0 01-1.5 0A6.5 6.5 0 008 1.5a.75.75 0 01-.75-.75z"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="modal-status" id="modalStatus" data-text="checking">Checking files...</div>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            en: {
+                loading: "Loading profile...",
+                goodbye: "Good bye!",
+                play: "Play",
+                changelogs: "ChangeLogs",
+                version_release: "YourClient Release",
+                version_beta: "YourClient Beta",
+                version_alpha: "YourClient Alpha",
+                version_release_desc: "Stable version with optimized performance and all features tested. Recommended for most users who want reliable gameplay experience.",
+                version_beta_desc: "Beta version with latest features and improvements. May contain minor bugs but includes cutting-edge functionality for testing.",
+                version_alpha_desc: "Experimental alpha version with newest features in development. Expect frequent updates and possible instability.",
+                unavailable: "Unavailable",
+                client_changelog: "Client Changelog",
+                release_210_1: "Improved rendering performance by 30%",
+                release_210_2: "Fixed memory leaks in texture loading",
+                release_210_3: "Added support for 4K resolution displays",
+                release_210_4: "Enhanced anti-cheat system integration",
+                beta_220_1: "Experimental ray tracing support",
+                beta_220_2: "New UI framework implementation",
+                beta_220_3: "Advanced shader compilation system",
+                beta_220_4: "Improved network protocol efficiency",
+                alpha_230_1: "Experimental AI-powered optimization",
+                alpha_230_2: "New plugin architecture framework",
+                alpha_230_3: "Advanced debugging tools integration",
+                alpha_230_4: "Prototype cloud synchronization",
+                release_205_1: "Critical security vulnerability patches",
+                release_205_2: "Fixed crash on startup for some configurations",
+                release_205_3: "Improved compatibility with older hardware",
+                release_205_4: "Enhanced error reporting system",
+                launch: "Launch",
+                subscription: "Subscription until: Dec 12, 2025",
+                version: "Client Version",
+                settings: "Settings",
+                memory: "Memory Allocation",
+                memory_desc: "Configure RAM allocation for optimal performance",
+                ram: "RAM:",
+                adaptive_ram: "Adaptive RAM allocation during gameplay",
+                resolution: "Screen Resolution",
+                resolution_desc: "Set preferred screen resolution for games",
+                resolution_label: "Resolution:",
+                directory: "Game Directory",
+                directory_desc: "Select the folder where your game is installed",
+                browse: "Browse",
+                save: "Save Configuration",
+                checking: "Checking files...",
+                downloading: "Downloading file:",
+                launching: "Launching..."
+            },
+            ru: {
+                loading: "Загрузка профиля...",
+                goodbye: "До свидания!",
+                play: "Играть",
+                changelogs: "Изменения",
+                version_release: "YourClient Релиз",
+                version_beta: "YourClient Бета",
+                version_alpha: "YourClient Альфа",
+                version_release_desc: "Стабильная версия с оптимизированной производительностью и протестированными функциями. Рекомендуется для большинства пользователей, желающих надежный игровой опыт.",
+                version_beta_desc: "Бета-версия с новейшими функциями и улучшениями. Может содержать незначительные ошибки, но включает передовую функциональность для тестирования.",
+                version_alpha_desc: "Экспериментальная альфа-версия с новейшими функциями в разработке. Ожидайте частые обновления и возможную нестабильность.",
+                unavailable: "Недоступно",
+                client_changelog: "История изменений клиента",
+                release_210_1: "Улучшена производительность рендеринга на 30%",
+                release_210_2: "Исправлены утечки памяти при загрузке текстур",
+                release_210_3: "Добавлена поддержка дисплеев с разрешением 4K",
+                release_210_4: "Улучшена интеграция системы защиты от читов",
+                beta_220_1: "Экспериментальная поддержка трассировки лучей",
+                beta_220_2: "Реализация нового UI фреймворка",
+                beta_220_3: "Продвинутая система компиляции шейдеров",
+                beta_220_4: "Улучшена эффективность сетевого протокола",
+                alpha_230_1: "Экспериментальная оптимизация на базе ИИ",
+                alpha_230_2: "Новый фреймворк архитектуры плагинов",
+                alpha_230_3: "Интеграция продвинутых инструментов отладки",
+                alpha_230_4: "Прототип облачной синхронизации",
+                release_205_1: "Критические патчи уязвимостей безопасности",
+                release_205_2: "Исправлен краш при запуске для некоторых конфигураций",
+                release_205_3: "Улучшена совместимость со старым оборудованием",
+                release_205_4: "Улучшена система отчетов об ошибках",
+                launch: "Запустить",
+                subscription: "Подписка до: 12 декабря 2025",
+                version: "Версия клиента",
+                settings: "Настройки",
+                memory: "Выделение памяти",
+                memory_desc: "Настройте выделение ОЗУ для оптимальной производительности",
+                ram: "ОЗУ:",
+                adaptive_ram: "Адаптивное выделение ОЗУ во время игры",
+                resolution: "Разрешение экрана",
+                resolution_desc: "Установите предпочтительное разрешение экрана для игр",
+                resolution_label: "Разрешение:",
+                directory: "Директория игры",
+                directory_desc: "Выберите папку, где установлена ваша игра",
+                browse: "Обзор",
+                save: "Сохранить конфигурацию",
+                checking: "Проверка файлов...",
+                downloading: "Загрузка файла:",
+                launching: "Запуск..."
+            }
+        };
+
+        let currentLanguage = localStorage.getItem('language') || 'en';
+        let selectedVersion = 'release';
+        let currentNickname = '';
+
+        function updateLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            
+            document.querySelectorAll('[data-text]').forEach(element => {
+                const key = element.getAttribute('data-text');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+
+            const currentIcon = document.getElementById('currentLanguageIcon');
+            const dropdown = document.getElementById('languageDropdown');
+            
+            if (lang === 'en') {
+                currentIcon.src = 'en.svg';
+                currentIcon.alt = 'English';
+                dropdown.innerHTML = '<div class="language-option" data-lang="ru"><img src="ru.svg" alt="Русский"></div>';
+            } else {
+                currentIcon.src = 'ru.svg';
+                currentIcon.alt = 'Русский';
+                dropdown.innerHTML = '<div class="language-option" data-lang="en"><img src="en.svg" alt="English"></div>';
+            }
+
+            bindLanguageDropdown();
+            
+            window.chrome.webview.postMessage('language_changed:' + lang);
+        }
+
+        function bindLanguageDropdown() {
+            const dropdown = document.getElementById('languageDropdown');
+            dropdown.addEventListener('click', function(e) {
+                if (e.target.closest('.language-option')) {
+                    const lang = e.target.closest('.language-option').getAttribute('data-lang');
+                    updateLanguage(lang);
+                    dropdown.classList.remove('show');
+                }
+            });
+        }
+
+        function checkVersionAccess() {
+            const betaVersion = document.getElementById('betaVersion');
+            const alphaVersion = document.getElementById('alphaVersion');
+            
+            if (currentNickname === 'algorithm') {
+                betaVersion.classList.add('disabled');
+                alphaVersion.classList.add('disabled');
+                betaVersion.querySelector('.version-status').classList.remove('hidden');
+                alphaVersion.querySelector('.version-status').classList.remove('hidden');
+                if (selectedVersion === 'beta' || selectedVersion === 'alpha') {
+                    selectedVersion = 'release';
+                    updateVersionSelection();
+                }
+            } else {
+                betaVersion.classList.remove('disabled');
+                alphaVersion.classList.remove('disabled');
+                
+                betaVersion.querySelector('.version-status').classList.add('hidden');
+                alphaVersion.querySelector('.version-status').classList.add('hidden');
+            }
+        }
+
+        function updateVersionSelection() {
+            document.querySelectorAll('.version-item').forEach(item => {
+                item.classList.remove('selected');
+                if (item.getAttribute('data-version') === selectedVersion) {
+                    item.classList.add('selected');
+                }
+            });
+            
+            const launchBtn = document.getElementById('launchBtn');
+            if (selectedVersion && !document.querySelector('.version-item.selected').classList.contains('disabled')) {
+                launchBtn.disabled = false;
+            } else {
+                launchBtn.disabled = true;
+            }
+        }
+
+        const themeToggle = document.getElementById('themeToggle');
+        const languageToggle = document.getElementById('languageToggle');
+        const languageDropdown = document.getElementById('languageDropdown');
+        const body = document.body;
+        
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            body.setAttribute('data-theme', 'light');
+        }
+        
+        updateLanguage(currentLanguage);
+
+        languageToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            languageDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.language-selector')) {
+                languageDropdown.classList.remove('show');
+            }
+        });
+
+        bindLanguageDropdown();
+        
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        const playTab = document.getElementById('playTab');
+        const changelogTab = document.getElementById('changelogTab');
+        const playContent = document.getElementById('playContent');
+        const changelogContent = document.getElementById('changelogContent');
+        const actionButtons = document.querySelector('.action-buttons');
+
+        playTab.addEventListener('click', function() {
+            playTab.classList.add('active');
+            changelogTab.classList.remove('active');
+            playContent.classList.remove('hidden');
+            changelogContent.classList.add('hidden');
+            actionButtons.classList.remove('changelog-mode');
+        });
+
+        changelogTab.addEventListener('click', function() {
+            changelogTab.classList.add('active');
+            playTab.classList.remove('active');
+            changelogContent.classList.remove('hidden');
+            playContent.classList.add('hidden');
+            actionButtons.classList.add('changelog-mode');
+        });
+
+        document.querySelectorAll('.version-item').forEach(item => {
+            item.addEventListener('click', function() {
+                if (!this.classList.contains('disabled')) {
+                    selectedVersion = this.getAttribute('data-version');
+                    updateVersionSelection();
+                }
+            });
+        });
+
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+                (e.ctrlKey && e.key === 'u') ||
+                e.key === 'Tab') {
+                e.preventDefault();
+            }
+        });
+
+        let isDragging = false;
+
+        document.addEventListener('mousedown', function(e) {
+            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' ||
+                e.target.closest('.launch-btn') || e.target.closest('.close-btn') ||
+                e.target.closest('.theme-toggle') || e.target.closest('.settings-btn') ||
+                e.target.closest('.browse-btn') || e.target.closest('.save-btn') ||
+                e.target.closest('.back-btn') || e.target.closest('.checkbox-container') ||
+                e.target.closest('.logout-btn') || e.target.closest('.language-selector') ||
+                e.target.closest('.version-item') || e.target.closest('.nav-button')) {
+                return;
+            }
+            
+            isDragging = true;
+            window.chrome.webview.postMessage('start_drag');
+        });
+
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+        });
+
+        document.querySelector('.close-btn').addEventListener('click', function() {
+            window.chrome.webview.postMessage('close_window');
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            const logoutOverlay = document.getElementById('logoutOverlay');
+            logoutOverlay.classList.add('show');
+            
+            setTimeout(() => {
+                window.chrome.webview.postMessage('clear_remember_data');
+                window.chrome.webview.postMessage('logout');
+            }, 1500);
+        });
+
+        const settingsBtn = document.getElementById('settingsBtn');
+        const backBtn = document.getElementById('backBtn');
+        const mainPage = document.getElementById('mainPage');
+        const settingsPage = document.getElementById('settingsPage');
+        const adaptiveRam = document.getElementById('adaptiveRam');
+        const adaptiveCheckbox = document.getElementById('adaptiveCheckbox');
+        const ramInput = document.getElementById('ramInput');
+        const widthInput = document.getElementById('widthInput');
+        const heightInput = document.getElementById('heightInput');
+        const browseBtn = document.getElementById('browseBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        let isAdaptiveRam = false;
+        let originalRamValue = 4096;
+
+        function updateRamInputState() {
+            if (isAdaptiveRam) {
+                originalRamValue = parseInt(ramInput.value) || 4096;
+                ramInput.value = 'Auto';
+                ramInput.disabled = true;
+            } else {
+                ramInput.disabled = false;
+                ramInput.value = originalRamValue;
+            }
+        }
+
+        function loadConfigurationValues(config) {
+            originalRamValue = config.ram || 4096;
+            ramInput.value = originalRamValue;
+            widthInput.value = config.width || 1920;
+            heightInput.value = config.height || 1080;
+            document.getElementById('folderDisplay').textContent = config.gameFolder;
+            isAdaptiveRam = config.adaptiveRam;
+            adaptiveCheckbox.classList.toggle('checked', isAdaptiveRam);
+            updateRamInputState();
+        }
+
+        settingsBtn.addEventListener('click', function() {
+            mainPage.classList.add('hidden');
+            settingsPage.classList.add('active');
+        });
+
+        backBtn.addEventListener('click', function() {
+            settingsPage.classList.remove('active');
+            mainPage.classList.remove('hidden');
+        });
+
+        adaptiveRam.addEventListener('click', function() {
+            isAdaptiveRam = !isAdaptiveRam;
+            adaptiveCheckbox.classList.toggle('checked', isAdaptiveRam);
+            updateRamInputState();
+        });
+
+        ramInput.addEventListener('input', function() {
+            if (!isAdaptiveRam) {
+                originalRamValue = parseInt(ramInput.value) || 4096;
+            }
+        });
+
+        browseBtn.addEventListener('click', function() {
+            window.chrome.webview.postMessage('browse_folder');
+        });
+
+        saveBtn.addEventListener('click', function() {
+            const ramValue = isAdaptiveRam ? originalRamValue : parseInt(ramInput.value);
+            const width = parseInt(widthInput.value) || 1920;
+            const height = parseInt(heightInput.value) || 1080;
+            const folderPath = document.getElementById('folderDisplay').textContent;
+            
+            const config = {
+                ram: ramValue,
+                adaptiveRam: isAdaptiveRam,
+                width: width,
+                height: height,
+                gameFolder: folderPath,
+                language: currentLanguage,
+                selectedVersion: selectedVersion
+            };
+            
+            window.chrome.webview.postMessage('save_config:' + JSON.stringify(config));
+            
+            const originalText = saveBtn.textContent;
+            const savedText = currentLanguage === 'ru' ? 'Конфигурация сохранена!' : 'Configuration saved!';
+            saveBtn.textContent = savedText;
+            saveBtn.classList.add('saved');
+            saveBtn.disabled = true;
+            
+            setTimeout(() => {
+                saveBtn.textContent = originalText;
+                saveBtn.classList.remove('saved');
+                saveBtn.disabled = false;
+            }, 2000);
+        });
+
+        function generateRandomHash() {
+            const chars = 'abcdef0123456789';
+            let result = '';
+            for (let i = 0; i < 15; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        document.getElementById('launchBtn').addEventListener('click', function() {
+            if (this.disabled) return;
+            
+            const modal = document.getElementById('launchModal');
+            const status = document.getElementById('modalStatus');
+            
+            modal.classList.add('show');
+            
+            status.textContent = translations[currentLanguage].checking;
+            
+            setTimeout(() => {
+                const fileName = generateRandomHash();
+                status.innerHTML = `${translations[currentLanguage].downloading} <span class="file-name">${fileName}</span>`;
+                
+                setTimeout(() => {
+                    status.textContent = translations[currentLanguage].launching;
+                    
+                    setTimeout(() => {
+                        modal.classList.remove('show');
+                        window.chrome.webview.postMessage('launch_app:' + selectedVersion);
+                    }, 2000);
+                }, 3000);
+            }, 2000);
+        });
+
+        window.addEventListener('message', function(event) {
+            if (event.data.startsWith('folder_selected:')) {
+                const folderPath = event.data.substring(16);
+                document.getElementById('folderDisplay').textContent = folderPath;
+            } else if (event.data.startsWith('config_loaded:')) {
+                const config = JSON.parse(event.data.substring(14));
+                loadConfigurationValues(config);
+                if (config.language && config.language !== currentLanguage) {
+                    updateLanguage(config.language);
+                }
+                if (config.selectedVersion) {
+                    selectedVersion = config.selectedVersion;
+                    updateVersionSelection();
+                }
+            } else if (event.data.startsWith('user_data:')) {
+                const userData = JSON.parse(event.data.substring(10));
+                currentNickname = userData.nickname || 'algorithm';
+                document.getElementById('userNickname').textContent = currentNickname;
+                checkVersionAccess();
+            }
+        });
+
+        window.addEventListener('load', function() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const delay = Math.random() * 200 + 300;
+            
+            setTimeout(() => {
+                loadingOverlay.classList.add('hidden');
+                window.chrome.webview.postMessage('profile_loaded');
+                window.chrome.webview.postMessage('load_config');
+                checkVersionAccess();
+                updateVersionSelection();
+            }, delay);
+        });
+    </script>
+</body>
+</html>

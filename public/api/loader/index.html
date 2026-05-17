@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        
+        :root {
+            --bg-primary: #0d0d1a;
+            --bg-secondary: rgba(255, 255, 255, 0.05);
+            --bg-secondary-hover: rgba(255, 255, 255, 0.08);
+            --border-primary: rgba(255, 255, 255, 0.1);
+            --border-focus: rgba(255, 255, 255, 0.3);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-placeholder: rgba(255, 255, 255, 0.4);
+            --button-bg: #ffffff;
+            --button-text: #0d0d1a;
+            --button-hover: #e0e0e0;
+            --button-disabled: rgba(255, 255, 255, 0.3);
+            --success-bg: rgba(34, 197, 94, 0.1);
+            --success-border: rgba(34, 197, 94, 0.3);
+            --success-text: #22c55e;
+            --error-bg: rgba(239, 68, 68, 0.1);
+            --error-border: rgba(239, 68, 68, 0.3);
+            --error-text: #ef4444;
+            --hover-overlay: rgba(255, 255, 255, 0.1);
+            --social-bg: rgba(255, 255, 255, 0.05);
+            --social-hover: rgba(255, 255, 255, 0.15);
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: rgba(0, 0, 0, 0.05);
+            --bg-secondary-hover: rgba(0, 0, 0, 0.08);
+            --border-primary: rgba(0, 0, 0, 0.1);
+            --border-focus: rgba(0, 0, 0, 0.3);
+            --text-primary: #1a1a1a;
+            --text-secondary: rgba(0, 0, 0, 0.6);
+            --text-placeholder: rgba(0, 0, 0, 0.4);
+            --button-bg: #1a1a1a;
+            --button-text: #ffffff;
+            --button-hover: #333333;
+            --button-disabled: rgba(0, 0, 0, 0.3);
+            --success-bg: rgba(34, 197, 94, 0.1);
+            --success-border: rgba(34, 197, 94, 0.3);
+            --success-text: #16a34a;
+            --error-bg: rgba(239, 68, 68, 0.1);
+            --error-border: rgba(239, 68, 68, 0.3);
+            --error-text: #dc2626;
+            --hover-overlay: rgba(0, 0, 0, 0.1);
+            --social-bg: rgba(0, 0, 0, 0.05);
+            --social-hover: rgba(0, 0, 0, 0.15);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            -webkit-user-drag: none;
+            -moz-user-drag: none;
+            user-drag: none;
+            transition: all 0.3s ease;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            z-index: 10;
+            opacity: 1;
+            transition: all 0.5s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 20px;
+        }
+
+        .spinner img {
+            width: 100%;
+            height: 100%;
+            animation: spin 1s linear infinite;
+            filter: brightness(0) invert(1);
+        }
+
+        [data-theme="light"] .spinner img {
+            filter: brightness(0) invert(0);
+        }
+
+        .loading-text {
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .login-box {
+            background: var(--bg-primary);
+            width: 480px;
+            height: 620px;
+            padding: 40px;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .header-controls {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .language-selector {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .language-toggle {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+            position: relative;
+        }
+
+        .language-toggle:hover {
+            background: var(--hover-overlay);
+        }
+
+        .language-toggle img {
+            width: 16px;
+            height: 16px;
+            border-radius: 2px;
+        }
+
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            padding: 4px;
+            margin-top: 4px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .language-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .language-option {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+
+        .language-option:hover {
+            background: var(--hover-overlay);
+        }
+
+        .language-option img {
+            width: 16px;
+            height: 16px;
+            border-radius: 2px;
+        }
+        
+        .theme-toggle, .close-btn {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .theme-toggle:hover, .close-btn:hover {
+            background: var(--hover-overlay);
+        }
+        
+        .theme-icon {
+            width: 16px;
+            height: 16px;
+            position: relative;
+        }
+        
+        .theme-icon img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 16px;
+            height: 16px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: brightness(0) invert(1);
+        }
+        
+        [data-theme="light"] .theme-icon img {
+            filter: brightness(0) invert(0);
+        }
+        
+        .moon-icon {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+        
+        .sun-icon {
+            opacity: 0;
+            transform: rotate(180deg) scale(0.5);
+        }
+        
+        [data-theme="light"] .moon-icon {
+            opacity: 0;
+            transform: rotate(-180deg) scale(0.5);
+        }
+        
+        [data-theme="light"] .sun-icon {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+        
+        .close-btn::before,
+        .close-btn::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 1px;
+        }
+        
+        .close-btn::before {
+            transform: rotate(45deg);
+        }
+        
+        .close-btn::after {
+            transform: rotate(-45deg);
+        }
+        
+        .login-title {
+            color: var(--text-primary);
+            font-size: 24px;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 40px;
+            transition: color 0.3s ease;
+        }
+        
+        .notification {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 0;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            max-height: 50px;
+            margin-bottom: 20px;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        
+        .notification.success {
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+            color: var(--success-text);
+        }
+        
+        .notification.error {
+            background: var(--error-bg);
+            border: 1px solid var(--error-border);
+            color: var(--error-text);
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+        
+        .form-label {
+            display: block;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            transition: color 0.3s ease;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s ease;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+        
+        .form-input:focus {
+            border-color: var(--border-focus);
+            background: var(--bg-secondary-hover);
+        }
+        
+        .form-input::placeholder {
+            color: var(--text-placeholder);
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+
+        .eye-icon {
+            width: 20px;
+            height: 20px;
+            position: relative;
+        }
+        
+        .eye-icon img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: brightness(0) invert(1);
+        }
+        
+        [data-theme="light"] .eye-icon img {
+            filter: brightness(0) invert(0);
+        }
+        
+        .eye-closed {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .eye-open {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        
+        .eye-icon.show-password .eye-closed {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        
+        .eye-icon.show-password .eye-open {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            margin-bottom: 24px;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border-primary);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox.checked {
+            background: var(--button-bg);
+            border-color: var(--button-bg);
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            color: var(--button-text);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .checkbox-label {
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .login-btn:hover {
+            background: var(--button-hover);
+        }
+        
+        .login-btn:disabled {
+            background: var(--button-disabled);
+            cursor: not-allowed;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 32px;
+        }
+        
+        .social-btn {
+            width: 48px;
+            height: 48px;
+            background: var(--social-bg);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .social-btn:hover {
+            background: var(--social-hover);
+        }
+        
+        .social-btn img {
+            width: 24px;
+            height: 24px;
+            filter: brightness(0) invert(1);
+            transition: filter 0.3s ease;
+        }
+        
+        [data-theme="light"] .social-btn img {
+            filter: brightness(0) invert(0);
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="login-box" id="loginBox">
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner">
+                <img src="loading.svg" alt="Loading">
+            </div>
+            <div class="loading-text" data-text="loading">Loading...</div>
+        </div>
+
+        <div class="header-controls">
+            <div class="language-selector">
+                <div class="language-toggle" id="languageToggle">
+                    <img src="en.svg" alt="English" id="currentLanguageIcon">
+                </div>
+                <div class="language-dropdown" id="languageDropdown">
+                    <div class="language-option" data-lang="ru">
+                        <img src="ru.svg" alt="Русский">
+                    </div>
+                </div>
+            </div>
+            <div class="theme-toggle" id="themeToggle">
+                <div class="theme-icon">
+                    <img class="moon-icon" src="moon.svg" alt="moon">
+                    <img class="sun-icon" src="sun.svg" alt="sun">
+                </div>
+            </div>
+            <div class="close-btn"></div>
+        </div>
+        <h1 class="login-title" data-text="title">Login to your account</h1>
+        
+        <div id="notification" class="notification"></div>
+        
+        <form id="loginForm" autocomplete="off">
+            <div class="form-group">
+                <label class="form-label" for="username" data-text="username">Username</label>
+                <div class="input-wrapper">
+                    <input type="text" id="username" class="form-input" data-placeholder="username_placeholder" placeholder="Enter your username" autocomplete="off" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="password" data-text="password">Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" class="form-input" data-placeholder="password_placeholder" placeholder="Enter your password" autocomplete="new-password" required minlength="6" maxlength="64">
+                    <div class="password-toggle" id="passwordToggle">
+                        <div class="eye-icon" id="eyeIcon">
+                            <img class="eye-closed" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwcHgiIGhlaWdodD0iODAwcHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIuOTk5MDIgM0wyMC45OTkgMjFNOS44NDMzIDkuOTEzNjRDOS4zMjA2NiAxMC40NTM2IDguOTk5MDIgMTEuMTg5MiA4Ljk5OTAyIDEyQzguOTk5MDIgMTMuNjU2OSAxMC4zNDIyIDE1IDExLjk5OSAxNUMxMi44MjE1IDE1IDEzLjU2NjcgMTQuNjY5IDE0LjEwODYgMTQuMTMzTTYuNDk5MDIgNi42NDcxNUM0LjU5OTcyIDcuOTAwMzQgMy4xNTMwNSA5Ljc4Mzk0IDIuNDU3MDMgMTJDMy43MzEyOCAxNi4wNTcxIDcuNTIxNTkgMTkgMTEuOTk5MiAxOUMxMy45ODgxIDE5IDE1Ljg0MTQgMTguNDE5NCAxNy4zOTg4IDE3LjQxODRNMTAuOTk5IDUuMDQ5MzlDMTEuMzI4IDUuMDE2NzMgMTEuNjYxNyA1IDExLjk5OTIgNUMxNi40NzY5IDUgMjAuMjY3MiA3Ljk0MjkxIDIxLjU0MTQgMTJDMjEuMjYwNyAxMi44OTQgMjAuODU3NyAxMy43MzM4IDIwLjM1MjIgMTQuNSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4=" alt="Hide password">
+                            <img class="eye-open" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwcHgiIGhlaWdodD0iODAwcHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE1LjAwMDcgMTJDMTUuMDAwNyAxMy42NTY5IDEzLjY1NzYgMTUgMTIuMDAwNyAxNUMxMC4zNDM5IDE1IDkuMDAwNzMgMTMuNjU2OSA5LjAwMDczIDEyQzkuMDAwNzMgMTAuMzQzMSAxMC4zNDM5IDkgMTIuMDAwNyA5QzEzLjY1NzYgOSAxNS4wMDA3IDEwLjM0MzEgMTUuMDAwNyAxMloiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHBhdGggZD0iTTEyLjAwMTIgNUM3LjUyMzU0IDUgMy43MzMyNiA3Ljk0Mjg4IDIuNDU4OTggMTJDMy43MzMyNCAxNi4wNTcxIDcuNTIzNTQgMTkgMTIuMDAxMiAxOUMxNi40Nzg4IDE5IDIwLjI2OTEgMTYuMDU3MSAyMS41NDM0IDEyQzIwLjI2OTEgNy45NDI5MSAxNi40Nzg4IDUgMTIuMDAxMiA1WiIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4=" alt="Show password">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="remember-me" id="rememberMe">
+                <div class="checkbox" id="rememberCheckbox"></div>
+                <span class="checkbox-label" data-text="remember_me">Remember me</span>
+            </div>
+            
+            <button type="submit" class="login-btn" data-text="continue">
+                Continue
+            </button>
+        </form>
+        
+        <div class="social-links">
+            <button class="social-btn" data-url="https://discord.gg/">
+                <img src="discord.svg" alt="Discord">
+            </button>
+            <button class="social-btn" data-url="https://t.me/">
+                <img src="telegram.svg" alt="Telegram">
+            </button>
+            <button class="social-btn" data-url="https://luminar-five-drab.vercel.app/">
+                <img src="site.svg" alt="Website">
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            en: {
+                loading: "Loading...",
+                title: "Login to your account",
+                username: "Username",
+                username_placeholder: "Enter your username", 
+                password: "Password",
+                password_placeholder: "Enter your password",
+                remember_me: "Remember me",
+                continue: "Continue",
+                correct_data: "Correct data!",
+                incorrect_data: "Incorrect data",
+                checking_data: "Checking your data..."
+            },
+            ru: {
+                loading: "Загрузка...",
+                title: "Войдите в свой аккаунт",
+                username: "Имя пользователя",
+                username_placeholder: "Введите имя пользователя",
+                password: "Пароль", 
+                password_placeholder: "Введите пароль",
+                remember_me: "Запомнить меня",
+                continue: "Продолжить",
+                correct_data: "Правильные данные!",
+                incorrect_data: "Неправильные данные",
+                checking_data: "Проверка ваших данных..."
+            }
+        };
+
+        let currentLanguage = localStorage.getItem('language') || 'en';
+        let isRememberChecked = false;
+
+        function updateLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            
+            document.querySelectorAll('[data-text]').forEach(element => {
+                const key = element.getAttribute('data-text');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+
+            document.querySelectorAll('[data-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-placeholder');
+                if (translations[lang] && translations[lang][key]) {
+                    element.placeholder = translations[lang][key];
+                }
+            });
+
+            const currentIcon = document.getElementById('currentLanguageIcon');
+            const dropdown = document.getElementById('languageDropdown');
+            
+            if (lang === 'en') {
+                currentIcon.src = 'en.svg';
+                currentIcon.alt = 'English';
+                dropdown.innerHTML = '<div class="language-option" data-lang="ru"><img src="ru.svg" alt="Русский"></div>';
+            } else {
+                currentIcon.src = 'ru.svg';
+                currentIcon.alt = 'Русский';
+                dropdown.innerHTML = '<div class="language-option" data-lang="en"><img src="en.svg" alt="English"></div>';
+            }
+
+            bindLanguageDropdown();
+            
+            window.chrome.webview.postMessage('language_changed:' + lang);
+        }
+
+        function bindLanguageDropdown() {
+            const dropdown = document.getElementById('languageDropdown');
+            dropdown.addEventListener('click', function(e) {
+                if (e.target.closest('.language-option')) {
+                    const lang = e.target.closest('.language-option').getAttribute('data-lang');
+                    updateLanguage(lang);
+                    dropdown.classList.remove('show');
+                }
+            });
+        }
+
+        const themeToggle = document.getElementById('themeToggle');
+        const languageToggle = document.getElementById('languageToggle');
+        const languageDropdown = document.getElementById('languageDropdown');
+        const body = document.body;
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            body.setAttribute('data-theme', 'light');
+        }
+        
+        updateLanguage(currentLanguage);
+        languageToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            languageDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.language-selector')) {
+                languageDropdown.classList.remove('show');
+            }
+        });
+
+        bindLanguageDropdown();
+        
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        const passwordToggle = document.getElementById('passwordToggle');
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        passwordInput.addEventListener('input', function(e) {
+            if (e.target.value.length > 64) {
+                e.target.value = e.target.value.substring(0, 64);
+            }
+        });
+
+        passwordInput.addEventListener('paste', function(e) {
+            // Allow paste
+        });
+
+        passwordInput.addEventListener('keydown', function(e) {
+            // Allow all input
+        });
+
+        passwordToggle.addEventListener('click', function() {
+            const isPasswordVisible = passwordInput.type === 'text';
+            
+            if (isPasswordVisible) {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('show-password');
+            } else {
+                passwordInput.type = 'text';
+                eyeIcon.classList.add('show-password');
+            }
+        });
+
+        const rememberMe = document.getElementById('rememberMe');
+        const rememberCheckbox = document.getElementById('rememberCheckbox');
+
+        rememberMe.addEventListener('click', function() {
+            isRememberChecked = !isRememberChecked;
+            rememberCheckbox.classList.toggle('checked', isRememberChecked);
+        });
+
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+                (e.ctrlKey && e.key === 'u')) {
+                e.preventDefault();
+            }
+        });
+
+        let isDragging = false;
+
+        document.addEventListener('mousedown', function(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || 
+                e.target.closest('.login-btn') || e.target.closest('.close-btn') ||
+                e.target.closest('.theme-toggle') || e.target.closest('.social-btn') ||
+                e.target.closest('.password-toggle') || e.target.closest('.language-selector') ||
+                e.target.closest('.remember-me')) {
+                return;
+            }
+            
+            isDragging = true;
+            window.chrome.webview.postMessage('start_drag');
+        });
+
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+        });
+
+        document.querySelector('.close-btn').addEventListener('click', function() {
+            window.chrome.webview.postMessage('close_window');
+        });
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function showLoading() {
+            const submitBtn = document.querySelector('.login-btn');
+            submitBtn.innerHTML = `
+                <div style="width: 20px; height: 20px; border: 2px solid transparent; border-top: 2px solid currentColor; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                ${translations[currentLanguage].checking_data}
+            `;
+            
+            if (!document.querySelector('#spin-animation')) {
+                const style = document.createElement('style');
+                style.id = 'spin-animation';
+                style.textContent = `
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const submitBtn = document.querySelector('.login-btn');
+            
+            submitBtn.disabled = true;
+            showLoading();
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, source: 'loader' })
+                });
+                
+                const data = await response.json();
+                
+                if (data.ok) {
+                    showNotification(translations[currentLanguage].correct_data, 'success');
+                    
+                    if (isRememberChecked) {
+                        window.chrome.webview.postMessage('save_remember_data:' + JSON.stringify({
+                            username: username,
+                            password: password
+                        }));
+                    }
+                    
+                    setTimeout(() => {
+                        window.chrome.webview.postMessage('navigate_to_profile');
+                    }, 1000);
+                } else {
+                    const errorMsg = data.error || translations[currentLanguage].incorrect_data;
+                    showNotification(errorMsg, 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = translations[currentLanguage].continue;
+                }
+            } catch (err) {
+                showNotification('Connection error', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = translations[currentLanguage].continue;
+            }
+        });
+
+        document.querySelectorAll('.social-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const url = this.getAttribute('data-url');
+                window.chrome.webview.postMessage('open_external_url:' + url);
+            });
+        });
+
+        window.addEventListener('message', function(event) {
+            if (event.data.startsWith('remembered_data:')) {
+                const data = JSON.parse(event.data.substring(16));
+                document.getElementById('username').value = data.username;
+                document.getElementById('password').value = data.password;
+                isRememberChecked = true;
+                rememberCheckbox.classList.add('checked');
+            } else if (event.data === 'auto_login') {
+                document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+            }
+        });
+
+        window.addEventListener('load', function() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const delay = Math.random() * 200 + 300;
+            
+            setTimeout(() => {
+                loadingOverlay.classList.add('hidden');
+                window.chrome.webview.postMessage('check_remember_data');
+            }, delay);
+        });
+    </script>
+</body>
+</html>
