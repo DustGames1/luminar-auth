@@ -1,56 +1,23 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login — LUMINAR</title>
-<link rel="stylesheet" href="/style.css">
-</head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Вход — Luminar</title><link rel="stylesheet" href="/style.css"></head>
 <body>
-
-<div class="nav-line">
-  <a href="/" class="brand">LUMINAR</a>
-  <div class="links"><a href="/">Home</a><a href="/buy">Store</a></div>
-  <div class="right"><a href="/register" class="btn btn-neon">Sign Up</a></div>
-</div>
-
-<div class="auth-full">
-  <div class="auth-panel">
-    <h2>LOGIN</h2>
-    <p class="sub">Access your account</p>
-    <div class="auth-tabs">
-      <a href="/login" class="on">Login</a>
-      <a href="/register">Register</a>
-    </div>
-    <form id="f">
-      <div class="inp-group">
-        <label>Username</label>
-        <input type="text" id="username" placeholder="your_login" required autocomplete="username">
-      </div>
-      <div class="inp-group">
-        <label>Password</label>
-        <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
-      </div>
-      <button type="submit" class="btn btn-neon btn-block btn-lg">Enter</button>
-      <div id="msg" class="auth-msg"></div>
-    </form>
-  </div>
-</div>
-
+<div class="navbar"><div class="navbar-inner"><a href="/" class="navbar-brand"><span class="navbar-brand-icon">L</span> Luminar</a><nav class="navbar-links"><a href="/">Главная</a><a href="/buy">Магазин</a></nav><div class="navbar-actions"><a href="/register" class="btn btn-primary btn-sm">Регистрация</a></div></div></div>
+<div class="auth-page"><div class="auth-card">
+  <h2>Вход</h2><p class="auth-sub">Войдите в аккаунт Luminar</p>
+  <div class="auth-switch"><a href="/login" class="active">Вход</a><a href="/register">Регистрация</a></div>
+  <form id="f">
+    <div class="form-field"><label>Логин</label><input class="form-input" type="text" id="username" placeholder="Ваш логин" required></div>
+    <div class="form-field"><label>Пароль</label><input class="form-input" type="password" id="password" placeholder="••••••••" required></div>
+    <button type="submit" class="btn btn-primary btn-block btn-lg">Войти</button>
+    <div id="msg" class="form-msg"></div>
+  </form>
+</div></div>
 <script>
-document.getElementById('f').addEventListener('submit', async e => {
-  e.preventDefault();
-  const msg = document.getElementById('msg');
-  msg.className = 'auth-msg'; msg.textContent = '';
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value;
-  try {
-    const r = await fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username,password,source:'web'}) });
-    const d = await r.json();
-    if (r.ok) { localStorage.setItem('luminar_token',d.token); msg.className='auth-msg ok'; msg.textContent='OK'; setTimeout(()=>location.href='/profile',400); }
-    else { msg.className='auth-msg err'; msg.textContent=d.error||'Error'; }
-  } catch { msg.className='auth-msg err'; msg.textContent='Network error'; }
-});
+document.getElementById('f').addEventListener('submit',async e=>{e.preventDefault();const msg=document.getElementById('msg');msg.className='form-msg';msg.textContent='';
+const u=document.getElementById('username').value.trim(),p=document.getElementById('password').value;
+try{const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p,source:'web'})});const d=await r.json();
+if(r.ok){localStorage.setItem('luminar_token',d.token);msg.className='form-msg success';msg.textContent='Успешно!';setTimeout(()=>location.href='/profile',500);}
+else{msg.className='form-msg error';msg.textContent=d.error||'Ошибка';}}catch{msg.className='form-msg error';msg.textContent='Ошибка сети';}});
 </script>
-</body>
-</html>
+</body></html>

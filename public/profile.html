@@ -1,159 +1,74 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard — LUMINAR</title>
-<link rel="stylesheet" href="/style.css">
-</head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Профиль — Luminar</title><link rel="stylesheet" href="/style.css"></head>
 <body>
+<div class="navbar"><div class="navbar-inner"><a href="/" class="navbar-brand"><span class="navbar-brand-icon">L</span> Luminar</a><nav class="navbar-links"><a href="/">Главная</a><a href="/buy">Магазин</a></nav><div class="navbar-actions"><a href="/profile" class="btn btn-primary btn-sm" id="navUser">Профиль</a></div></div></div>
 
-<div class="nav-line">
-  <a href="/" class="brand">LUMINAR</a>
-  <div class="links"><a href="/">Home</a><a href="/buy">Store</a></div>
-  <div class="right"><a href="#" onclick="logout()" class="btn btn-ghost">Logout</a></div>
-</div>
-
-<div class="profile-wrap">
-  <!-- Left sidebar -->
-  <aside class="profile-side">
-    <div class="avatar-block">
+<div class="profile-layout">
+  <div class="profile-sidebar">
+    <div class="user-card">
       <img id="avatar" src="" alt="">
-      <div class="name" id="username">...</div>
-      <div class="meta" id="uidLine"></div>
-      <div class="sub-line" id="subText">Loading...</div>
+      <div class="user-name" id="username">...</div>
+      <div class="user-meta" id="uidLine"></div>
+      <div class="user-sub" id="subText">Загрузка...</div>
     </div>
-    <div class="side-link active" data-tab="account">→ Account</div>
-    <div class="side-link" data-tab="settings">→ Settings</div>
-    <div class="side-link" data-tab="launcher">→ Launcher</div>
-    <div class="side-link" onclick="window.open('https://t.me/offersheart','_blank')">→ Support</div>
-    <a id="adminBtn" href="/admin" class="side-link" style="display:none; color:var(--neon);">→ Admin</a>
-  </aside>
+    <button class="sidebar-btn sidebar-btn-primary" onclick="window.open('https://t.me/offersheart','_blank')">Поддержка</button>
+    <a id="adminBtn" href="/admin" class="sidebar-btn sidebar-btn-ghost" style="display:none;">Admin Panel</a>
+    <button class="sidebar-btn sidebar-btn-ghost" onclick="logout()">Выйти</button>
+  </div>
 
-  <!-- Main content -->
-  <main class="profile-main">
-    <!-- Account -->
-    <div id="tab-account">
-      <div class="panel-title">// Account Info</div>
-      <div class="data-grid">
-        <div class="data-cell"><div class="dc-label">Registered</div><div class="dc-val" id="regDate">—</div></div>
-        <div class="data-cell"><div class="dc-label">UID</div><div class="dc-val" id="uidVal">—</div></div>
-        <div class="data-cell"><div class="dc-label">HWID</div><div class="dc-val" id="hwidVal">—</div></div>
-      </div>
-      <div class="panel-title">// Activate Key</div>
-      <div class="key-input">
-        <input type="text" id="licenseKey" placeholder="LMR-XXXX-XXXX-XXXX-XXXX">
-        <button class="btn btn-neon" onclick="activate()">Activate</button>
-      </div>
-      <div id="activateMsg" class="auth-msg"></div>
+  <div>
+    <div class="profile-tabs">
+      <div class="profile-tab active" data-tab="account">Аккаунт</div>
+      <div class="profile-tab" data-tab="settings">Настройки</div>
+      <div class="profile-tab" data-tab="launcher">Лаунчер</div>
     </div>
-
-    <!-- Settings -->
-    <div id="tab-settings" class="hidden">
-      <div class="panel-title">// Settings</div>
-      <div class="set-section">
-        <h4>Avatar URL</h4>
-        <div class="set-input-row">
-          <input type="text" id="avatarUrl" placeholder="https://...">
-          <button class="btn btn-neon" onclick="updateAvatar()">Save</button>
+    <div class="profile-panel">
+      <div id="tab-account">
+        <div class="info-grid">
+          <div class="info-item"><div class="info-label">Регистрация</div><div class="info-value" id="regDate">—</div></div>
+          <div class="info-item"><div class="info-label">UID</div><div class="info-value" id="uidVal">—</div></div>
+          <div class="info-item"><div class="info-label">HWID</div><div class="info-value" id="hwidVal">—</div></div>
         </div>
-        <div id="avatarMsg" class="auth-msg"></div>
+        <div class="key-row"><input type="text" id="licenseKey" placeholder="Введите лицензионный ключ..."><button class="btn btn-primary" onclick="activate()">Активировать</button></div>
+        <div id="activateMsg" class="form-msg"></div>
       </div>
-      <div class="set-section">
-        <h4>Security</h4>
-        <button class="btn btn-ghost" onclick="alert('Soon')">Setup 2FA</button>
+      <div id="tab-settings" class="hidden">
+        <div class="settings-block"><h4>Аватарка</h4><div class="settings-row"><input type="text" id="avatarUrl" placeholder="https://..."><button class="btn btn-primary" onclick="updateAvatar()">Сохранить</button></div><div id="avatarMsg" class="form-msg"></div></div>
+        <div class="settings-block"><h4>Безопасность</h4><button class="btn btn-secondary btn-sm" onclick="alert('Скоро')">2FA Telegram</button></div>
       </div>
-    </div>
-
-    <!-- Launcher -->
-    <div id="tab-launcher" class="hidden">
-      <div class="panel-title">// System Requirements</div>
-      <div class="data-grid">
-        <div class="data-cell"><div class="dc-label">OS</div><div class="dc-val">Windows x64</div></div>
-        <div class="data-cell"><div class="dc-label">RAM</div><div class="dc-val">4 GB min</div></div>
-        <div class="data-cell"><div class="dc-label">GPU</div><div class="dc-val">Any</div></div>
-      </div>
-      <div class="panel-title">// Download</div>
-      <div style="display:grid; grid-template-columns:1fr auto; gap:0; border:1px solid var(--border);">
-        <div style="padding:16px 20px; background:var(--panel);">
-          <div style="font-size:9px; color:var(--text-4); text-transform:uppercase; letter-spacing:1.5px; font-weight:600; margin-bottom:4px; font-family:'JetBrains Mono',monospace;">Version</div>
-          <div class="mono" id="versionVal" style="font-size:14px; font-weight:700;">—</div>
+      <div id="tab-launcher" class="hidden">
+        <div class="info-grid">
+          <div class="info-item"><div class="info-label">ОС</div><div class="info-value">Windows x64</div></div>
+          <div class="info-item"><div class="info-label">RAM</div><div class="info-value">4 GB min</div></div>
+          <div class="info-item"><div class="info-label">GPU</div><div class="info-value">Any</div></div>
         </div>
-        <button class="btn btn-neon" onclick="downloadLoader()" style="border-radius:0; padding:16px 32px;">Download</button>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:0;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;">
+          <div style="padding:16px;background:rgba(255,255,255,0.02);"><div class="info-label">Версия</div><div class="info-value" id="versionVal">—</div></div>
+          <button class="btn btn-primary" onclick="downloadLoader()" style="border-radius:0;padding:16px 28px;">Скачать</button>
+        </div>
+        <div id="downloadMsg" class="form-msg" style="text-align:right;"></div>
       </div>
-      <div id="downloadMsg" class="auth-msg" style="text-align:right;"></div>
     </div>
-  </main>
+  </div>
 </div>
+
+<footer class="footer"><div class="footer-bottom"><span>© 2026 Luminar</span><span>by DustGames</span></div></footer>
 
 <script>
-const token = localStorage.getItem('luminar_token');
-if (!token) location.href = '/login';
-let userData = null;
-
-async function loadProfile() {
-  const r = await fetch('/api/me', { headers:{'Authorization':'Bearer '+token} });
-  if (!r.ok) { localStorage.removeItem('luminar_token'); location.href='/login'; return; }
-  const data = await r.json(); userData = data.user; const u = userData;
-
-  document.getElementById('username').textContent = u.username;
-  document.getElementById('uidLine').textContent = `#${u.id}${u.role?' · '+u.role:''}`;
-  document.getElementById('uidVal').textContent = u.id;
-  document.getElementById('regDate').textContent = new Date(Number(u.created_at)).toLocaleDateString();
-
-  if ((u.username&&u.username.toLowerCase()==='dustgames')||(u.role&&u.role.toLowerCase()==='admin'))
-    document.getElementById('adminBtn').style.display='flex';
-
-  document.getElementById('avatar').src = u.avatar_url||`https://api.dicebear.com/7.x/identicon/svg?seed=${u.username}`;
-  if (u.avatar_url) document.getElementById('avatarUrl').value = u.avatar_url;
-
-  const hv = document.getElementById('hwidVal');
-  if (u.hwid) { hv.textContent='Locked'; hv.classList.add('c-green'); }
-  else { hv.textContent='None'; hv.classList.add('c-red'); }
-
-  const sub = u.subscription, st = document.getElementById('subText');
-  if (sub.active) st.innerHTML=`Until: <span class="c-green">${new Date(Number(sub.until)).toLocaleDateString()}</span>`;
-  else st.innerHTML='<span class="c-red">No subscription</span>';
-
-  fetch('/api/version').then(r=>r.text()).then(v=>{document.getElementById('versionVal').textContent=v;});
-}
-
-// Tabs
-document.querySelectorAll('.side-link[data-tab]').forEach(link => {
-  link.addEventListener('click', () => {
-    document.querySelectorAll('.side-link').forEach(l=>l.classList.remove('active'));
-    link.classList.add('active');
-    document.querySelectorAll('[id^="tab-"]').forEach(t=>t.classList.add('hidden'));
-    document.getElementById('tab-'+link.dataset.tab).classList.remove('hidden');
-  });
-});
-
-async function updateAvatar() {
-  const url=document.getElementById('avatarUrl').value.trim(), msg=document.getElementById('avatarMsg');
-  if(!url){msg.className='auth-msg err';msg.textContent='Enter URL';return;}
-  const r=await fetch('/api/me/avatar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({avatar_url:url})});
-  if(r.ok){msg.className='auth-msg ok';msg.textContent='Saved';document.getElementById('avatar').src=url;}
-  else{const d=await r.json();msg.className='auth-msg err';msg.textContent=d.error||'Error';}
-}
-
-async function activate() {
-  const key=document.getElementById('licenseKey').value.trim(), msg=document.getElementById('activateMsg');
-  if(!key){msg.className='auth-msg err';msg.textContent='Enter key';return;}
-  const r=await fetch('/api/me/activate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({key})});
-  const d=await r.json();
-  if(r.ok){msg.className='auth-msg ok';msg.textContent='+'+d.days+' days';document.getElementById('licenseKey').value='';setTimeout(loadProfile,500);}
-  else{msg.className='auth-msg err';msg.textContent=d.error||'Error';}
-}
-
-function downloadLoader() {
-  const msg=document.getElementById('downloadMsg');
-  if(!userData||!userData.subscription||!userData.subscription.active){msg.className='auth-msg err';msg.textContent='Need subscription';setTimeout(()=>location.href='/buy',1200);return;}
-  msg.className='auth-msg ok';msg.textContent='Starting...';
-  window.location.href='/api/download/loader?token='+encodeURIComponent(token);
-}
-
+const token=localStorage.getItem('luminar_token');if(!token)location.href='/login';let userData=null;
+async function loadProfile(){const r=await fetch('/api/me',{headers:{'Authorization':'Bearer '+token}});if(!r.ok){localStorage.removeItem('luminar_token');location.href='/login';return;}const data=await r.json();userData=data.user;const u=userData;
+document.getElementById('username').textContent=u.username;document.getElementById('navUser').textContent=u.username;document.getElementById('uidLine').textContent=`#${u.id}${u.role?' · '+u.role:''}`;document.getElementById('uidVal').textContent=u.id;document.getElementById('regDate').textContent=new Date(Number(u.created_at)).toLocaleDateString();
+if((u.username&&u.username.toLowerCase()==='dustgames')||(u.role&&u.role.toLowerCase()==='admin'))document.getElementById('adminBtn').style.display='flex';
+document.getElementById('avatar').src=u.avatar_url||`https://api.dicebear.com/7.x/identicon/svg?seed=${u.username}`;if(u.avatar_url)document.getElementById('avatarUrl').value=u.avatar_url;
+const hv=document.getElementById('hwidVal');if(u.hwid){hv.textContent='Привязан';hv.style.color='var(--green)';}else{hv.textContent='Нет';hv.style.color='var(--red)';}
+const sub=u.subscription,st=document.getElementById('subText');if(sub.active)st.innerHTML=`До: <span style="color:var(--green)">${new Date(Number(sub.until)).toLocaleDateString()}</span>`;else st.innerHTML='<span style="color:var(--red)">Нет подписки</span>';
+fetch('/api/version').then(r=>r.text()).then(v=>{document.getElementById('versionVal').textContent=v;});}
+document.querySelectorAll('.profile-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.profile-tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');document.querySelectorAll('[id^="tab-"]').forEach(t=>t.classList.add('hidden'));document.getElementById('tab-'+tab.dataset.tab).classList.remove('hidden');});});
+async function updateAvatar(){const url=document.getElementById('avatarUrl').value.trim(),msg=document.getElementById('avatarMsg');if(!url){msg.className='form-msg error';msg.textContent='Введите URL';return;}const r=await fetch('/api/me/avatar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({avatar_url:url})});if(r.ok){msg.className='form-msg success';msg.textContent='Сохранено';document.getElementById('avatar').src=url;}else{const d=await r.json();msg.className='form-msg error';msg.textContent=d.error||'Ошибка';}}
+async function activate(){const key=document.getElementById('licenseKey').value.trim(),msg=document.getElementById('activateMsg');if(!key){msg.className='form-msg error';msg.textContent='Введите ключ';return;}const r=await fetch('/api/me/activate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({key})});const d=await r.json();if(r.ok){msg.className='form-msg success';msg.textContent='+'+d.days+' дней!';document.getElementById('licenseKey').value='';setTimeout(loadProfile,500);}else{msg.className='form-msg error';msg.textContent=d.error||'Ошибка';}}
+function downloadLoader(){const msg=document.getElementById('downloadMsg');if(!userData||!userData.subscription||!userData.subscription.active){msg.className='form-msg error';msg.textContent='Нужна подписка';setTimeout(()=>location.href='/buy',1200);return;}msg.className='form-msg success';msg.textContent='Загрузка...';window.location.href='/api/download/loader?token='+encodeURIComponent(token);}
 function logout(){localStorage.removeItem('luminar_token');location.href='/';}
 loadProfile();
 </script>
-</body>
-</html>
+</body></html>

@@ -3,128 +3,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LUMINAR</title>
+<title>Luminar — Minecraft Client</title>
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
-<div class="nav-line">
-  <a href="/" class="brand">LUMINAR</a>
-  <div class="links">
-    <a href="/" class="on">Home</a>
-    <a href="/buy">Store</a>
-    <a href="https://t.me/offersheart" target="_blank">Community</a>
+<div class="navbar"><div class="navbar-inner">
+  <a href="/" class="navbar-brand"><span class="navbar-brand-icon">L</span> Luminar</a>
+  <nav class="navbar-links"><a href="/" class="active">Главная</a><a href="/buy">Магазин</a><a href="https://t.me/offersheart" target="_blank">Telegram</a></nav>
+  <div class="navbar-actions" id="navAuth"><a href="/login" class="btn btn-secondary btn-sm">Войти</a><a href="/register" class="btn btn-primary btn-sm">Начать</a></div>
+</div></div>
+
+<section class="hero">
+  <div class="hero-badge"><span class="hero-badge-dot"></span> Версия 1.0 — Онлайн</div>
+  <h1>Лучший клиент<br>для <span class="grad">Minecraft</span></h1>
+  <p class="hero-desc">Обходы античитов нового поколения, мощная KillAura, HWID-защита и автообновления. Всё в одном красивом лоадере.</p>
+  <div class="hero-buttons">
+    <a href="/register" class="btn btn-primary btn-lg">Начать бесплатно</a>
+    <a href="https://t.me/offersheart" class="btn btn-secondary btn-lg">Наш Telegram</a>
   </div>
-  <div class="right" id="navAuth">
-    <a href="/login" class="btn btn-ghost">Login</a>
-    <a href="/register" class="btn btn-neon">Get Started</a>
-  </div>
+</section>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="stat-num">7K+</div><div class="stat-label">Игроков</div></div>
+  <div class="stat-card"><div class="stat-num">99%</div><div class="stat-label">Аптайм</div></div>
+  <div class="stat-card"><div class="stat-num">24/7</div><div class="stat-label">Поддержка</div></div>
+  <div class="stat-card"><div class="stat-num">∞</div><div class="stat-label">Обновления</div></div>
 </div>
 
-<section class="hero-split">
-  <div class="hero-left">
-    <div class="hero-tag">Online — v1.0 stable</div>
-    <h1>NEXT GEN<br><span class="glow">MINECRAFT</span><br>CLIENT.</h1>
-    <p>Обходы античитов нового поколения. SpookyTime KillAura. HWID-защита. Автообновления. Всё в одном лоадере.</p>
-    <div class="hero-btns">
-      <a href="/register" class="btn btn-neon btn-lg">Get Access</a>
-      <a href="https://t.me/offersheart" class="btn btn-ghost btn-lg">Join Community</a>
-    </div>
+<section class="section">
+  <div class="section-header">
+    <span class="section-badge">Возможности</span>
+    <h2>Почему Luminar?</h2>
+    <p>Каждый модуль создан для максимальной эффективности</p>
   </div>
-  <div class="hero-right">
-    <div class="hero-cube">
-      <div class="inner">L</div>
-    </div>
-  </div>
-</section>
-
-<div class="stats-bar">
-  <div class="stat"><div class="num">7,000+</div><div class="lbl">Users</div></div>
-  <div class="stat"><div class="num">99.9%</div><div class="lbl">Uptime</div></div>
-  <div class="stat"><div class="num">24/7</div><div class="lbl">Support</div></div>
-  <div class="stat"><div class="num">∞</div><div class="lbl">Updates</div></div>
-</div>
-
-<section class="sec">
-  <div class="sec-label">// Features</div>
-  <h2>Что внутри</h2>
-  <p class="sec-desc">Каждый модуль создан для доминирования на серверах</p>
-
-  <div class="feat-list">
-    <div class="feat-item">
-      <div class="f-num">01</div>
-      <div class="f-title">SpookyTime KillAura</div>
-      <div class="f-desc">Ультра-быстрая аура с ротацией. Обходит FunTime, Holyworld, Vulcan.</div>
-    </div>
-    <div class="feat-item">
-      <div class="f-num">02</div>
-      <div class="f-title">HWID Protection</div>
-      <div class="f-desc">Привязка к железу, обфускация, шифрование строк. Реверс невозможен.</div>
-    </div>
-    <div class="feat-item">
-      <div class="f-num">03</div>
-      <div class="f-title">Auto-Update System</div>
-      <div class="f-desc">Лоадер проверяет версию и обновляет клиент автоматически.</div>
-    </div>
-    <div class="feat-item">
-      <div class="f-num">04</div>
-      <div class="f-title">Premium HUD</div>
-      <div class="f-desc">MSDF шрифты, плавные анимации, полная кастомизация интерфейса.</div>
-    </div>
-    <div class="feat-item">
-      <div class="f-num">05</div>
-      <div class="f-title">200+ FPS Engine</div>
-      <div class="f-desc">Оптимизированный рендер, кэш шейдеров, встроенная OptiFine.</div>
-    </div>
+  <div class="features-grid">
+    <div class="feature-card"><div class="feature-card-icon">⚔️</div><h3>SpookyTime KillAura</h3><p>Ультра-быстрая аура с ротацией. Обходит FunTime, Holyworld, Vulcan и другие античиты.</p></div>
+    <div class="feature-card"><div class="feature-card-icon">🛡️</div><h3>HWID Защита</h3><p>Привязка к железу, обфускация классов и шифрование строк. Реверс невозможен.</p></div>
+    <div class="feature-card"><div class="feature-card-icon">🚀</div><h3>Авто-обновления</h3><p>Лоадер сам проверяет версию и обновляет клиент. Всегда актуальная версия.</p></div>
+    <div class="feature-card"><div class="feature-card-icon">🎨</div><h3>Премиум HUD</h3><p>MSDF шрифты, плавные анимации и полная кастомизация каждого элемента.</p></div>
+    <div class="feature-card"><div class="feature-card-icon">⚡</div><h3>200+ FPS</h3><p>Оптимизированный рендер, кэш шейдеров, встроенная OptiFine. Без просадок.</p></div>
+    <div class="feature-card"><div class="feature-card-icon">💬</div><h3>Сообщество</h3><p>7000+ игроков в Telegram. Конфиги, помощь и быстрые ответы на вопросы.</p></div>
   </div>
 </section>
 
-<section class="sec">
-  <div class="sec-label">// Pricing</div>
-  <h2>Тарифы</h2>
-  <p class="sec-desc">Прозрачные цены. Мгновенная активация.</p>
-
-  <div class="price-cols">
-    <div class="price-col">
-      <div class="p-name">Month</div>
-      <div class="p-amount">349<small>₽</small></div>
-      <div class="p-info">30 дней доступа к Luminar. Все модули и обновления.</div>
-      <a href="/buy" class="btn btn-ghost btn-block">Select</a>
-    </div>
-    <div class="price-col hot">
-      <div class="p-name">Year</div>
-      <div class="p-amount">499<small>₽</small></div>
-      <div class="p-info">365 дней. Лучшая цена за день использования.</div>
-      <a href="/buy" class="btn btn-neon btn-block">Select</a>
-    </div>
-    <div class="price-col">
-      <div class="p-name">Lifetime</div>
-      <div class="p-amount">599<small>₽</small></div>
-      <div class="p-info">Навсегда. Один платёж — бесконечный доступ.</div>
-      <a href="/buy" class="btn btn-ghost btn-block">Select</a>
-    </div>
+<section class="section">
+  <div class="section-header">
+    <span class="section-badge">Тарифы</span>
+    <h2>Выбери свой план</h2>
+    <p>Прозрачные цены и мгновенная активация</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card"><div class="price-card-icon">📦</div><h3>30 дней</h3><div class="price-desc">Месяц полного доступа к Luminar</div><div class="price-amount">349<small>₽</small></div><a href="/buy" class="btn btn-secondary btn-block">Выбрать</a></div>
+    <div class="price-card popular"><div class="price-card-icon">⚡</div><h3>365 дней</h3><div class="price-desc">Год игры по лучшей цене</div><div class="price-amount">499<small>₽</small></div><a href="/buy" class="btn btn-primary btn-block">Купить</a></div>
+    <div class="price-card"><div class="price-card-icon">👑</div><h3>Навсегда</h3><div class="price-desc">Один платёж — вечный доступ</div><div class="price-amount">599<small>₽</small></div><a href="/buy" class="btn btn-secondary btn-block">Выбрать</a></div>
   </div>
 </section>
 
-<footer class="foot">
-  <div class="f-left">© 2026 LUMINAR — BY DUSTGAMES</div>
-  <div class="f-right">
-    <a href="/">Home</a>
-    <a href="/buy">Store</a>
-    <a href="/login">Login</a>
-    <a href="https://t.me/offersheart" target="_blank">Telegram</a>
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-col"><div class="footer-brand"><span class="footer-brand-icon">L</span><h3>Luminar</h3></div><p style="color:var(--text-3);font-size:13px;line-height:1.7;max-width:280px;">Премиум клиент для Minecraft. Обходи античиты и доминируй.</p></div>
+    <div class="footer-col"><h4>Навигация</h4><a href="/">Главная</a><a href="/buy">Магазин</a><a href="/login">Войти</a></div>
+    <div class="footer-col"><h4>Связь</h4><a href="https://t.me/offersheart" target="_blank">Telegram</a><a href="#">Discord</a></div>
+    <div class="footer-col"><h4>Инфо</h4><a href="#">FAQ</a><a href="#">Условия</a></div>
   </div>
+  <div class="footer-bottom"><span>© 2026 Luminar</span><span>by DustGames</span></div>
 </footer>
 
 <script>
-const token = localStorage.getItem('luminar_token');
-if (token) {
-  fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } })
-    .then(r => r.ok ? r.json() : null)
-    .then(d => {
-      if (d && d.user) document.getElementById('navAuth').innerHTML = `<a href="/profile" class="btn btn-neon">${d.user.username}</a>`;
-    });
-}
+const token=localStorage.getItem('luminar_token');
+if(token){fetch('/api/me',{headers:{'Authorization':'Bearer '+token}}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.user)document.getElementById('navAuth').innerHTML=`<a href="/profile" class="btn btn-primary btn-sm">${d.user.username}</a>`;});}
 </script>
 </body>
 </html>
