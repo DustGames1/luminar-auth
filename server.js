@@ -351,7 +351,7 @@ app.post('/api/me/avatar', async (req, res) => {
     const token = auth.substring(7);
     const payload = jwt.verify(token, JWT_SECRET);
     const { avatar_url } = req.body || {};
-    if (!avatar_url || typeof avatar_url !== 'string' || avatar_url.length > 500)
+    if (!avatar_url || typeof avatar_url !== 'string' || avatar_url.length > 2000)
       return res.status(400).json({ error: 'Invalid avatar URL' });
     await pool.query('UPDATE users SET avatar_url = $1 WHERE username = $2', [avatar_url, payload.username]);
     res.json({ ok: true });
