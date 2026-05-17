@@ -1118,14 +1118,14 @@
                         <div class="version-list">
                             <div class="version-item selected" data-version="release">
                                 <div class="version-header">
-                                    <div class="version-name" data-text="version_release">YourClient Release</div>
+                                    <div class="version-name" data-text="version_release">Luminar Release</div>
                                 </div>
                                 <div class="version-description" data-text="version_release_desc">Stable version with optimized performance and all features tested. Recommended for most users who want reliable gameplay experience.</div>
                             </div>
                             
                             <div class="version-item" data-version="beta" id="betaVersion">
                                 <div class="version-header">
-                                    <div class="version-name" data-text="version_beta">YourClient Beta</div>
+                                    <div class="version-name" data-text="version_beta">Luminar Beta</div>
                                     <div class="version-status unavailable hidden" data-text="unavailable">Unavailable</div>
                                 </div>
                                 <div class="version-description" data-text="version_beta_desc">Beta version with latest features and improvements. May contain minor bugs but includes cutting-edge functionality for testing.</div>
@@ -1133,7 +1133,7 @@
                             
                             <div class="version-item" data-version="alpha" id="alphaVersion">
                                 <div class="version-header">
-                                    <div class="version-name" data-text="version_alpha">YourClient Alpha</div>
+                                    <div class="version-name" data-text="version_alpha">Luminar Alpha</div>
                                     <div class="version-status unavailable hidden" data-text="unavailable">Unavailable</div>
                                 </div>
                                 <div class="version-description" data-text="version_alpha_desc">Experimental alpha version with newest features in development. Expect frequent updates and possible instability.</div>
@@ -1146,7 +1146,7 @@
                         
                         <div class="changelog-entry">
                             <div class="changelog-header">
-                                <div class="changelog-version">YourClient Release v2.1.0</div>
+                                <div class="changelog-version">Luminar Release v2.1.0</div>
                                 <div class="changelog-date">June 15, 2025</div>
                             </div>
                             <div class="changelog-item" data-text="release_210_1">Improved rendering performance by 30%</div>
@@ -1157,7 +1157,7 @@
 
                         <div class="changelog-entry">
                             <div class="changelog-header">
-                                <div class="changelog-version">YourClient Beta v2.2.0</div>
+                                <div class="changelog-version">Luminar Beta v2.2.0</div>
                                 <div class="changelog-date">June 10, 2025</div>
                             </div>
                             <div class="changelog-item" data-text="beta_220_1">Experimental ray tracing support</div>
@@ -1168,7 +1168,7 @@
 
                         <div class="changelog-entry">
                             <div class="changelog-header">
-                                <div class="changelog-version">YourClient Alpha v2.3.0</div>
+                                <div class="changelog-version">Luminar Alpha v2.3.0</div>
                                 <div class="changelog-date">June 5, 2025</div>
                             </div>
                             <div class="changelog-item" data-text="alpha_230_1">Experimental AI-powered optimization</div>
@@ -1179,7 +1179,7 @@
 
                         <div class="changelog-entry">
                             <div class="changelog-header">
-                                <div class="changelog-version">YourClient Release v2.0.5</div>
+                                <div class="changelog-version">Luminar Release v2.0.5</div>
                                 <div class="changelog-date">May 28, 2025</div>
                             </div>
                             <div class="changelog-item" data-text="release_205_1">Critical security vulnerability patches</div>
@@ -1205,18 +1205,19 @@
                 <div class="bottom-section">
                     <div class="user-info">
                         <div class="avatar">
-                            <img src="https://cdn.discordapp.com/avatars/1372859170965028944/5c1e1954cc92486465f84aa0623e1777.png?size=1024" alt="Avatar">
+                            <img src="" alt="Avatar" id="userAvatar" style="display:none">
+                            <span id="avatarPlaceholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;background:linear-gradient(135deg,#7BCC87,#5CB868);border-radius:50%;">L</span>
                         </div>
                         <div class="user-details">
-                            <div class="uid">uid: 1372859170965028944</div>
-                            <div class="nickname" id="userNickname">algorithm</div>
-                            <div class="subscription" data-text="subscription">Subscription until: Dec 12, 2025</div>
+                            <div class="uid" id="userUid">uid: ...</div>
+                            <div class="nickname" id="userNickname">loading...</div>
+                            <div class="subscription" id="userSubscription" data-text="subscription">Loading...</div>
                         </div>
                     </div>
 
                     <div class="version-info">
-                        <div class="version-label" data-text="version">Loader Version</div>
-                        <div class="version-number">development 0.1</div>
+                        <div class="version-label" data-text="version">Client Version</div>
+                        <div class="version-number" id="clientVersion">loading...</div>
                     </div>
                 </div>
             </div>
@@ -1262,7 +1263,7 @@
                         <div class="setting-description" data-text="directory_desc">Select the folder where your game is installed</div>
                         
                         <div class="setting-control">
-                            <div class="folder-display" id="folderDisplay">C:\eclipsedlc</div>
+                            <div class="folder-display" id="folderDisplay">C:\\Luminar</div>
                             <button class="browse-btn" id="browseBtn" data-text="browse">Browse</button>
                         </div>
                     </div>
@@ -1301,9 +1302,9 @@
                 goodbye: "Good bye!",
                 play: "Play",
                 changelogs: "ChangeLogs",
-                version_release: "YourClient Release",
-                version_beta: "YourClient Beta",
-                version_alpha: "YourClient Alpha",
+                version_release: "Luminar Release",
+                version_beta: "Luminar Beta",
+                version_alpha: "Luminar Alpha",
                 version_release_desc: "Stable version with optimized performance and all features tested. Recommended for most users who want reliable gameplay experience.",
                 version_beta_desc: "Beta version with latest features and improvements. May contain minor bugs but includes cutting-edge functionality for testing.",
                 version_alpha_desc: "Experimental alpha version with newest features in development. Expect frequent updates and possible instability.",
@@ -1349,9 +1350,9 @@
                 goodbye: "До свидания!",
                 play: "Играть",
                 changelogs: "Изменения",
-                version_release: "YourClient Релиз",
-                version_beta: "YourClient Бета",
-                version_alpha: "YourClient Альфа",
+                version_release: "Luminar Релиз",
+                version_beta: "Luminar Бета",
+                version_alpha: "Luminar Альфа",
                 version_release_desc: "Стабильная версия с оптимизированной производительностью и протестированными функциями. Рекомендуется для большинства пользователей, желающих надежный игровой опыт.",
                 version_beta_desc: "Бета-версия с новейшими функциями и улучшениями. Может содержать незначительные ошибки, но включает передовую функциональность для тестирования.",
                 version_alpha_desc: "Экспериментальная альфа-версия с новейшими функциями в разработке. Ожидайте частые обновления и возможную нестабильность.",
@@ -1747,6 +1748,41 @@
                 window.chrome.webview.postMessage('profile_loaded');
                 window.chrome.webview.postMessage('load_config');
                 checkVersionAccess();
+                // Fetch real version from API
+                fetch('/api/version').then(r => r.text()).then(v => {
+                    document.getElementById('clientVersion').textContent = v || '1.0.0';
+                }).catch(() => {
+                    document.getElementById('clientVersion').textContent = '1.0.0';
+                });
+                // Fetch user data from API using stored credentials
+                const nickname = document.getElementById('userNickname').textContent;
+                // Try to get token from login response stored in localStorage
+                const token = localStorage.getItem('luminar_token');
+                if (token) {
+                    fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } })
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.user) {
+                                document.getElementById('userUid').textContent = 'uid: ' + data.user.id;
+                                document.getElementById('userNickname').textContent = data.user.username;
+                                currentNickname = data.user.username;
+                                if (data.user.subscription && data.user.subscription.active) {
+                                    const date = new Date(Number(data.user.subscription.until));
+                                    const formatted = date.toLocaleDateString(currentLanguage === 'ru' ? 'ru-RU' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                                    const prefix = currentLanguage === 'ru' ? 'Подписка до: ' : 'Subscription until: ';
+                                    document.getElementById('userSubscription').textContent = prefix + formatted;
+                                } else {
+                                    document.getElementById('userSubscription').textContent = currentLanguage === 'ru' ? 'Нет подписки' : 'No subscription';
+                                }
+                                if (data.user.avatar_url) {
+                                    document.getElementById('userAvatar').src = data.user.avatar_url;
+                                    document.getElementById('userAvatar').style.display = 'block';
+                                    document.getElementById('avatarPlaceholder').style.display = 'none';
+                                }
+                                checkVersionAccess();
+                            }
+                        }).catch(() => {});
+                }
                 updateVersionSelection();
             }, delay);
         });

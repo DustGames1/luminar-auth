@@ -859,6 +859,9 @@
                 
                 if (data.ok) {
                     showNotification(translations[currentLanguage].correct_data, 'success');
+                    // Save token for profile page
+                    if (data.token) localStorage.setItem('luminar_token', data.token);
+                    if (data.username) localStorage.setItem('luminar_username', data.username);
                     
                     if (isRememberChecked) {
                         window.chrome.webview.postMessage('save_remember_data:' + JSON.stringify({
