@@ -120,12 +120,15 @@ button { font-family: inherit; cursor: pointer; }
   color: var(--text-2);
   display: grid;
   place-items: center;
-  font-size: 16px;
   cursor: pointer;
   transition: 0.2s;
+  padding: 0;
+  line-height: 1;
 }
 
 .theme-toggle:hover { border-color: var(--purple); color: var(--purple); }
+
+.theme-toggle svg { width: 16px; height: 16px; }
 
 /* ═══════════ BUTTONS ═══════════ */
 .btn {
