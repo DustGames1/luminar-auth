@@ -11,10 +11,12 @@
 <div class="profile-layout">
   <!-- Left -->
   <div class="profile-left">
-    <div class="user-card">
-      <img id="avatar" src="" alt="">
-      <div><div class="user-name" id="username">... <span id="uidSpan"></span></div><div class="user-sub" id="subText">Loading...</div></div>
-      <button class="copy-icon" onclick="logout()" title="Logout">⏻</button>
+    <div class="user-card" style="flex-direction:column;align-items:center;text-align:center;padding:28px 20px;">
+      <img id="avatar" src="" alt="" style="width:64px;height:64px;margin-bottom:12px;">
+      <div class="user-name" id="username" style="font-size:16px;">...</div>
+      <div class="user-prefix" id="prefixText" style="font-size:11px;color:var(--purple);font-weight:600;margin-top:4px;"></div>
+      <div class="user-sub" id="subText" style="margin-top:6px;">Loading...</div>
+      <button class="copy-icon" onclick="logout()" title="Logout" style="position:absolute;top:16px;right:16px;">⏻</button>
     </div>
     <div class="activate-card">
       <label>Activate License-Key</label>
@@ -94,10 +96,11 @@ if(localStorage.getItem('theme')==='light'){document.documentElement.dataset.the
 
 const token=localStorage.getItem('luminar_token');if(!token)location.href='/login';let userData=null;
 async function loadProfile(){const r=await fetch('/api/me',{headers:{'Authorization':'Bearer '+token}});if(!r.ok){localStorage.removeItem('luminar_token');location.href='/login';return;}const data=await r.json();userData=data.user;const u=userData;
-document.getElementById('username').innerHTML=u.username+' <span style="color:var(--text-3)">['+u.id+']</span>';
+document.getElementById('username').textContent=u.username;
 document.getElementById('navUser').textContent=u.username;document.getElementById('uidVal').textContent=u.id;
 document.getElementById('regDate').textContent=new Date(Number(u.created_at)).toLocaleDateString();
 document.getElementById('emailVal').textContent=u.email||'Not set';
+const pf=document.getElementById('prefixText');if(u.prefix){pf.textContent=u.prefix;}else{pf.textContent='';}
 if(u.email){document.getElementById('emailLabel').textContent='Change Email';document.getElementById('emailInput').placeholder=u.email;}else{document.getElementById('emailLabel').textContent='Set Email';}
 if((u.username&&u.username.toLowerCase()==='dustgames')||(u.role&&u.role.toLowerCase()==='admin'))document.getElementById('adminBtn').style.display='flex';
 document.getElementById('avatar').src=u.avatar_url||`https://api.dicebear.com/7.x/identicon/svg?seed=${u.username}`;

@@ -48,6 +48,7 @@ async function initDB() {
   // Migration for existing tables
   try { await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT DEFAULT NULL'); } catch(e) {}
   try { await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS email TEXT DEFAULT NULL'); } catch(e) {}
+  try { await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS prefix TEXT DEFAULT NULL'); } catch(e) {}
   try { await pool.query('CREATE UNIQUE INDEX IF NOT EXISTS users_email_unique ON users(email) WHERE email IS NOT NULL'); } catch(e) {}
   await pool.query(`
     CREATE TABLE IF NOT EXISTS changelog (
@@ -277,7 +278,7 @@ app.post('/api/admin/users', adminOnly, async (req, res) => {
 });
 
 app.get('/api/admin/users', adminOnly, async (req, res) => {
-  const result = await pool.query('SELECT id, username, email, hwid, created_at, last_login, banned, sub_until, role FROM users ORDER BY id DESC');
+  const result = await pool.query('SELECT id, username, email, hwid, created_at, last_login, banned, sub_until, role, prefix FROM users ORDER BY id DESC');
   const users = result.rows.map(u => ({ ...u, subscription: getSubscription(u) }));
   res.json({ users });
 });
@@ -299,6 +300,12 @@ app.post('/api/admin/ban/:id', adminOnly, async (req, res) => {
 
 app.post('/api/admin/unban/:id', adminOnly, async (req, res) => {
   await pool.query('UPDATE users SET banned = 0 WHERE id = $1', [req.params.id]);
+  res.json({ ok: true });
+});
+
+app.post('/api/admin/prefix/:id', adminOnly, async (req, res) => {
+  const { prefix } = req.body || {};
+  await pool.query('UPDATE users SET prefix = $1 WHERE id = $2', [prefix || null, req.params.id]);
   res.json({ ok: true });
 });
 
@@ -374,9 +381,9 @@ app.get('/api/me', async (req, res) => {
     const payload = jwt.verify(token, JWT_SECRET);
     let result;
     try {
-      result = await pool.query('SELECT id, username, email, role, sub_until, avatar_url, created_at, hwid FROM users WHERE username = $1', [payload.username]);
+      result = await pool.query('SELECT id, username, email, role, prefix, sub_until, avatar_url, created_at, hwid FROM users WHERE username = $1', [payload.username]);
     } catch (dbErr) {
-      // Fallback if email column doesn't exist yet
+      // Fallback if email/prefix column doesn't exist yet
       result = await pool.query('SELECT id, username, role, sub_until, avatar_url, created_at, hwid FROM users WHERE username = $1', [payload.username]);
     }
     const user = result.rows[0];
