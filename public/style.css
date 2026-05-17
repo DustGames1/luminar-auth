@@ -79,13 +79,9 @@ button { font-family: inherit; cursor: pointer; }
 .nav-brand-icon {
   width: 28px;
   height: 28px;
-  background: var(--purple);
   border-radius: 8px;
-  display: grid;
-  place-items: center;
-  font-size: 13px;
-  font-weight: 800;
-  color: #000;
+  display: block;
+  object-fit: cover;
 }
 
 .nav-center {
