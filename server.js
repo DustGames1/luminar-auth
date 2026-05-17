@@ -358,11 +358,18 @@ app.get('/api/me', async (req, res) => {
     if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'No token' });
     const token = auth.substring(7);
     const payload = jwt.verify(token, JWT_SECRET);
-    const result = await pool.query('SELECT id, username, email, role, sub_until, avatar_url, created_at, hwid FROM users WHERE username = $1', [payload.username]);
+    let result;
+    try {
+      result = await pool.query('SELECT id, username, email, role, sub_until, avatar_url, created_at, hwid FROM users WHERE username = $1', [payload.username]);
+    } catch (dbErr) {
+      // Fallback if email column doesn't exist yet
+      result = await pool.query('SELECT id, username, role, sub_until, avatar_url, created_at, hwid FROM users WHERE username = $1', [payload.username]);
+    }
     const user = result.rows[0];
     if (!user) return res.status(404).json({ error: 'User not found' });
-    res.json({ user: { ...user, subscription: getSubscription(user) } });
+    res.json({ user: { ...user, email: user.email || null, subscription: getSubscription(user) } });
   } catch (e) {
+    console.error('/api/me error:', e.message);
     res.status(401).json({ error: 'Invalid token' });
   }
 });
