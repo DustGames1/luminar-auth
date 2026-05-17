@@ -390,6 +390,27 @@ app.post('/api/me/avatar', async (req, res) => {
   }
 });
 
+// Set email for accounts that don't have one
+app.post('/api/me/email', async (req, res) => {
+  try {
+    const auth = req.headers['authorization'];
+    if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'No token' });
+    const token = auth.substring(7);
+    const payload = jwt.verify(token, JWT_SECRET);
+    const { email } = req.body || {};
+    if (!email || !validEmail(email)) return res.status(400).json({ error: 'Invalid email' });
+
+    // Check if email already taken
+    const exists = await pool.query('SELECT 1 FROM users WHERE email = $1', [email.toLowerCase().trim()]);
+    if (exists.rows.length > 0) return res.status(409).json({ error: 'Email already in use' });
+
+    await pool.query('UPDATE users SET email = $1 WHERE username = $2', [email.toLowerCase().trim(), payload.username]);
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+});
+
 // Public avatar lookup (for loader)
 app.get('/api/avatar/:username', async (req, res) => {
   const result = await pool.query('SELECT avatar_url FROM users WHERE username = $1', [req.params.username]);

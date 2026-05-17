@@ -55,13 +55,14 @@
           <button class="btn btn-purple" onclick="uploadAvatar()">Upload</button>
         </div>
         <div id="avatarMsg" class="form-msg"></div>
-        <div style="margin-top:12px;">
-          <label style="font-size:11px;color:var(--text-3);">Or paste URL:</label>
-          <div class="activate-row" style="margin-top:6px;">
-            <input type="text" id="avatarUrl" placeholder="https://...">
-            <button class="btn btn-purple" onclick="updateAvatar()">Save</button>
-          </div>
+      </div>
+      <div class="activate-card" id="emailBlock" style="margin-top:12px;">
+        <label id="emailLabel">Set Email</label>
+        <div class="activate-row">
+          <input type="email" id="emailInput" placeholder="your@email.com">
+          <button class="btn btn-purple" onclick="setEmail()">Save</button>
         </div>
+        <div id="emailMsg" class="form-msg"></div>
       </div>
     </div>
 
@@ -97,6 +98,7 @@ document.getElementById('username').innerHTML=u.username+' <span style="color:va
 document.getElementById('navUser').textContent=u.username;document.getElementById('uidVal').textContent=u.id;
 document.getElementById('regDate').textContent=new Date(Number(u.created_at)).toLocaleDateString();
 document.getElementById('emailVal').textContent=u.email||'Not set';
+if(u.email){document.getElementById('emailLabel').textContent='Change Email';document.getElementById('emailInput').placeholder=u.email;}else{document.getElementById('emailLabel').textContent='Set Email';}
 if((u.username&&u.username.toLowerCase()==='dustgames')||(u.role&&u.role.toLowerCase()==='admin'))document.getElementById('adminBtn').style.display='flex';
 document.getElementById('avatar').src=u.avatar_url||`https://api.dicebear.com/7.x/identicon/svg?seed=${u.username}`;
 if(u.avatar_url)document.getElementById('avatarUrl').value=u.avatar_url;
@@ -107,8 +109,9 @@ fetch('/api/version').then(r=>r.text()).then(v=>{document.getElementById('versio
 
 document.querySelectorAll('.profile-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.profile-tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');document.querySelectorAll('[id^="tab-"]').forEach(t=>t.classList.add('hidden'));document.getElementById('tab-'+tab.dataset.tab).classList.remove('hidden');});});
 
-async function updateAvatar(){const url=document.getElementById('avatarUrl').value.trim(),msg=document.getElementById('avatarMsg');if(!url){msg.className='form-msg err';msg.textContent='Enter URL';return;}const r=await fetch('/api/me/avatar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({avatar_url:url})});if(r.ok){msg.className='form-msg ok';msg.textContent='Saved!';document.getElementById('avatar').src=url;}else{const d=await r.json();msg.className='form-msg err';msg.textContent=d.error||'Error';}}
+async function updateAvatar(){} // removed
 async function uploadAvatar(){const msg=document.getElementById('avatarMsg');const file=document.getElementById('avatarFile').files[0];if(!file){msg.className='form-msg err';msg.textContent='Choose a file first';return;}if(file.size>1500000){msg.className='form-msg err';msg.textContent='File too large (max 1.5MB)';return;}const reader=new FileReader();reader.onload=async function(){const dataUrl=reader.result;const r=await fetch('/api/me/avatar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({avatar_url:dataUrl})});if(r.ok){msg.className='form-msg ok';msg.textContent='Uploaded!';document.getElementById('avatar').src=dataUrl;}else{const d=await r.json();msg.className='form-msg err';msg.textContent=d.error||'Error';}};reader.readAsDataURL(file);}
+async function setEmail(){const em=document.getElementById('emailInput').value.trim(),msg=document.getElementById('emailMsg');if(!em||!em.includes('@')){msg.className='form-msg err';msg.textContent='Enter valid email';return;}const r=await fetch('/api/me/email',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({email:em})});const d=await r.json();if(r.ok){msg.className='form-msg ok';msg.textContent='Email saved!';document.getElementById('emailBlock').style.display='none';document.getElementById('emailVal').textContent=em;setTimeout(loadProfile,500);}else{msg.className='form-msg err';msg.textContent=d.error||'Error';}}
 async function activate(){const key=document.getElementById('licenseKey').value.trim(),msg=document.getElementById('activateMsg');if(!key){msg.className='form-msg err';msg.textContent='Enter key';return;}const r=await fetch('/api/me/activate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({key})});const d=await r.json();if(r.ok){msg.className='form-msg ok';msg.textContent='+'+d.days+' days!';document.getElementById('licenseKey').value='';setTimeout(loadProfile,500);}else{msg.className='form-msg err';msg.textContent=d.error||'Error';}}
 function downloadLoader(){const msg=document.getElementById('downloadMsg');if(!userData||!userData.subscription||!userData.subscription.active){msg.className='form-msg err';msg.textContent='Need subscription';setTimeout(()=>location.href='/buy',1200);return;}msg.className='form-msg ok';msg.textContent='Starting...';window.location.href='/api/download/loader?token='+encodeURIComponent(token);}
 function logout(){localStorage.removeItem('luminar_token');location.href='/';}
