@@ -7,7 +7,7 @@
     <h2>Welcome Back!</h2>
     <p class="auth-sub">Is this your first time on the site? <a href="/register">Sign up right now!</a></p>
     <form id="f">
-      <div class="form-field"><label>Username</label><input class="form-input" type="text" id="username" placeholder="Your login" required></div>
+      <div class="form-field"><label>Email or Username</label><input class="form-input" type="text" id="email" placeholder="your@email.com or username" required></div>
       <div class="form-field"><label>Password</label><input class="form-input" type="password" id="password" placeholder="••••••••" required></div>
       <button type="submit" class="btn btn-purple btn-block btn-lg">🔑 Sign In</button>
       <div id="msg" class="form-msg"></div>
@@ -18,8 +18,8 @@
 </div>
 <script>
 document.getElementById('f').addEventListener('submit',async e=>{e.preventDefault();const msg=document.getElementById('msg');msg.className='form-msg';msg.textContent='';
-const u=document.getElementById('username').value.trim(),p=document.getElementById('password').value;
-try{const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p,source:'web'})});const d=await r.json();
+const em=document.getElementById('email').value.trim(),p=document.getElementById('password').value;
+try{const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,password:p,source:'web'})});const d=await r.json();
 if(r.ok){localStorage.setItem('luminar_token',d.token);msg.className='form-msg ok';msg.textContent='Успешно!';setTimeout(()=>location.href='/profile',500);}
 else{msg.className='form-msg err';msg.textContent=d.error||'Error';}}catch{msg.className='form-msg err';msg.textContent='Network error';}});
 </script>

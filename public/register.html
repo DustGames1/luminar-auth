@@ -8,6 +8,7 @@
     <p class="auth-sub">Already have an account? <a href="/login">Sign in!</a></p>
     <form id="f">
       <div class="form-field"><label>Username</label><input class="form-input" type="text" id="username" placeholder="3-16 chars, a-z 0-9 _" required></div>
+      <div class="form-field"><label>Email</label><input class="form-input" type="email" id="email" placeholder="your@email.com" required></div>
       <div class="form-field"><label>Password</label><input class="form-input" type="password" id="password" placeholder="Min 6 characters" required></div>
       <div class="form-field"><label>Confirm Password</label><input class="form-input" type="password" id="password2" placeholder="••••••••" required></div>
       <button type="submit" class="btn btn-purple btn-block btn-lg">🔑 Sign Up</button>
@@ -19,9 +20,9 @@
 </div>
 <script>
 document.getElementById('f').addEventListener('submit',async e=>{e.preventDefault();const msg=document.getElementById('msg');msg.className='form-msg';
-const u=document.getElementById('username').value.trim(),p=document.getElementById('password').value,p2=document.getElementById('password2').value;
+const u=document.getElementById('username').value.trim(),em=document.getElementById('email').value.trim(),p=document.getElementById('password').value,p2=document.getElementById('password2').value;
 if(p!==p2){msg.className='form-msg err';msg.textContent='Passwords mismatch';return;}
-try{const r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});const d=await r.json();
+try{const r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,email:em,password:p})});const d=await r.json();
 if(r.ok){localStorage.setItem('luminar_token',d.token);msg.className='form-msg ok';msg.textContent='Created!';setTimeout(()=>location.href='/buy',500);}
 else{msg.className='form-msg err';msg.textContent=d.error||'Error';}}catch{msg.className='form-msg err';msg.textContent='Network error';}});
 </script>

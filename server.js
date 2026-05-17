@@ -42,11 +42,13 @@ async function initDB() {
       banned INTEGER DEFAULT 0,
       sub_until BIGINT DEFAULT 0,
       role TEXT DEFAULT NULL,
-      avatar_url TEXT DEFAULT NULL
+      avatar_url TEXT DEFAULT NULL,
+      email TEXT UNIQUE DEFAULT NULL
     );
   `);
   // Migration for existing tables
   try { await pool.query('ALTER TABLE users ADD COLUMN avatar_url TEXT DEFAULT NULL'); } catch(e) {}
+  try { await pool.query('ALTER TABLE users ADD COLUMN email TEXT UNIQUE DEFAULT NULL'); } catch(e) {}
   await pool.query(`
     CREATE TABLE IF NOT EXISTS changelog (
       id SERIAL PRIMARY KEY,
@@ -94,6 +96,7 @@ app.use('/api/', limiter);
 const validUsername = (u) => typeof u === 'string' && /^[a-zA-Z0-9_]{3,16}$/.test(u);
 const validPassword = (p) => typeof p === 'string' && p.length >= 6 && p.length <= 64;
 const validHwid = (h) => typeof h === 'string' && h.length >= 8 && h.length <= 128;
+const validEmail = (e) => typeof e === 'string' && e.includes('@') && e.split('@')[1].includes('.');
 
 function adminOnly(req, res, next) {
   if (req.headers['x-admin-key'] !== ADMIN_KEY) return res.status(403).json({ error: 'Forbidden' });
@@ -113,17 +116,21 @@ app.get('/api/health', (req, res) => res.json({ ok: true, ts: Date.now() }));
 
 app.post('/api/register', async (req, res) => {
   try {
-    const { username, password } = req.body || {};
+    const { username, email, password } = req.body || {};
     if (!validUsername(username)) return res.status(400).json({ error: 'Invalid username (3-16, a-z 0-9 _)' });
+    if (!validEmail(email)) return res.status(400).json({ error: 'Invalid email address' });
     if (!validPassword(password)) return res.status(400).json({ error: 'Invalid password (6-64 chars)' });
 
-    const exists = await pool.query('SELECT 1 FROM users WHERE username = $1', [username]);
-    if (exists.rows.length > 0) return res.status(409).json({ error: 'Username already taken' });
+    const existsUser = await pool.query('SELECT 1 FROM users WHERE username = $1', [username]);
+    if (existsUser.rows.length > 0) return res.status(409).json({ error: 'Username already taken' });
+
+    const existsEmail = await pool.query('SELECT 1 FROM users WHERE email = $1', [email.toLowerCase().trim()]);
+    if (existsEmail.rows.length > 0) return res.status(409).json({ error: 'Email already registered' });
 
     const hash = await bcrypt.hash(password, 12);
     // HWID is NOT saved on registration — will be set on first loader launch
-    await pool.query('INSERT INTO users (username, password_hash, hwid, created_at, sub_until) VALUES ($1, $2, NULL, $3, 0)',
-      [username, hash, Date.now()]);
+    await pool.query('INSERT INTO users (username, email, password_hash, hwid, created_at, sub_until) VALUES ($1, $2, $3, NULL, $4, 0)',
+      [username, email.toLowerCase().trim(), hash, Date.now()]);
 
     const token = jwt.sign({ username, hwid: null }, JWT_SECRET, { expiresIn: TOKEN_TTL });
     return res.json({ ok: true, token, subscription: { active: false, until: null, daysLeft: 0 } });
@@ -135,12 +142,34 @@ app.post('/api/register', async (req, res) => {
 
 app.post('/api/login', async (req, res) => {
   try {
-    const { username, password, hwid, source } = req.body || {};
-    if (!validUsername(username) || !validPassword(password))
-      return res.status(400).json({ error: 'Bad request' });
+    const { username, email, password, hwid, source } = req.body || {};
+    const isLoader = source === 'loader';
 
-    const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
-    const user = result.rows[0];
+    let user;
+    if (isLoader) {
+      // Loader login uses username+password
+      if (!validUsername(username) || !validPassword(password))
+        return res.status(400).json({ error: 'Bad request' });
+      const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+      user = result.rows[0];
+    } else {
+      // Web login: try email first, then fallback to username (for old accounts without email)
+      if (!validPassword(password)) return res.status(400).json({ error: 'Bad request' });
+      
+      const loginField = (email || username || '').trim();
+      if (!loginField) return res.status(400).json({ error: 'Bad request' });
+
+      // If it looks like an email (has @), search by email
+      if (loginField.includes('@')) {
+        const result = await pool.query('SELECT * FROM users WHERE email = $1', [loginField.toLowerCase()]);
+        user = result.rows[0];
+      } else {
+        // Otherwise search by username (legacy accounts without email)
+        const result = await pool.query('SELECT * FROM users WHERE username = $1', [loginField]);
+        user = result.rows[0];
+      }
+    }
+
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
     if (user.banned) return res.status(403).json({ error: 'Account banned' });
 
@@ -148,13 +177,9 @@ app.post('/api/login', async (req, res) => {
     if (!ok) return res.status(401).json({ error: 'Invalid credentials' });
 
     // HWID lock — only enforced when source is 'loader' (real hardware HWID)
-    // Website login (source='web' or no source) doesn't check or set HWID
-    const isLoader = source === 'loader';
-
     if (isLoader && validHwid(hwid)) {
       const stored = (user.hwid || '').trim();
       if (!stored) {
-        // First loader launch — save HWID
         await pool.query('UPDATE users SET hwid = $1 WHERE id = $2', [hwid, user.id]);
       } else if (stored !== hwid) {
         return res.status(403).json({ error: 'HWID mismatch. Contact owner to reset.' });
@@ -164,8 +189,6 @@ app.post('/api/login', async (req, res) => {
     await pool.query('UPDATE users SET last_login = $1 WHERE id = $2', [Date.now(), user.id]);
 
     const sub = getSubscription(user);
-    // Note: subscription not required for login — only for loader download
-
     const token = jwt.sign({ username: user.username, hwid: isLoader ? hwid : null }, JWT_SECRET, { expiresIn: TOKEN_TTL });
     return res.json({ ok: true, token, username: user.username, uid: user.id, role: user.role || null, subscription: sub });
   } catch (e) {
@@ -240,7 +263,7 @@ app.post('/api/admin/users', adminOnly, async (req, res) => {
 });
 
 app.get('/api/admin/users', adminOnly, async (req, res) => {
-  const result = await pool.query('SELECT id, username, hwid, created_at, last_login, banned, sub_until, role FROM users ORDER BY id DESC');
+  const result = await pool.query('SELECT id, username, email, hwid, created_at, last_login, banned, sub_until, role FROM users ORDER BY id DESC');
   const users = result.rows.map(u => ({ ...u, subscription: getSubscription(u) }));
   res.json({ users });
 });
@@ -335,7 +358,7 @@ app.get('/api/me', async (req, res) => {
     if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'No token' });
     const token = auth.substring(7);
     const payload = jwt.verify(token, JWT_SECRET);
-    const result = await pool.query('SELECT id, username, role, sub_until, avatar_url, created_at, hwid FROM users WHERE username = $1', [payload.username]);
+    const result = await pool.query('SELECT id, username, email, role, sub_until, avatar_url, created_at, hwid FROM users WHERE username = $1', [payload.username]);
     const user = result.rows[0];
     if (!user) return res.status(404).json({ error: 'User not found' });
     res.json({ user: { ...user, subscription: getSubscription(user) } });

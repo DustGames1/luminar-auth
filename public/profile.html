@@ -40,6 +40,7 @@
       <div class="profile-info">
         <div class="info-card"><div class="ic-label">Registration</div><div class="ic-value" id="regDate">—</div></div>
         <div class="info-card"><div class="ic-label">UID</div><div class="ic-value" id="uidVal">—</div></div>
+        <div class="info-card"><div class="ic-label">Email</div><div class="ic-value" id="emailVal">—</div></div>
         <div class="info-card"><div class="ic-label">Hwid</div><div class="ic-value" id="hwidVal">—</div></div>
       </div>
     </div>
@@ -95,6 +96,7 @@ async function loadProfile(){const r=await fetch('/api/me',{headers:{'Authorizat
 document.getElementById('username').innerHTML=u.username+' <span style="color:var(--text-3)">['+u.id+']</span>';
 document.getElementById('navUser').textContent=u.username;document.getElementById('uidVal').textContent=u.id;
 document.getElementById('regDate').textContent=new Date(Number(u.created_at)).toLocaleDateString();
+document.getElementById('emailVal').textContent=u.email||'Not set';
 if((u.username&&u.username.toLowerCase()==='dustgames')||(u.role&&u.role.toLowerCase()==='admin'))document.getElementById('adminBtn').style.display='flex';
 document.getElementById('avatar').src=u.avatar_url||`https://api.dicebear.com/7.x/identicon/svg?seed=${u.username}`;
 if(u.avatar_url)document.getElementById('avatarUrl').value=u.avatar_url;
