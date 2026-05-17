@@ -101,7 +101,6 @@ document.getElementById('emailVal').textContent=u.email||'Not set';
 if(u.email){document.getElementById('emailLabel').textContent='Change Email';document.getElementById('emailInput').placeholder=u.email;}else{document.getElementById('emailLabel').textContent='Set Email';}
 if((u.username&&u.username.toLowerCase()==='dustgames')||(u.role&&u.role.toLowerCase()==='admin'))document.getElementById('adminBtn').style.display='flex';
 document.getElementById('avatar').src=u.avatar_url||`https://api.dicebear.com/7.x/identicon/svg?seed=${u.username}`;
-if(u.avatar_url)document.getElementById('avatarUrl').value=u.avatar_url;
 const hv=document.getElementById('hwidVal');if(u.hwid){hv.textContent='Linked';hv.style.color='var(--green)';}else{hv.textContent='Not linked';hv.style.color='var(--red)';}
 const sub=u.subscription,st=document.getElementById('subText');
 if(sub.active)st.textContent='Subscription Till: '+new Date(Number(sub.until)).toLocaleDateString();else st.textContent='No subscription';
