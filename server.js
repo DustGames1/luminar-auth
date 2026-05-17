@@ -42,13 +42,13 @@ async function initDB() {
       banned INTEGER DEFAULT 0,
       sub_until BIGINT DEFAULT 0,
       role TEXT DEFAULT NULL,
-      avatar_url TEXT DEFAULT NULL,
-      email TEXT UNIQUE DEFAULT NULL
+      avatar_url TEXT DEFAULT NULL
     );
   `);
   // Migration for existing tables
-  try { await pool.query('ALTER TABLE users ADD COLUMN avatar_url TEXT DEFAULT NULL'); } catch(e) {}
-  try { await pool.query('ALTER TABLE users ADD COLUMN email TEXT UNIQUE DEFAULT NULL'); } catch(e) {}
+  try { await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT DEFAULT NULL'); } catch(e) {}
+  try { await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS email TEXT DEFAULT NULL'); } catch(e) {}
+  try { await pool.query('CREATE UNIQUE INDEX IF NOT EXISTS users_email_unique ON users(email) WHERE email IS NOT NULL'); } catch(e) {}
   await pool.query(`
     CREATE TABLE IF NOT EXISTS changelog (
       id SERIAL PRIMARY KEY,
