@@ -2,112 +2,111 @@
 <html lang="ru">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Admin — Luminar</title><link rel="stylesheet" href="/style.css">
 <style>
-.adm-layout{display:grid;grid-template-columns:220px 1fr;gap:16px;max-width:1200px;margin:100px auto 60px;padding:0 24px;}
-.adm-side{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;height:fit-content;position:sticky;top:90px;}
-.adm-nav-item{padding:12px 16px;border-radius:var(--radius-xs);font-size:13px;font-weight:500;color:var(--text-3);cursor:pointer;transition:0.25s;margin-bottom:4px;}
-.adm-nav-item:hover{background:rgba(255,255,255,0.04);color:var(--text);}
-.adm-nav-item.active{background:var(--gradient);color:#fff;font-weight:700;box-shadow:var(--glow);}
-.adm-main{display:flex;flex-direction:column;gap:12px;}
-.adm-card{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;}
-.adm-card-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
-.adm-toolbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr)) auto;gap:8px;margin-bottom:12px;}
-.adm-toolbar input{padding:11px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text);font-size:13px;outline:none;transition:0.2s;}
-.adm-toolbar input:focus{border-color:var(--accent);}
-.adm-toolbar input::placeholder{color:var(--text-3);}
-.adm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
-.adm-stat{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;text-align:center;}
-.adm-stat .n{font-size:24px;font-weight:800;letter-spacing:-0.5px;}
-.adm-stat .l{font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+.adm{max-width:1100px;margin:40px auto;padding:0 32px;}
+.adm-tabs{display:flex;gap:8px;margin-bottom:16px;}
+.adm-tab{padding:10px 20px;border-radius:var(--radius-pill);font-size:13px;font-weight:600;color:var(--text-3);cursor:pointer;border:1px solid var(--border);background:var(--surface);transition:0.2s;}
+.adm-tab.active{background:var(--purple);color:#000;border-color:var(--purple);}
+.adm-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:12px;}
+.adm-card h3{font-size:15px;font-weight:700;margin-bottom:14px;}
+.adm-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr)) auto;gap:8px;margin-bottom:12px;}
+.adm-bar input{padding:11px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:13px;outline:none;}
+.adm-bar input:focus{border-color:var(--purple);}
+.adm-bar input::placeholder{color:var(--text-3);}
+.adm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.adm-st{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;}
+.adm-st .n{font-size:22px;font-weight:800;}
+.adm-st .l{font-size:10px;color:var(--text-3);margin-top:2px;}
 .tbl{width:100%;border-collapse:collapse;font-size:12px;}
-.tbl th,.tbl td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--border);}
-.tbl th{font-size:10px;color:var(--text-3);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
-.tbl tbody tr:hover{background:rgba(255,255,255,0.02);}
-.tbl .acts{display:flex;gap:4px;flex-wrap:wrap;}
-.ab{width:28px;height:28px;display:inline-grid;place-items:center;border-radius:var(--radius-xs);border:1px solid var(--border);background:rgba(255,255,255,0.03);color:var(--text-3);cursor:pointer;transition:0.2s;position:relative;}
-.ab:hover{background:rgba(255,255,255,0.08);color:var(--text);border-color:var(--border-2);}
-.ab.g{border-color:rgba(16,185,129,0.3);color:var(--green);}
-.ab.g:hover{background:rgba(16,185,129,0.1);}
-.ab.r{border-color:rgba(239,68,68,0.3);color:var(--red);}
-.ab.r:hover{background:rgba(239,68,68,0.1);}
+.tbl th,.tbl td{text-align:left;padding:10px;border-bottom:1px solid var(--border);}
+.tbl th{font-size:10px;color:var(--text-3);font-weight:700;text-transform:uppercase;}
+.tbl tbody tr:hover{background:var(--surface-2);}
+.tbl .acts{display:flex;gap:4px;}
+.ab{width:28px;height:28px;display:inline-grid;place-items:center;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text-3);cursor:pointer;transition:0.2s;position:relative;}
+.ab:hover{border-color:var(--purple);color:var(--purple);}
+.ab.g{border-color:rgba(74,222,128,0.3);color:var(--green);}
+.ab.r{border-color:rgba(248,113,113,0.3);color:var(--red);}
 .ab svg{width:13px;height:13px;stroke-width:2.2;}
 .ab[data-t]::after{content:attr(data-t);position:absolute;bottom:calc(100%+5px);left:50%;transform:translateX(-50%) translateY(2px);background:var(--bg);color:var(--text);padding:4px 8px;border-radius:6px;font-size:10px;font-weight:600;white-space:nowrap;opacity:0;transition:0.15s;border:1px solid var(--border);z-index:10;pointer-events:none;}
 .ab[data-t]:hover::after{opacity:1;transform:translateX(-50%) translateY(0);}
 .badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;}
-.b-ok{background:rgba(16,185,129,0.1);color:var(--green);}
-.b-ban{background:rgba(239,68,68,0.1);color:var(--red);}
-.b-exp{background:rgba(245,158,11,0.1);color:var(--yellow);}
-.b-used{background:rgba(255,255,255,0.04);color:var(--text-3);}
-.keys-res{margin-top:10px;padding:14px;background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.15);border-radius:var(--radius-sm);}
+.b-ok{background:rgba(74,222,128,0.1);color:var(--green);}
+.b-ban{background:rgba(248,113,113,0.1);color:var(--red);}
+.b-exp{background:rgba(251,191,36,0.1);color:var(--yellow);}
+.b-used{background:var(--surface-2);color:var(--text-3);}
+.keys-res{margin-top:10px;padding:14px;background:rgba(74,222,128,0.05);border:1px solid rgba(74,222,128,0.15);border-radius:var(--radius);}
 .keys-res pre{font-size:12px;color:var(--green);margin-top:6px;user-select:all;white-space:pre-wrap;}
 .err-b{color:var(--red);font-size:12px;margin-top:8px;}
 .ok-b{color:var(--green);font-size:12px;margin-top:8px;}
-@media(max-width:768px){.adm-layout{grid-template-columns:1fr;}.adm-side{position:static;}.adm-stats{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:768px){.adm-stats{grid-template-columns:repeat(2,1fr);}}
 </style>
 </head>
 <body>
-<div class="navbar"><div class="navbar-inner"><a href="/" class="navbar-brand"><span class="navbar-brand-icon">L</span> Luminar</a><nav class="navbar-links"><a href="/">Главная</a><a href="/profile">Профиль</a><a href="/admin" class="active">Admin</a></nav><div class="navbar-actions"><a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Выйти</a></div></div></div>
+<nav class="nav">
+  <a href="/" class="nav-brand"><span class="nav-brand-icon">L</span> Luminar</a>
+  <div class="nav-center"><a href="/">Home</a><a href="/profile">Profile</a><a href="/admin" class="active">Admin</a></div>
+  <div class="nav-right"><button class="theme-toggle" onclick="toggleTheme()">🌙</button><a href="#" onclick="logout()" class="btn btn-dark">Logout</a></div>
+</nav>
 
-<div id="auth" class="auth-page"><div class="auth-card">
-  <h2>Admin Panel</h2><p class="auth-sub">Введите ключ доступа</p>
-  <div class="form-field"><label>Admin Key</label><input class="form-input" type="password" id="adminKey" placeholder="••••••••"></div>
-  <button onclick="login()" class="btn btn-primary btn-block btn-lg">Войти</button>
-  <div id="loginErr" class="form-msg error"></div>
-</div></div>
-
-<div id="panel" class="hidden"><div class="adm-layout">
-  <aside class="adm-side">
-    <div class="adm-nav-item active" data-s="dash">Обзор</div>
-    <div class="adm-nav-item" data-s="users">Пользователи</div>
-    <div class="adm-nav-item" data-s="keys">Ключи</div>
-    <div class="adm-nav-item" data-s="ver">Версия</div>
-  </aside>
-  <div class="adm-main">
-    <div id="s-dash" class="sb">
-      <div class="adm-card"><div class="adm-card-title">Статистика</div><div class="adm-stats"><div class="adm-stat"><div class="n" id="sT">—</div><div class="l">Всего</div></div><div class="adm-stat"><div class="n" id="sA">—</div><div class="l">Активных</div></div><div class="adm-stat"><div class="n" id="sB">—</div><div class="l">Банов</div></div><div class="adm-stat"><div class="n" id="sK">—</div><div class="l">Ключей</div></div></div></div>
-      <div class="adm-card"><div class="adm-card-title">Создать пользователя</div><div class="adm-toolbar"><input type="text" id="nU" placeholder="username"><input type="password" id="nP" placeholder="password"><input type="number" id="nD" placeholder="дней" value="30"><button onclick="createUser()" class="btn btn-primary btn-sm">Создать</button></div><div id="cMsg"></div></div>
-    </div>
-    <div id="s-users" class="sb hidden">
-      <div class="adm-card"><div class="adm-card-title">Пользователи <button onclick="loadUsers()" class="btn btn-secondary btn-sm" style="margin-left:auto;">Обновить</button></div><table class="tbl"><thead><tr><th>ID</th><th>User</th><th>Роль</th><th>Подписка</th><th>HWID</th><th>Статус</th><th>Действия</th></tr></thead><tbody id="uBody"></tbody></table></div>
-    </div>
-    <div id="s-keys" class="sb hidden">
-      <div class="adm-card"><div class="adm-card-title">Генерация ключей</div><div class="adm-toolbar"><input type="number" id="kD" placeholder="дней" value="30"><input type="number" id="kC" placeholder="кол-во" value="1"><input type="text" id="kN" placeholder="заметка"><button onclick="genKeys()" class="btn btn-primary btn-sm">Создать</button></div><div id="kOut"></div></div>
-      <div class="adm-card"><div class="adm-card-title">Все ключи <button onclick="loadKeys()" class="btn btn-secondary btn-sm" style="margin-left:auto;">Обновить</button></div><table class="tbl"><thead><tr><th>ID</th><th>Ключ</th><th>Дней</th><th>Статус</th><th>Кем</th><th>Note</th><th></th></tr></thead><tbody id="kBody"></tbody></table></div>
-    </div>
-    <div id="s-ver" class="sb hidden">
-      <div class="adm-card"><div class="adm-card-title">Версия клиента</div><p style="color:var(--text-3);font-size:13px;margin-bottom:12px;">Лоадер сверяет версию и обновляет клиент</p><div class="adm-toolbar"><input type="text" id="vI" placeholder="1.0.0"><button onclick="setVer()" class="btn btn-primary btn-sm">Обновить</button></div><div id="vMsg"></div></div>
-    </div>
+<div id="auth" class="auth-page" style="min-height:calc(100vh - 60px);">
+  <div class="auth-box">
+    <h2>Admin Panel</h2>
+    <p class="auth-sub">Enter admin key to access</p>
+    <div class="form-field"><label>Admin Key</label><input class="form-input" type="password" id="adminKey" placeholder="••••••••"></div>
+    <button onclick="login()" class="btn btn-purple btn-block btn-lg">🔑 Access</button>
+    <div id="loginErr" class="form-msg err"></div>
   </div>
-</div></div>
+</div>
+
+<div id="panel" class="hidden">
+<div class="adm">
+  <div class="adm-tabs">
+    <div class="adm-tab active" data-s="dash">Dashboard</div>
+    <div class="adm-tab" data-s="users">Users</div>
+    <div class="adm-tab" data-s="keys">Keys</div>
+    <div class="adm-tab" data-s="ver">Version</div>
+  </div>
+  <div id="s-dash" class="sb">
+    <div class="adm-card"><h3>Statistics</h3><div class="adm-stats"><div class="adm-st"><div class="n" id="sT">—</div><div class="l">Total</div></div><div class="adm-st"><div class="n" id="sA">—</div><div class="l">Active</div></div><div class="adm-st"><div class="n" id="sB">—</div><div class="l">Banned</div></div><div class="adm-st"><div class="n" id="sK">—</div><div class="l">Free Keys</div></div></div></div>
+    <div class="adm-card"><h3>Create User</h3><div class="adm-bar"><input type="text" id="nU" placeholder="username"><input type="password" id="nP" placeholder="password"><input type="number" id="nD" placeholder="days" value="30"><button onclick="createUser()" class="btn btn-purple">Create</button></div><div id="cMsg"></div></div>
+  </div>
+  <div id="s-users" class="sb hidden"><div class="adm-card"><h3>Users <button onclick="loadUsers()" class="btn btn-dark" style="margin-left:8px;padding:6px 12px;font-size:11px;">↻</button></h3><table class="tbl"><thead><tr><th>ID</th><th>User</th><th>Role</th><th>Sub</th><th>HWID</th><th>Status</th><th>Actions</th></tr></thead><tbody id="uBody"></tbody></table></div></div>
+  <div id="s-keys" class="sb hidden">
+    <div class="adm-card"><h3>Generate Keys</h3><div class="adm-bar"><input type="number" id="kD" placeholder="days" value="30"><input type="number" id="kC" placeholder="count" value="1"><input type="text" id="kN" placeholder="note"><button onclick="genKeys()" class="btn btn-purple">Generate</button></div><div id="kOut"></div></div>
+    <div class="adm-card"><h3>All Keys <button onclick="loadKeys()" class="btn btn-dark" style="margin-left:8px;padding:6px 12px;font-size:11px;">↻</button></h3><table class="tbl"><thead><tr><th>ID</th><th>Key</th><th>Days</th><th>Status</th><th>Used By</th><th>Note</th><th></th></tr></thead><tbody id="kBody"></tbody></table></div>
+  </div>
+  <div id="s-ver" class="sb hidden"><div class="adm-card"><h3>Client Version</h3><p style="color:var(--text-3);font-size:12px;margin-bottom:12px;">Loader compares and auto-updates</p><div class="adm-bar"><input type="text" id="vI" placeholder="1.0.0"><button onclick="setVer()" class="btn btn-purple">Update</button></div><div id="vMsg"></div></div></div>
+</div>
+</div>
 
 <script>
+function toggleTheme(){const t=document.documentElement;t.dataset.theme=t.dataset.theme==='light'?'':'light';localStorage.setItem('theme',t.dataset.theme);document.querySelector('.theme-toggle').textContent=t.dataset.theme==='light'?'☀️':'🌙';}
+if(localStorage.getItem('theme')==='light'){document.documentElement.dataset.theme='light';document.querySelector('.theme-toggle').textContent='☀️';}
 let AK=localStorage.getItem('adminKey')||'',users=[],keys=[];
 async function api(m,p,b){const o={method:m,headers:{'x-admin-key':AK}};if(b){o.headers['Content-Type']='application/json';o.body=JSON.stringify(b);}const r=await fetch(p,o);return{ok:r.ok,data:await r.json().catch(()=>({}))};}
-function login(){const k=document.getElementById('adminKey').value.trim();if(!k){document.getElementById('loginErr').textContent='Введите ключ';return;}AK=k;localStorage.setItem('adminKey',k);checkAuth();}
-async function checkAuth(){if(!AK)return;const r=await api('GET','/api/admin/users');if(!r.ok){document.getElementById('loginErr').textContent='Неверный ключ';AK='';localStorage.removeItem('adminKey');return;}document.getElementById('auth').classList.add('hidden');document.getElementById('panel').classList.remove('hidden');loadUsers();loadKeys();}
+function login(){const k=document.getElementById('adminKey').value.trim();if(!k){document.getElementById('loginErr').textContent='Enter key';return;}AK=k;localStorage.setItem('adminKey',k);checkAuth();}
+async function checkAuth(){if(!AK)return;const r=await api('GET','/api/admin/users');if(!r.ok){document.getElementById('loginErr').textContent='Invalid key';AK='';localStorage.removeItem('adminKey');return;}document.getElementById('auth').classList.add('hidden');document.getElementById('panel').classList.remove('hidden');loadUsers();loadKeys();}
 function logout(){localStorage.removeItem('adminKey');AK='';location.reload();}
-document.querySelectorAll('.adm-nav-item').forEach(i=>{i.addEventListener('click',()=>{document.querySelectorAll('.adm-nav-item').forEach(x=>x.classList.remove('active'));i.classList.add('active');document.querySelectorAll('.sb').forEach(x=>x.classList.add('hidden'));document.getElementById('s-'+i.dataset.s).classList.remove('hidden');});});
+document.querySelectorAll('.adm-tab').forEach(i=>{i.addEventListener('click',()=>{document.querySelectorAll('.adm-tab').forEach(x=>x.classList.remove('active'));i.classList.add('active');document.querySelectorAll('.sb').forEach(x=>x.classList.add('hidden'));document.getElementById('s-'+i.dataset.s).classList.remove('hidden');});});
 async function loadUsers(){const r=await api('GET','/api/admin/users');if(!r.ok)return;users=r.data.users;renderUsers();updStats();}
 function renderUsers(){const tb=document.getElementById('uBody');tb.innerHTML='';for(const u of users){const sub=u.subscription,tr=document.createElement('tr');let st,until;if(u.banned)st='<span class="badge b-ban">BAN</span>';else if(sub.active){st='<span class="badge b-ok">OK</span>';until=new Date(Number(sub.until)).toLocaleDateString()+' ('+sub.daysLeft+'d)';}else{st='<span class="badge b-exp">EXP</span>';until='—';}
-tr.innerHTML=`<td>${u.id}</td><td><b>${u.username}</b></td><td>${u.role||'—'}</td><td>${until||'—'}</td><td title="${u.hwid||''}">${u.hwid?u.hwid.slice(0,8)+'…':'<span style="color:var(--red)">—</span>'}</td><td>${st}</td><td class="acts">
+tr.innerHTML=`<td>${u.id}</td><td><b>${u.username}</b></td><td>${u.role||'—'}</td><td>${until||'—'}</td><td>${u.hwid?u.hwid.slice(0,8)+'…':'<span style="color:var(--red)">—</span>'}</td><td>${st}</td><td class="acts">
 <button onclick="giveSub(${u.id})" class="ab g" data-t="+Sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></button>
 <button onclick="rmSub(${u.id})" class="ab r" data-t="-Sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg></button>
-<button onclick="setRole(${u.id})" class="ab" data-t="Роль"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5 21a7 7 0 0114 0"/></svg></button>
-<button onclick="rstHwid(${u.id})" class="ab" data-t="HWID"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0115.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></svg></button>
-${u.banned?`<button onclick="unban(${u.id})" class="ab g" data-t="Разбан"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></button>`:`<button onclick="ban(${u.id})" class="ab r" data-t="Бан"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg></button>`}
-<button onclick="delUser(${u.id})" class="ab r" data-t="Удалить"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></td>`;tb.appendChild(tr);}}
+<button onclick="rstHwid(${u.id})" class="ab" data-t="HWID"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0115.5-6.3L21 8"/><path d="M21 3v5h-5"/></svg></button>
+${u.banned?`<button onclick="unban(${u.id})" class="ab g" data-t="Unban"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></button>`:`<button onclick="ban(${u.id})" class="ab r" data-t="Ban"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg></button>`}
+<button onclick="delUser(${u.id})" class="ab r" data-t="Del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></td>`;tb.appendChild(tr);}}
 function updStats(){document.getElementById('sT').textContent=users.length;document.getElementById('sA').textContent=users.filter(u=>u.subscription&&u.subscription.active&&!u.banned).length;document.getElementById('sB').textContent=users.filter(u=>u.banned).length;document.getElementById('sK').textContent=keys.filter(k=>!k.used_at).length;}
-async function createUser(){const u=document.getElementById('nU').value.trim(),p=document.getElementById('nP').value,d=+document.getElementById('nD').value||0,msg=document.getElementById('cMsg');if(!u||!p){msg.className='err-b';msg.textContent='Заполните поля';return;}const r=await api('POST','/api/admin/users',{username:u,password:p,days:d});if(r.ok){msg.className='ok-b';msg.textContent='Создан!';document.getElementById('nU').value='';document.getElementById('nP').value='';loadUsers();}else{msg.className='err-b';msg.textContent=r.data.error||'Ошибка';}}
-async function giveSub(id){const d=prompt('Дней?','30');if(!d)return;await api('POST','/api/admin/subscribe/'+id,{days:+d});loadUsers();}
-async function rmSub(id){if(!confirm('Забрать подписку?'))return;await api('POST','/api/admin/unsubscribe/'+id);loadUsers();}
-async function setRole(id){const r=prompt('Роль (Admin, VIP, пусто):');if(r===null)return;await api('POST','/api/admin/role/'+id,{role:r});loadUsers();}
-async function rstHwid(id){if(!confirm('Сбросить HWID?'))return;await api('POST','/api/admin/reset-hwid/'+id);loadUsers();}
-async function ban(id){if(!confirm('Забанить?'))return;await api('POST','/api/admin/ban/'+id);loadUsers();}
+async function createUser(){const u=document.getElementById('nU').value.trim(),p=document.getElementById('nP').value,d=+document.getElementById('nD').value||0,msg=document.getElementById('cMsg');if(!u||!p){msg.className='err-b';msg.textContent='Fill fields';return;}const r=await api('POST','/api/admin/users',{username:u,password:p,days:d});if(r.ok){msg.className='ok-b';msg.textContent='Created!';document.getElementById('nU').value='';document.getElementById('nP').value='';loadUsers();}else{msg.className='err-b';msg.textContent=r.data.error||'Error';}}
+async function giveSub(id){const d=prompt('Days?','30');if(!d)return;await api('POST','/api/admin/subscribe/'+id,{days:+d});loadUsers();}
+async function rmSub(id){if(!confirm('Remove?'))return;await api('POST','/api/admin/unsubscribe/'+id);loadUsers();}
+async function rstHwid(id){if(!confirm('Reset HWID?'))return;await api('POST','/api/admin/reset-hwid/'+id);loadUsers();}
+async function ban(id){if(!confirm('Ban?'))return;await api('POST','/api/admin/ban/'+id);loadUsers();}
 async function unban(id){await api('POST','/api/admin/unban/'+id);loadUsers();}
-async function delUser(id){if(!confirm('Удалить навсегда?'))return;await api('DELETE','/api/admin/users/'+id);loadUsers();}
-async function genKeys(){const d=+document.getElementById('kD').value,c=+document.getElementById('kC').value,n=document.getElementById('kN').value.trim(),out=document.getElementById('kOut');if(!d||d<1){out.innerHTML='<div class="err-b">Укажите дни</div>';return;}const r=await api('POST','/api/admin/keys',{days:d,count:c,note:n});if(r.ok){out.innerHTML=`<div class="keys-res"><b style="color:var(--green)">Создано: ${r.data.keys.length}</b><pre>${r.data.keys.join('\n')}</pre></div>`;loadKeys();}else out.innerHTML='<div class="err-b">'+(r.data.error||'Ошибка')+'</div>';}
-async function loadKeys(){const r=await api('GET','/api/admin/keys');if(!r.ok)return;keys=r.data.keys;const tb=document.getElementById('kBody');tb.innerHTML='';for(const k of keys){const u=k.used_at,tr=document.createElement('tr');tr.innerHTML=`<td>${k.id}</td><td style="font-size:11px;color:${u?'var(--text-3)':'var(--yellow)'}">${k.key}</td><td>${k.days}</td><td>${u?'<span class="badge b-used">USED</span>':'<span class="badge b-ok">FREE</span>'}</td><td>${u?k.used_by+' · '+new Date(Number(u)).toLocaleDateString():'—'}</td><td>${k.note||'—'}</td><td class="acts"><button onclick="delKey(${k.id})" class="ab r" data-t="Удалить"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></td>`;tb.appendChild(tr);}updStats();}
-async function delKey(id){if(!confirm('Удалить ключ?'))return;await api('DELETE','/api/admin/keys/'+id);loadKeys();}
-async function setVer(){const v=document.getElementById('vI').value.trim(),msg=document.getElementById('vMsg');if(!v){msg.className='err-b';msg.textContent='Введите версию';return;}const r=await api('POST','/api/admin/version',{version:v});if(r.ok){msg.className='ok-b';msg.textContent='Обновлено: '+v;}else{msg.className='err-b';msg.textContent=r.data.error||'Ошибка';}}
+async function delUser(id){if(!confirm('Delete?'))return;await api('DELETE','/api/admin/users/'+id);loadUsers();}
+async function genKeys(){const d=+document.getElementById('kD').value,c=+document.getElementById('kC').value,n=document.getElementById('kN').value.trim(),out=document.getElementById('kOut');if(!d){out.innerHTML='<div class="err-b">Days?</div>';return;}const r=await api('POST','/api/admin/keys',{days:d,count:c,note:n});if(r.ok){out.innerHTML=`<div class="keys-res"><b style="color:var(--green)">Generated: ${r.data.keys.length}</b><pre>${r.data.keys.join('\n')}</pre></div>`;loadKeys();}else out.innerHTML='<div class="err-b">'+(r.data.error||'Error')+'</div>';}
+async function loadKeys(){const r=await api('GET','/api/admin/keys');if(!r.ok)return;keys=r.data.keys;const tb=document.getElementById('kBody');tb.innerHTML='';for(const k of keys){const u=k.used_at,tr=document.createElement('tr');tr.innerHTML=`<td>${k.id}</td><td style="font-size:11px;color:${u?'var(--text-3)':'var(--yellow)'}">${k.key}</td><td>${k.days}</td><td>${u?'<span class="badge b-used">USED</span>':'<span class="badge b-ok">FREE</span>'}</td><td>${u?k.used_by:'—'}</td><td>${k.note||'—'}</td><td class="acts"><button onclick="delKey(${k.id})" class="ab r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></td>`;tb.appendChild(tr);}updStats();}
+async function delKey(id){if(!confirm('Delete?'))return;await api('DELETE','/api/admin/keys/'+id);loadKeys();}
+async function setVer(){const v=document.getElementById('vI').value.trim(),msg=document.getElementById('vMsg');if(!v){msg.className='err-b';msg.textContent='?';return;}const r=await api('POST','/api/admin/version',{version:v});if(r.ok){msg.className='ok-b';msg.textContent='Updated: '+v;}else{msg.className='err-b';msg.textContent=r.data.error||'Error';}}
 fetch('/api/version').then(r=>r.text()).then(v=>{document.getElementById('vI').value=v;});
 document.getElementById('adminKey').addEventListener('keypress',e=>{if(e.key==='Enter')login();});
 checkAuth();

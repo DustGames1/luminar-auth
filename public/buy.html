@@ -1,29 +1,50 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Магазин — Luminar</title><link rel="stylesheet" href="/style.css"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Products — Luminar</title><link rel="stylesheet" href="/style.css"></head>
 <body>
-<div class="navbar"><div class="navbar-inner"><a href="/" class="navbar-brand"><span class="navbar-brand-icon">L</span> Luminar</a><nav class="navbar-links"><a href="/">Главная</a><a href="/buy" class="active">Магазин</a><a href="https://t.me/offersheart" target="_blank">Telegram</a></nav><div class="navbar-actions" id="navAuth"><a href="/login" class="btn btn-secondary btn-sm">Войти</a><a href="/register" class="btn btn-primary btn-sm">Начать</a></div></div></div>
+<nav class="nav">
+  <a href="/" class="nav-brand"><span class="nav-brand-icon">L</span> Luminar</a>
+  <div class="nav-center"><a href="/">Home</a><a href="/buy" class="active">Products</a></div>
+  <div class="nav-right" id="navAuth"><button class="theme-toggle" onclick="toggleTheme()">🌙</button><a href="/login" class="btn btn-dark">Sign In</a><a href="/register" class="btn btn-purple">Sign Up</a></div>
+</nav>
 
-<section class="section" style="padding-top:140px;text-align:center;">
-  <div class="section-header"><span class="section-badge">Магазин</span><h2>Выберите тариф</h2><p>Мгновенная активация после оплаты</p></div>
-  <div class="pricing-tabs"><div class="ptab active" onclick="sw('subs')">Подписки</div><div class="ptab" onclick="sw('other')">Другое</div></div>
-  <div id="subs-tab" class="pricing-grid">
-    <div class="price-card"><div class="price-card-icon">📦</div><h3>30 дней</h3><div class="price-desc">Месяц полного доступа</div><div class="price-amount">349<small>₽</small></div><button class="btn btn-secondary btn-block" onclick="buy(30,349)">Купить</button></div>
-    <div class="price-card popular"><div class="price-card-icon">⚡</div><h3>365 дней</h3><div class="price-desc">Год по лучшей цене</div><div class="price-amount">499<small>₽</small></div><button class="btn btn-primary btn-block" onclick="buy(365,499)">Купить</button></div>
-    <div class="price-card"><div class="price-card-icon">👑</div><h3>Навсегда</h3><div class="price-desc">Один платёж — вечный доступ</div><div class="price-amount">599<small>₽</small></div><button class="btn btn-secondary btn-block" onclick="buy(9999,599)">Купить</button></div>
+<section class="sec" style="text-align:center;padding-top:80px;">
+  <span class="sec-badge">🛒 Products</span>
+  <h2>Browse the products!</h2>
+  <p class="sec-desc">We assure you that you will not regret what our client bought — it's a high-quality product that exceeds.</p>
+
+  <div class="price-tabs">
+    <div class="ptab active" onclick="sw('subs')">✏ Subscriptions</div>
+    <div class="ptab" onclick="sw('other')">💎 Additions</div>
   </div>
-  <div id="other-tab" class="pricing-grid" style="display:none;">
-    <div class="price-card"><div class="price-card-icon">🔄</div><h3>Сброс HWID</h3><div class="price-desc">Отвязка оборудования</div><div class="price-amount">149<small>₽</small></div><button class="btn btn-secondary btn-block" onclick="buyH()">Купить</button></div>
+
+  <div id="subs-tab" class="price-grid">
+    <div class="price-card"><div class="price-amount">349<small>₽</small></div><div class="price-name">30 Days</div><button class="btn btn-purple btn-block" onclick="buy(30,349)">🛒 Purchase</button></div>
+    <div class="price-card"><div class="price-amount">499<small>₽</small></div><div class="price-name">365 Days</div><button class="btn btn-purple btn-block" onclick="buy(365,499)">🛒 Purchase</button></div>
+    <div class="price-card"><div class="price-amount">599<small>₽</small></div><div class="price-name">Lifetime</div><button class="btn btn-purple btn-block" onclick="buy(9999,599)">🛒 Purchase</button></div>
+  </div>
+
+  <div id="other-tab" class="price-grid" style="display:none;">
+    <div class="price-card"><div class="price-amount">149<small>₽</small></div><div class="price-name">HWID Reset</div><button class="btn btn-purple btn-block" onclick="buyH()">🛒 Purchase</button></div>
   </div>
 </section>
 
-<footer class="footer"><div class="footer-bottom"><span>© 2026 Luminar</span><span>by DustGames</span></div></footer>
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-col"><h4>📄 Pages</h4><a href="/">Home</a><a href="/buy">Products</a></div>
+    <div class="footer-col"><h4>💬 Communicate</h4><a href="https://t.me/offersheart">Telegram</a></div>
+    <div class="footer-col"><h4>🔐 Account</h4><a href="/login">Sign In</a><a href="/register">Sign Up</a></div>
+  </div>
+  <div class="footer-bottom"><span>© Luminar, 2026</span><span>All Rights Reserved</span></div>
+</footer>
 
 <script>
+function toggleTheme(){const t=document.documentElement;t.dataset.theme=t.dataset.theme==='light'?'':'light';localStorage.setItem('theme',t.dataset.theme);document.querySelector('.theme-toggle').textContent=t.dataset.theme==='light'?'☀️':'🌙';}
+if(localStorage.getItem('theme')==='light'){document.documentElement.dataset.theme='light';document.querySelector('.theme-toggle').textContent='☀️';}
 const PAY='https://funpay.com/users/19926313/',token=localStorage.getItem('luminar_token');
-if(token){fetch('/api/me',{headers:{'Authorization':'Bearer '+token}}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.user)document.getElementById('navAuth').innerHTML=`<a href="/profile" class="btn btn-primary btn-sm">${d.user.username}</a>`;});}
+if(token){fetch('/api/me',{headers:{'Authorization':'Bearer '+token}}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.user)document.getElementById('navAuth').innerHTML=`<button class="theme-toggle" onclick="toggleTheme()">🌙</button><a href="/profile" class="btn btn-purple">${d.user.username}</a>`;});}
 function sw(t){document.querySelectorAll('.ptab').forEach(x=>x.classList.remove('active'));event.target.classList.add('active');document.getElementById('subs-tab').style.display=t==='subs'?'grid':'none';document.getElementById('other-tab').style.display=t==='other'?'grid':'none';}
-function buy(d,p){if(!token){alert('Сначала войдите');location.href='/login';return;}if(confirm(`${d===9999?'Навсегда':d+' дней'} за ${p}₽?`))window.open(PAY,'_blank');}
-function buyH(){if(!token){alert('Сначала войдите');location.href='/login';return;}if(confirm('Сброс HWID за 149₽?'))window.open(PAY,'_blank');}
+function buy(d,p){if(!token){alert('Sign in first');location.href='/login';return;}if(confirm(`${d===9999?'Lifetime':d+' days'} for ${p}₽?`))window.open(PAY,'_blank');}
+function buyH(){if(!token){alert('Sign in first');location.href='/login';return;}if(confirm('HWID Reset for 149₽?'))window.open(PAY,'_blank');}
 </script>
 </body></html>

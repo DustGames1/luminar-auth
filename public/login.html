@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Вход — Luminar</title><link rel="stylesheet" href="/style.css"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Sign In — Luminar</title><link rel="stylesheet" href="/style.css"></head>
 <body>
-<div class="navbar"><div class="navbar-inner"><a href="/" class="navbar-brand"><span class="navbar-brand-icon">L</span> Luminar</a><nav class="navbar-links"><a href="/">Главная</a><a href="/buy">Магазин</a></nav><div class="navbar-actions"><a href="/register" class="btn btn-primary btn-sm">Регистрация</a></div></div></div>
-<div class="auth-page"><div class="auth-card">
-  <h2>Вход</h2><p class="auth-sub">Войдите в аккаунт Luminar</p>
-  <div class="auth-switch"><a href="/login" class="active">Вход</a><a href="/register">Регистрация</a></div>
-  <form id="f">
-    <div class="form-field"><label>Логин</label><input class="form-input" type="text" id="username" placeholder="Ваш логин" required></div>
-    <div class="form-field"><label>Пароль</label><input class="form-input" type="password" id="password" placeholder="••••••••" required></div>
-    <button type="submit" class="btn btn-primary btn-block btn-lg">Войти</button>
-    <div id="msg" class="form-msg"></div>
-  </form>
-</div></div>
+<div class="auth-page">
+  <div class="auth-box">
+    <h2>Welcome Back!</h2>
+    <p class="auth-sub">Is this your first time on the site? <a href="/register">Sign up right now!</a></p>
+    <form id="f">
+      <div class="form-field"><label>Username</label><input class="form-input" type="text" id="username" placeholder="Your login" required></div>
+      <div class="form-field"><label>Password</label><input class="form-input" type="password" id="password" placeholder="••••••••" required></div>
+      <button type="submit" class="btn btn-purple btn-block btn-lg">🔑 Sign In</button>
+      <div id="msg" class="form-msg"></div>
+    </form>
+    <div class="auth-divider">OR</div>
+    <a href="/" class="btn btn-dark btn-block">← Back to Home</a>
+  </div>
+</div>
 <script>
 document.getElementById('f').addEventListener('submit',async e=>{e.preventDefault();const msg=document.getElementById('msg');msg.className='form-msg';msg.textContent='';
 const u=document.getElementById('username').value.trim(),p=document.getElementById('password').value;
 try{const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p,source:'web'})});const d=await r.json();
-if(r.ok){localStorage.setItem('luminar_token',d.token);msg.className='form-msg success';msg.textContent='Успешно!';setTimeout(()=>location.href='/profile',500);}
-else{msg.className='form-msg error';msg.textContent=d.error||'Ошибка';}}catch{msg.className='form-msg error';msg.textContent='Ошибка сети';}});
+if(r.ok){localStorage.setItem('luminar_token',d.token);msg.className='form-msg ok';msg.textContent='Успешно!';setTimeout(()=>location.href='/profile',500);}
+else{msg.className='form-msg err';msg.textContent=d.error||'Error';}}catch{msg.className='form-msg err';msg.textContent='Network error';}});
 </script>
 </body></html>
