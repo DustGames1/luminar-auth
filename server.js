@@ -400,13 +400,14 @@ app.post('/api/me/email', async (req, res) => {
     const { email } = req.body || {};
     if (!email || !validEmail(email)) return res.status(400).json({ error: 'Invalid email' });
 
-    // Check if email already taken
-    const exists = await pool.query('SELECT 1 FROM users WHERE email = $1', [email.toLowerCase().trim()]);
-    if (exists.rows.length > 0) return res.status(409).json({ error: 'Email already in use' });
+    // Check if email already taken by another user
+    const exists = await pool.query('SELECT username FROM users WHERE email = $1', [email.toLowerCase().trim()]);
+    if (exists.rows.length > 0 && exists.rows[0].username !== payload.username) return res.status(409).json({ error: 'Email already in use' });
 
     await pool.query('UPDATE users SET email = $1 WHERE username = $2', [email.toLowerCase().trim(), payload.username]);
     res.json({ ok: true });
   } catch (e) {
+    console.error('/api/me/email error:', e.message);
     res.status(401).json({ error: 'Invalid token' });
   }
 });
