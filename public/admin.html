@@ -3,260 +3,137 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — Luminar</title>
+<title>Admin — LUMINAR</title>
 <link rel="stylesheet" href="/style.css">
 <style>
-/* ═══ Admin Layout ═══ */
-.adm {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: 12px;
-  max-width: 1260px;
-  margin: 100px auto 60px;
-  padding: 0 24px;
-}
-
-.adm-nav {
-  background: var(--surface-1);
-  border: 1px solid var(--glass-border);
-  border-radius: 14px;
-  padding: 10px;
-  height: fit-content;
-  position: sticky;
-  top: 90px;
-}
-
-.adm-nav-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  color: var(--white-50);
-  font-size: 12.5px;
-  font-weight: 500;
-  transition: 0.2s;
-  margin-bottom: 2px;
-}
-
-.adm-nav-item:hover { background: var(--white-04); color: var(--white); }
-.adm-nav-item.active { background: var(--white); color: var(--bg); font-weight: 700; }
-
-.adm-body { display: flex; flex-direction: column; gap: 12px; }
-
-.adm-card {
-  background: var(--surface-1);
-  border: 1px solid var(--glass-border);
-  border-radius: 14px;
-  padding: 22px;
-}
-
-.adm-card-head {
-  font-size: 15px;
-  font-weight: 700;
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.adm-bar {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) auto;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-
-.adm-bar input {
-  background: var(--surface-2);
-  border: 1px solid var(--glass-border);
-  border-radius: 10px;
-  padding: 10px 12px;
-  color: var(--white);
-  font-size: 12.5px;
-  outline: none;
-  transition: 0.2s;
-}
-.adm-bar input:focus { border-color: var(--white-15); }
-.adm-bar input::placeholder { color: var(--white-30); }
-
-.adm-stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.adm-stat {
-  background: var(--surface-2);
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
-  padding: 14px;
-}
-.adm-stat .n { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-.adm-stat .l { font-size: 9.5px; color: var(--white-30); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 700; margin-top: 2px; }
-
-/* Table */
-.tbl { width: 100%; border-collapse: collapse; font-size: 11.5px; }
-.tbl th, .tbl td { text-align: left; padding: 10px 10px; border-bottom: 1px solid var(--glass-border); }
-.tbl th { color: var(--white-30); font-weight: 700; text-transform: uppercase; font-size: 9.5px; letter-spacing: 1px; }
-.tbl tbody tr:hover { background: var(--white-04); }
-
-.tbl .acts { display: flex; gap: 4px; flex-wrap: wrap; }
-
-.ab {
-  width: 28px; height: 28px;
-  display: inline-grid; place-items: center;
-  border-radius: 8px;
-  border: 1px solid var(--glass-border);
-  background: var(--white-04);
-  color: var(--white-50);
-  cursor: pointer;
-  transition: 0.2s;
-  position: relative;
-}
-.ab:hover { background: var(--white-08); color: var(--white); border-color: var(--white-15); transform: translateY(-1px); }
-.ab.g { background: rgba(52,211,153,0.08); border-color: rgba(52,211,153,0.2); color: var(--green); }
-.ab.g:hover { background: rgba(52,211,153,0.15); }
-.ab.r { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.2); color: var(--red); }
-.ab.r:hover { background: rgba(248,113,113,0.15); }
-.ab svg { width: 13px; height: 13px; stroke-width: 2.2; }
-
-.ab[data-t]::after {
-  content: attr(data-t);
-  position: absolute; bottom: calc(100% + 5px); left: 50%;
-  transform: translateX(-50%) translateY(3px);
-  background: var(--bg); color: var(--white); padding: 3px 7px;
-  border-radius: 5px; font-size: 9.5px; font-weight: 600;
-  white-space: nowrap; pointer-events: none; opacity: 0;
-  transition: 0.15s; border: 1px solid var(--glass-border); z-index: 10;
-}
-.ab[data-t]:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-.badge { display: inline-block; padding: 2px 8px; border-radius: 5px; font-size: 9.5px; font-weight: 700; letter-spacing: 0.5px; }
-.b-active { background: rgba(52,211,153,0.1); color: var(--green); }
-.b-banned { background: rgba(248,113,113,0.1); color: var(--red); }
-.b-expired { background: rgba(251,191,36,0.1); color: var(--yellow); }
-.b-used { background: var(--white-04); color: var(--white-30); }
-
-.keys-out { margin-top: 10px; padding: 12px; background: rgba(52,211,153,0.05); border: 1px solid rgba(52,211,153,0.15); border-radius: 10px; }
-.keys-out pre { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--green); margin-top: 6px; user-select: all; white-space: pre-wrap; }
-
-.err-box { color: var(--red); font-size: 11.5px; margin-top: 8px; }
-.ok-box { color: var(--green); font-size: 11.5px; margin-top: 8px; }
-
-@media (max-width: 768px) {
-  .adm { grid-template-columns: 1fr; margin-top: 80px; }
-  .adm-nav { position: static; }
-  .adm-stats { grid-template-columns: repeat(2, 1fr); }
-}
+.adm-wrap { display:grid; grid-template-columns:200px 1fr; min-height:100vh; padding-top:56px; }
+.adm-side { background:var(--panel); border-right:1px solid var(--border); padding:24px 12px; position:sticky; top:56px; height:calc(100vh - 56px); }
+.adm-item { padding:10px 14px; font-size:11px; font-weight:500; color:var(--text-3); cursor:pointer; transition:0.2s; border-left:2px solid transparent; margin-bottom:2px; font-family:'JetBrains Mono',monospace; letter-spacing:0.5px; text-transform:uppercase; }
+.adm-item:hover { color:var(--text); background:var(--card); }
+.adm-item.on { color:var(--neon); border-left-color:var(--neon); background:rgba(255,51,102,0.05); }
+.adm-main { padding:32px; }
+.adm-block { background:var(--panel); border:1px solid var(--border); padding:24px; margin-bottom:12px; }
+.adm-block-title { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--text-3); margin-bottom:16px; }
+.adm-bar { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)) auto; gap:6px; margin-bottom:12px; }
+.adm-bar input { padding:10px 12px; background:var(--dark); border:1px solid var(--border); color:var(--text); font-size:12px; outline:none; }
+.adm-bar input:focus { border-color:var(--neon); }
+.adm-bar input::placeholder { color:var(--text-4); }
+.adm-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; margin-bottom:16px; }
+.adm-st { background:var(--card); border:1px solid var(--border); padding:16px; text-align:center; }
+.adm-st .n { font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:800; }
+.adm-st .l { font-size:9px; color:var(--text-4); text-transform:uppercase; letter-spacing:1.5px; margin-top:2px; }
+.tbl { width:100%; border-collapse:collapse; font-size:11px; }
+.tbl th,.tbl td { text-align:left; padding:10px; border-bottom:1px solid var(--border); }
+.tbl th { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text-4); text-transform:uppercase; letter-spacing:1px; }
+.tbl tbody tr:hover { background:var(--card); }
+.tbl .acts { display:flex; gap:4px; }
+.ab { width:26px; height:26px; display:inline-grid; place-items:center; border:1px solid var(--border); background:var(--panel); color:var(--text-3); cursor:pointer; transition:0.2s; position:relative; }
+.ab:hover { color:var(--text); border-color:var(--text-3); }
+.ab.g { border-color:rgba(0,255,136,0.3); color:var(--green); }
+.ab.g:hover { background:rgba(0,255,136,0.1); }
+.ab.r { border-color:rgba(255,68,68,0.3); color:var(--red); }
+.ab.r:hover { background:rgba(255,68,68,0.1); }
+.ab svg { width:12px; height:12px; stroke-width:2.2; }
+.ab[data-t]::after { content:attr(data-t); position:absolute; bottom:calc(100%+4px); left:50%; transform:translateX(-50%) translateY(2px); background:var(--black); color:var(--text); padding:3px 6px; font-size:9px; font-weight:600; white-space:nowrap; opacity:0; transition:0.15s; border:1px solid var(--border); z-index:10; pointer-events:none; }
+.ab[data-t]:hover::after { opacity:1; transform:translateX(-50%) translateY(0); }
+.badge { display:inline-block; padding:2px 7px; font-size:9px; font-weight:700; letter-spacing:0.5px; font-family:'JetBrains Mono',monospace; }
+.b-ok { background:rgba(0,255,136,0.1); color:var(--green); }
+.b-ban { background:rgba(255,68,68,0.1); color:var(--red); }
+.b-exp { background:rgba(255,170,0,0.1); color:var(--yellow); }
+.b-used { background:var(--card); color:var(--text-4); }
+.keys-res { margin-top:10px; padding:12px; background:rgba(0,255,136,0.03); border:1px solid rgba(0,255,136,0.15); }
+.keys-res pre { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--green); margin-top:6px; user-select:all; white-space:pre-wrap; }
+.err-b { color:var(--red); font-size:11px; margin-top:8px; }
+.ok-b { color:var(--green); font-size:11px; margin-top:8px; }
+@media(max-width:900px){ .adm-wrap{grid-template-columns:1fr;} .adm-side{position:static;height:auto;display:flex;flex-wrap:wrap;gap:4px;padding:12px;} .adm-main{padding:16px;} .adm-stats{grid-template-columns:repeat(2,1fr);} }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="topbar-inner">
-    <a href="/" class="topbar-logo"><span class="topbar-logo-icon">L</span> Luminar</a>
-    <nav class="topbar-nav">
-      <a href="/">Главная</a>
-      <a href="/profile">Профиль</a>
-      <a href="/admin" class="active">Admin</a>
-    </nav>
-    <div class="topbar-right">
-      <a href="#" onclick="logout()" class="btn btn-outline btn-sm">Выйти</a>
-    </div>
-  </div>
+<div class="nav-line">
+  <a href="/" class="brand">LUMINAR</a>
+  <div class="links"><a href="/">Home</a><a href="/profile">Profile</a><a href="/admin" class="on">Admin</a></div>
+  <div class="right"><a href="#" onclick="logout()" class="btn btn-ghost">Logout</a></div>
 </div>
 
 <!-- Auth -->
-<div id="auth-screen" class="auth-page">
-  <div class="auth-box">
-    <h2>Admin</h2>
-    <p class="sub">Введите ключ доступа</p>
-    <div class="field">
-      <label>Admin Key</label>
+<div id="auth" class="auth-full">
+  <div class="auth-panel">
+    <h2>ADMIN</h2>
+    <p class="sub">Enter admin key</p>
+    <div class="inp-group">
+      <label>Key</label>
       <input type="password" id="adminKey" placeholder="••••••••">
     </div>
-    <button onclick="login()" class="btn btn-fill btn-block btn-lg">Войти</button>
+    <button onclick="login()" class="btn btn-neon btn-block btn-lg">Access</button>
     <div id="loginErr" class="auth-msg err"></div>
   </div>
 </div>
 
 <!-- Panel -->
 <div id="panel" class="hidden">
-  <div class="adm">
-    <aside class="adm-nav">
-      <div class="adm-nav-item active" data-s="dash">Обзор</div>
-      <div class="adm-nav-item" data-s="users">Юзеры</div>
-      <div class="adm-nav-item" data-s="keys">Ключи</div>
-      <div class="adm-nav-item" data-s="ver">Версия</div>
+  <div class="adm-wrap">
+    <aside class="adm-side">
+      <div class="adm-item on" data-s="dash">Dashboard</div>
+      <div class="adm-item" data-s="users">Users</div>
+      <div class="adm-item" data-s="keys">Keys</div>
+      <div class="adm-item" data-s="ver">Version</div>
     </aside>
-
-    <div class="adm-body">
-      <!-- Dashboard -->
-      <div id="s-dash" class="s-block">
-        <div class="adm-card">
-          <div class="adm-card-head">Статистика</div>
+    <div class="adm-main">
+      <!-- Dash -->
+      <div id="s-dash" class="s-b">
+        <div class="adm-block">
+          <div class="adm-block-title">// Statistics</div>
           <div class="adm-stats">
-            <div class="adm-stat"><div class="n" id="sT">—</div><div class="l">Всего</div></div>
-            <div class="adm-stat"><div class="n" id="sA">—</div><div class="l">Активных</div></div>
-            <div class="adm-stat"><div class="n" id="sB">—</div><div class="l">Банов</div></div>
-            <div class="adm-stat"><div class="n" id="sK">—</div><div class="l">Ключей</div></div>
+            <div class="adm-st"><div class="n" id="sT">—</div><div class="l">Total</div></div>
+            <div class="adm-st"><div class="n" id="sA">—</div><div class="l">Active</div></div>
+            <div class="adm-st"><div class="n" id="sB">—</div><div class="l">Banned</div></div>
+            <div class="adm-st"><div class="n" id="sK">—</div><div class="l">Free Keys</div></div>
           </div>
         </div>
-        <div class="adm-card">
-          <div class="adm-card-head">Новый пользователь</div>
+        <div class="adm-block">
+          <div class="adm-block-title">// Create User</div>
           <div class="adm-bar">
             <input type="text" id="nU" placeholder="username">
             <input type="password" id="nP" placeholder="password">
-            <input type="number" id="nD" placeholder="дней" value="30">
-            <button onclick="createUser()" class="btn btn-fill btn-sm">Создать</button>
+            <input type="number" id="nD" placeholder="days" value="30">
+            <button onclick="createUser()" class="btn btn-neon">Create</button>
           </div>
           <div id="cMsg"></div>
         </div>
       </div>
-
       <!-- Users -->
-      <div id="s-users" class="s-block hidden">
-        <div class="adm-card">
-          <div class="adm-card-head">Пользователи <button onclick="loadUsers()" class="btn btn-glass btn-sm" style="margin-left:auto;">↻</button></div>
-          <table class="tbl">
-            <thead><tr><th>ID</th><th>User</th><th>Роль</th><th>Подписка</th><th>HWID</th><th>Статус</th><th>Действия</th></tr></thead>
-            <tbody id="uBody"></tbody>
-          </table>
+      <div id="s-users" class="s-b hidden">
+        <div class="adm-block">
+          <div class="adm-block-title">// Users <button onclick="loadUsers()" class="btn btn-ghost" style="margin-left:12px;padding:6px 12px;font-size:10px;">Refresh</button></div>
+          <table class="tbl"><thead><tr><th>ID</th><th>User</th><th>Role</th><th>Sub</th><th>HWID</th><th>Status</th><th>Actions</th></tr></thead><tbody id="uBody"></tbody></table>
         </div>
       </div>
-
       <!-- Keys -->
-      <div id="s-keys" class="s-block hidden">
-        <div class="adm-card">
-          <div class="adm-card-head">Генерация ключей</div>
+      <div id="s-keys" class="s-b hidden">
+        <div class="adm-block">
+          <div class="adm-block-title">// Generate Keys</div>
           <div class="adm-bar">
-            <input type="number" id="kD" placeholder="дней" value="30">
-            <input type="number" id="kC" placeholder="кол-во" value="1">
-            <input type="text" id="kN" placeholder="заметка">
-            <button onclick="genKeys()" class="btn btn-fill btn-sm">Создать</button>
+            <input type="number" id="kD" placeholder="days" value="30">
+            <input type="number" id="kC" placeholder="count" value="1">
+            <input type="text" id="kN" placeholder="note">
+            <button onclick="genKeys()" class="btn btn-neon">Generate</button>
           </div>
           <div id="kOut"></div>
         </div>
-        <div class="adm-card">
-          <div class="adm-card-head">Все ключи <button onclick="loadKeys()" class="btn btn-glass btn-sm" style="margin-left:auto;">↻</button></div>
-          <table class="tbl">
-            <thead><tr><th>ID</th><th>Ключ</th><th>Дней</th><th>Статус</th><th>Кем</th><th>Note</th><th></th></tr></thead>
-            <tbody id="kBody"></tbody>
-          </table>
+        <div class="adm-block">
+          <div class="adm-block-title">// All Keys <button onclick="loadKeys()" class="btn btn-ghost" style="margin-left:12px;padding:6px 12px;font-size:10px;">Refresh</button></div>
+          <table class="tbl"><thead><tr><th>ID</th><th>Key</th><th>Days</th><th>Status</th><th>Used By</th><th>Note</th><th></th></tr></thead><tbody id="kBody"></tbody></table>
         </div>
       </div>
-
       <!-- Version -->
-      <div id="s-ver" class="s-block hidden">
-        <div class="adm-card">
-          <div class="adm-card-head">Версия клиента</div>
-          <p style="color:var(--white-30);font-size:12px;margin-bottom:12px;">Лоадер сверяет версию и обновляет клиент автоматически</p>
+      <div id="s-ver" class="s-b hidden">
+        <div class="adm-block">
+          <div class="adm-block-title">// Client Version</div>
+          <p style="color:var(--text-4);font-size:11px;margin-bottom:12px;">Loader compares this version and auto-updates</p>
           <div class="adm-bar">
             <input type="text" id="vI" placeholder="1.0.0">
-            <button onclick="setVer()" class="btn btn-fill btn-sm">Обновить</button>
+            <button onclick="setVer()" class="btn btn-neon">Update</button>
           </div>
           <div id="vMsg"></div>
         </div>
@@ -266,138 +143,36 @@
 </div>
 
 <script>
-let AK = localStorage.getItem('adminKey')||'';
-let users=[], keys=[];
-
-async function api(m,p,b){
-  const o={method:m,headers:{'x-admin-key':AK}};
-  if(b){o.headers['Content-Type']='application/json';o.body=JSON.stringify(b);}
-  const r=await fetch(p,o);
-  return {ok:r.ok,data:await r.json().catch(()=>({}))};
-}
-
-function login(){
-  const k=document.getElementById('adminKey').value.trim();
-  if(!k){document.getElementById('loginErr').textContent='Введите ключ';return;}
-  AK=k; localStorage.setItem('adminKey',k); checkAuth();
-}
-
-async function checkAuth(){
-  if(!AK)return;
-  const r=await api('GET','/api/admin/users');
-  if(!r.ok){document.getElementById('loginErr').textContent='Неверный ключ';AK='';localStorage.removeItem('adminKey');return;}
-  document.getElementById('auth-screen').classList.add('hidden');
-  document.getElementById('panel').classList.remove('hidden');
-  loadUsers(); loadKeys();
-}
-
+let AK=localStorage.getItem('adminKey')||'';
+let users=[],keys=[];
+async function api(m,p,b){const o={method:m,headers:{'x-admin-key':AK}};if(b){o.headers['Content-Type']='application/json';o.body=JSON.stringify(b);}const r=await fetch(p,o);return{ok:r.ok,data:await r.json().catch(()=>({}))};}
+function login(){const k=document.getElementById('adminKey').value.trim();if(!k){document.getElementById('loginErr').textContent='Enter key';return;}AK=k;localStorage.setItem('adminKey',k);checkAuth();}
+async function checkAuth(){if(!AK)return;const r=await api('GET','/api/admin/users');if(!r.ok){document.getElementById('loginErr').textContent='Invalid key';AK='';localStorage.removeItem('adminKey');return;}document.getElementById('auth').classList.add('hidden');document.getElementById('panel').classList.remove('hidden');loadUsers();loadKeys();}
 function logout(){localStorage.removeItem('adminKey');AK='';location.reload();}
-
-// Nav
-document.querySelectorAll('.adm-nav-item').forEach(i=>{
-  i.addEventListener('click',()=>{
-    document.querySelectorAll('.adm-nav-item').forEach(x=>x.classList.remove('active'));
-    i.classList.add('active');
-    document.querySelectorAll('.s-block').forEach(x=>x.classList.add('hidden'));
-    document.getElementById('s-'+i.dataset.s).classList.remove('hidden');
-  });
-});
-
-// Users
-async function loadUsers(){
-  const r=await api('GET','/api/admin/users'); if(!r.ok)return;
-  users=r.data.users; renderUsers(); updStats();
-}
-
-function renderUsers(){
-  const tb=document.getElementById('uBody'); tb.innerHTML='';
-  for(const u of users){
-    const sub=u.subscription; const tr=document.createElement('tr');
-    let st,until;
-    if(u.banned) st='<span class="badge b-banned">BAN</span>';
-    else if(sub.active){st='<span class="badge b-active">OK</span>';until=new Date(Number(sub.until)).toLocaleDateString()+' ('+sub.daysLeft+'d)';}
-    else{st='<span class="badge b-expired">EXP</span>';until='—';}
-    tr.innerHTML=`
-      <td>${u.id}</td><td><b style="color:#fff">${u.username}</b></td><td>${u.role||'—'}</td>
-      <td>${until||'—'}</td><td title="${u.hwid||''}">${u.hwid?u.hwid.slice(0,8)+'…':'<span class="c-red">—</span>'}</td><td>${st}</td>
-      <td class="acts">
-        <button onclick="giveSub(${u.id})" class="ab g" data-t="+Sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></button>
-        <button onclick="rmSub(${u.id})" class="ab r" data-t="-Sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg></button>
-        <button onclick="setRole(${u.id})" class="ab" data-t="Role"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5 21a7 7 0 0114 0"/></svg></button>
-        <button onclick="rstHwid(${u.id})" class="ab" data-t="HWID"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0115.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></svg></button>
-        ${u.banned
-          ?`<button onclick="unban(${u.id})" class="ab g" data-t="Unban"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></button>`
-          :`<button onclick="ban(${u.id})" class="ab r" data-t="Ban"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg></button>`}
-        <button onclick="delUser(${u.id})" class="ab r" data-t="Del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
-      </td>`;
-    tb.appendChild(tr);
-  }
-}
-
-function updStats(){
-  document.getElementById('sT').textContent=users.length;
-  document.getElementById('sA').textContent=users.filter(u=>u.subscription&&u.subscription.active&&!u.banned).length;
-  document.getElementById('sB').textContent=users.filter(u=>u.banned).length;
-  document.getElementById('sK').textContent=keys.filter(k=>!k.used_at).length;
-}
-
-async function createUser(){
-  const u=document.getElementById('nU').value.trim(),p=document.getElementById('nP').value,d=parseInt(document.getElementById('nD').value)||0;
-  const msg=document.getElementById('cMsg');
-  if(!u||!p){msg.className='err-box';msg.textContent='Заполните';return;}
-  const r=await api('POST','/api/admin/users',{username:u,password:p,days:d});
-  if(r.ok){msg.className='ok-box';msg.textContent='OK';document.getElementById('nU').value='';document.getElementById('nP').value='';loadUsers();}
-  else{msg.className='err-box';msg.textContent=r.data.error||'Err';}
-}
-
-async function giveSub(id){const d=prompt('Дней?','30');if(!d)return;await api('POST','/api/admin/subscribe/'+id,{days:+d});loadUsers();}
-async function rmSub(id){if(!confirm('Забрать?'))return;await api('POST','/api/admin/unsubscribe/'+id);loadUsers();}
-async function setRole(id){const r=prompt('Роль:');if(r===null)return;await api('POST','/api/admin/role/'+id,{role:r});loadUsers();}
-async function rstHwid(id){if(!confirm('Сброс HWID?'))return;await api('POST','/api/admin/reset-hwid/'+id);loadUsers();}
-async function ban(id){if(!confirm('Бан?'))return;await api('POST','/api/admin/ban/'+id);loadUsers();}
+document.querySelectorAll('.adm-item').forEach(i=>{i.addEventListener('click',()=>{document.querySelectorAll('.adm-item').forEach(x=>x.classList.remove('on'));i.classList.add('on');document.querySelectorAll('.s-b').forEach(x=>x.classList.add('hidden'));document.getElementById('s-'+i.dataset.s).classList.remove('hidden');});});
+async function loadUsers(){const r=await api('GET','/api/admin/users');if(!r.ok)return;users=r.data.users;renderUsers();updStats();}
+function renderUsers(){const tb=document.getElementById('uBody');tb.innerHTML='';for(const u of users){const sub=u.subscription,tr=document.createElement('tr');let st,until;if(u.banned)st='<span class="badge b-ban">BAN</span>';else if(sub.active){st='<span class="badge b-ok">OK</span>';until=new Date(Number(sub.until)).toLocaleDateString()+' ('+sub.daysLeft+'d)';}else{st='<span class="badge b-exp">EXP</span>';until='—';}
+tr.innerHTML=`<td>${u.id}</td><td><b>${u.username}</b></td><td>${u.role||'—'}</td><td>${until||'—'}</td><td title="${u.hwid||''}">${u.hwid?u.hwid.slice(0,8)+'…':'<span class="c-red">—</span>'}</td><td>${st}</td><td class="acts">
+<button onclick="giveSub(${u.id})" class="ab g" data-t="+Sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></button>
+<button onclick="rmSub(${u.id})" class="ab r" data-t="-Sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg></button>
+<button onclick="setRole(${u.id})" class="ab" data-t="Role"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5 21a7 7 0 0114 0"/></svg></button>
+<button onclick="rstHwid(${u.id})" class="ab" data-t="HWID"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0115.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></svg></button>
+${u.banned?`<button onclick="unban(${u.id})" class="ab g" data-t="Unban"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></button>`:`<button onclick="ban(${u.id})" class="ab r" data-t="Ban"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg></button>`}
+<button onclick="delUser(${u.id})" class="ab r" data-t="Del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+</td>`;tb.appendChild(tr);}}
+function updStats(){document.getElementById('sT').textContent=users.length;document.getElementById('sA').textContent=users.filter(u=>u.subscription&&u.subscription.active&&!u.banned).length;document.getElementById('sB').textContent=users.filter(u=>u.banned).length;document.getElementById('sK').textContent=keys.filter(k=>!k.used_at).length;}
+async function createUser(){const u=document.getElementById('nU').value.trim(),p=document.getElementById('nP').value,d=+document.getElementById('nD').value||0,msg=document.getElementById('cMsg');if(!u||!p){msg.className='err-b';msg.textContent='Fill fields';return;}const r=await api('POST','/api/admin/users',{username:u,password:p,days:d});if(r.ok){msg.className='ok-b';msg.textContent='Created';document.getElementById('nU').value='';document.getElementById('nP').value='';loadUsers();}else{msg.className='err-b';msg.textContent=r.data.error||'Error';}}
+async function giveSub(id){const d=prompt('Days?','30');if(!d)return;await api('POST','/api/admin/subscribe/'+id,{days:+d});loadUsers();}
+async function rmSub(id){if(!confirm('Remove sub?'))return;await api('POST','/api/admin/unsubscribe/'+id);loadUsers();}
+async function setRole(id){const r=prompt('Role:');if(r===null)return;await api('POST','/api/admin/role/'+id,{role:r});loadUsers();}
+async function rstHwid(id){if(!confirm('Reset HWID?'))return;await api('POST','/api/admin/reset-hwid/'+id);loadUsers();}
+async function ban(id){if(!confirm('Ban?'))return;await api('POST','/api/admin/ban/'+id);loadUsers();}
 async function unban(id){await api('POST','/api/admin/unban/'+id);loadUsers();}
-async function delUser(id){if(!confirm('Удалить?'))return;await api('DELETE','/api/admin/users/'+id);loadUsers();}
-
-// Keys
-async function genKeys(){
-  const d=+document.getElementById('kD').value,c=+document.getElementById('kC').value,n=document.getElementById('kN').value.trim();
-  const out=document.getElementById('kOut');
-  if(!d||d<1){out.innerHTML='<div class="err-box">Дни?</div>';return;}
-  const r=await api('POST','/api/admin/keys',{days:d,count:c,note:n});
-  if(r.ok){out.innerHTML=`<div class="keys-out"><b style="color:var(--green)">Создано: ${r.data.keys.length}</b><pre>${r.data.keys.join('\n')}</pre></div>`;loadKeys();}
-  else out.innerHTML='<div class="err-box">'+(r.data.error||'Err')+'</div>';
-}
-
-async function loadKeys(){
-  const r=await api('GET','/api/admin/keys');if(!r.ok)return;
-  keys=r.data.keys;
-  const tb=document.getElementById('kBody');tb.innerHTML='';
-  for(const k of keys){
-    const u=k.used_at;const tr=document.createElement('tr');
-    tr.innerHTML=`
-      <td>${k.id}</td>
-      <td class="mono" style="font-size:10.5px;color:${u?'var(--white-30)':'var(--yellow)'}">${k.key}</td>
-      <td>${k.days}</td>
-      <td>${u?'<span class="badge b-used">USED</span>':'<span class="badge b-active">FREE</span>'}</td>
-      <td>${u?k.used_by+' · '+new Date(Number(u)).toLocaleDateString():'—'}</td>
-      <td>${k.note||'—'}</td>
-      <td class="acts"><button onclick="delKey(${k.id})" class="ab r" data-t="Del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></td>`;
-    tb.appendChild(tr);
-  }
-  updStats();
-}
-
-async function delKey(id){if(!confirm('Удалить?'))return;await api('DELETE','/api/admin/keys/'+id);loadKeys();}
-
-// Version
-async function setVer(){
-  const v=document.getElementById('vI').value.trim(),msg=document.getElementById('vMsg');
-  if(!v){msg.className='err-box';msg.textContent='?';return;}
-  const r=await api('POST','/api/admin/version',{version:v});
-  if(r.ok){msg.className='ok-box';msg.textContent='OK: '+v;}
-  else{msg.className='err-box';msg.textContent=r.data.error||'Err';}
-}
-
+async function delUser(id){if(!confirm('Delete forever?'))return;await api('DELETE','/api/admin/users/'+id);loadUsers();}
+async function genKeys(){const d=+document.getElementById('kD').value,c=+document.getElementById('kC').value,n=document.getElementById('kN').value.trim(),out=document.getElementById('kOut');if(!d||d<1){out.innerHTML='<div class="err-b">Days?</div>';return;}const r=await api('POST','/api/admin/keys',{days:d,count:c,note:n});if(r.ok){out.innerHTML=`<div class="keys-res"><b style="color:var(--green)">Generated: ${r.data.keys.length}</b><pre>${r.data.keys.join('\n')}</pre></div>`;loadKeys();}else out.innerHTML='<div class="err-b">'+(r.data.error||'Error')+'</div>';}
+async function loadKeys(){const r=await api('GET','/api/admin/keys');if(!r.ok)return;keys=r.data.keys;const tb=document.getElementById('kBody');tb.innerHTML='';for(const k of keys){const u=k.used_at,tr=document.createElement('tr');tr.innerHTML=`<td>${k.id}</td><td class="mono" style="font-size:10px;color:${u?'var(--text-4)':'var(--yellow)'}">${k.key}</td><td>${k.days}</td><td>${u?'<span class="badge b-used">USED</span>':'<span class="badge b-ok">FREE</span>'}</td><td>${u?k.used_by+' · '+new Date(Number(u)).toLocaleDateString():'—'}</td><td>${k.note||'—'}</td><td class="acts"><button onclick="delKey(${k.id})" class="ab r" data-t="Del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></td>`;tb.appendChild(tr);}updStats();}
+async function delKey(id){if(!confirm('Delete?'))return;await api('DELETE','/api/admin/keys/'+id);loadKeys();}
+async function setVer(){const v=document.getElementById('vI').value.trim(),msg=document.getElementById('vMsg');if(!v){msg.className='err-b';msg.textContent='?';return;}const r=await api('POST','/api/admin/version',{version:v});if(r.ok){msg.className='ok-b';msg.textContent='Updated: '+v;}else{msg.className='err-b';msg.textContent=r.data.error||'Error';}}
 fetch('/api/version').then(r=>r.text()).then(v=>{document.getElementById('vI').value=v;});
 document.getElementById('adminKey').addEventListener('keypress',e=>{if(e.key==='Enter')login();});
 checkAuth();

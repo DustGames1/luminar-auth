@@ -3,79 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Регистрация — Luminar</title>
+<title>Register — LUMINAR</title>
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
-<div class="topbar">
-  <div class="topbar-inner">
-    <a href="/" class="topbar-logo"><span class="topbar-logo-icon">L</span> Luminar</a>
-    <nav class="topbar-nav">
-      <a href="/">Главная</a>
-      <a href="/buy">Тарифы</a>
-    </nav>
-    <div class="topbar-right">
-      <a href="/login" class="btn btn-outline btn-sm">Войти</a>
-    </div>
-  </div>
+<div class="nav-line">
+  <a href="/" class="brand">LUMINAR</a>
+  <div class="links"><a href="/">Home</a><a href="/buy">Store</a></div>
+  <div class="right"><a href="/login" class="btn btn-ghost">Login</a></div>
 </div>
 
-<div class="auth-page">
-  <div class="auth-box">
-    <h2>Регистрация</h2>
-    <p class="sub">Создайте аккаунт Luminar</p>
-
-    <div class="auth-switch">
-      <a href="/login">Вход</a>
-      <a href="/register" class="on">Регистрация</a>
+<div class="auth-full">
+  <div class="auth-panel">
+    <h2>REGISTER</h2>
+    <p class="sub">Create your account</p>
+    <div class="auth-tabs">
+      <a href="/login">Login</a>
+      <a href="/register" class="on">Register</a>
     </div>
-
-    <form id="regForm">
-      <div class="field">
-        <label>Логин</label>
-        <input type="text" id="username" placeholder="3-16 символов, a-z 0-9 _" required autocomplete="username">
+    <form id="f">
+      <div class="inp-group">
+        <label>Username</label>
+        <input type="text" id="username" placeholder="3-16 chars, a-z 0-9 _" required autocomplete="username">
       </div>
-      <div class="field">
-        <label>Пароль</label>
-        <input type="password" id="password" placeholder="минимум 6 символов" required autocomplete="new-password">
+      <div class="inp-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="min 6 characters" required autocomplete="new-password">
       </div>
-      <div class="field">
-        <label>Повтор пароля</label>
+      <div class="inp-group">
+        <label>Confirm</label>
         <input type="password" id="password2" placeholder="••••••••" required autocomplete="new-password">
       </div>
-      <button type="submit" class="btn btn-fill btn-block btn-lg">Создать аккаунт</button>
+      <button type="submit" class="btn btn-neon btn-block btn-lg">Create Account</button>
       <div id="msg" class="auth-msg"></div>
     </form>
   </div>
 </div>
 
 <script>
-document.getElementById('regForm').addEventListener('submit', async e => {
+document.getElementById('f').addEventListener('submit', async e => {
   e.preventDefault();
   const msg = document.getElementById('msg');
   msg.className = 'auth-msg';
-
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
-  const password2 = document.getElementById('password2').value;
-  if (password !== password2) { msg.className = 'auth-msg err'; msg.textContent = 'Пароли не совпадают'; return; }
-
+  const p2 = document.getElementById('password2').value;
+  if (password !== p2) { msg.className='auth-msg err'; msg.textContent='Passwords mismatch'; return; }
   try {
-    const r = await fetch('/api/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
-    const data = await r.json();
-    if (r.ok) {
-      localStorage.setItem('luminar_token', data.token);
-      msg.className = 'auth-msg ok'; msg.textContent = 'Создан!';
-      setTimeout(() => location.href = '/buy', 500);
-    } else {
-      msg.className = 'auth-msg err'; msg.textContent = data.error || 'Ошибка';
-    }
-  } catch { msg.className = 'auth-msg err'; msg.textContent = 'Ошибка сети'; }
+    const r = await fetch('/api/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username,password}) });
+    const d = await r.json();
+    if (r.ok) { localStorage.setItem('luminar_token',d.token); msg.className='auth-msg ok'; msg.textContent='Created!'; setTimeout(()=>location.href='/buy',400); }
+    else { msg.className='auth-msg err'; msg.textContent=d.error||'Error'; }
+  } catch { msg.className='auth-msg err'; msg.textContent='Network error'; }
 });
 </script>
 </body>
