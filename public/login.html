@@ -8,22 +8,24 @@
 </head>
 <body>
 
-<nav>
-  <a href="/" class="logo">
-    <span class="logo-icon">L</span>
-    Luminar
-  </a>
-  <div class="links">
-    <a href="/">Главная</a>
-    <a href="/buy">Тарифы</a>
+<header class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <span class="nav-logo-mark">L</span>
+      Luminar
+    </a>
+    <nav class="nav-links">
+      <a href="/">Главная</a>
+      <a href="/buy">Тарифы</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="/login" class="btn btn-ghost btn-sm">Войти</a>
+      <a href="/register" class="btn btn-white btn-sm">Регистрация</a>
+    </div>
   </div>
-  <div class="auth-btns">
-    <a href="/login" class="btn btn-secondary">Войти</a>
-    <a href="/register" class="btn btn-primary">Регистрация</a>
-  </div>
-</nav>
+</header>
 
-<div class="auth-container">
+<div class="auth-wrapper">
   <div class="auth-card">
     <h2>Авторизация</h2>
     <p class="auth-subtitle">Войдите в свой аккаунт Luminar</p>
@@ -36,14 +38,14 @@
     <form id="loginForm">
       <div class="form-group">
         <label>Юзернейм</label>
-        <input type="text" id="username" placeholder="Ваш логин" required autocomplete="username">
+        <input class="form-input" type="text" id="username" placeholder="Ваш логин" required autocomplete="username">
       </div>
       <div class="form-group">
         <label>Пароль</label>
-        <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+        <input class="form-input" type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
       </div>
-      <button type="submit" class="btn btn-primary">Войти</button>
-      <div id="msg" class="error-msg"></div>
+      <button type="submit" class="btn btn-white btn-block">Войти</button>
+      <div id="msg" class="msg"></div>
     </form>
   </div>
 </div>
@@ -52,7 +54,7 @@
 document.getElementById('loginForm').addEventListener('submit', async e => {
   e.preventDefault();
   const msg = document.getElementById('msg');
-  msg.className = 'error-msg';
+  msg.className = 'msg';
   msg.textContent = '';
 
   const username = document.getElementById('username').value.trim();
@@ -67,13 +69,15 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
     const data = await r.json();
     if (r.ok) {
       localStorage.setItem('luminar_token', data.token);
-      msg.className = 'success-msg';
+      msg.className = 'msg msg-success';
       msg.textContent = 'Успешно! Перенаправление...';
       setTimeout(() => location.href = '/profile', 600);
     } else {
+      msg.className = 'msg msg-error';
       msg.textContent = data.error || 'Ошибка входа';
     }
   } catch (err) {
+    msg.className = 'msg msg-error';
     msg.textContent = 'Ошибка сети';
   }
 });

@@ -8,22 +8,24 @@
 </head>
 <body>
 
-<nav>
-  <a href="/" class="logo">
-    <span class="logo-icon">L</span>
-    Luminar
-  </a>
-  <div class="links">
-    <a href="/">Главная</a>
-    <a href="/buy">Тарифы</a>
+<header class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <span class="nav-logo-mark">L</span>
+      Luminar
+    </a>
+    <nav class="nav-links">
+      <a href="/">Главная</a>
+      <a href="/buy">Тарифы</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="/login" class="btn btn-ghost btn-sm">Войти</a>
+      <a href="/register" class="btn btn-white btn-sm">Регистрация</a>
+    </div>
   </div>
-  <div class="auth-btns">
-    <a href="/login" class="btn btn-secondary">Войти</a>
-    <a href="/register" class="btn btn-primary">Регистрация</a>
-  </div>
-</nav>
+</header>
 
-<div class="auth-container">
+<div class="auth-wrapper">
   <div class="auth-card">
     <h2>Создать аккаунт</h2>
     <p class="auth-subtitle">Зарегистрируйтесь для доступа к Luminar</p>
@@ -36,18 +38,18 @@
     <form id="registerForm">
       <div class="form-group">
         <label>Юзернейм</label>
-        <input type="text" id="username" placeholder="3-16 символов, латиница/цифры" required autocomplete="username">
+        <input class="form-input" type="text" id="username" placeholder="3-16 символов, латиница/цифры" required autocomplete="username">
       </div>
       <div class="form-group">
         <label>Пароль</label>
-        <input type="password" id="password" placeholder="Минимум 6 символов" required autocomplete="new-password">
+        <input class="form-input" type="password" id="password" placeholder="Минимум 6 символов" required autocomplete="new-password">
       </div>
       <div class="form-group">
         <label>Повтор пароля</label>
-        <input type="password" id="password2" placeholder="••••••••" required autocomplete="new-password">
+        <input class="form-input" type="password" id="password2" placeholder="••••••••" required autocomplete="new-password">
       </div>
-      <button type="submit" class="btn btn-primary">Создать аккаунт</button>
-      <div id="msg" class="error-msg"></div>
+      <button type="submit" class="btn btn-white btn-block">Создать аккаунт</button>
+      <div id="msg" class="msg"></div>
     </form>
   </div>
 </div>
@@ -56,12 +58,12 @@
 document.getElementById('registerForm').addEventListener('submit', async e => {
   e.preventDefault();
   const msg = document.getElementById('msg');
-  msg.className = 'error-msg';
+  msg.className = 'msg';
 
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
   const password2 = document.getElementById('password2').value;
-  if (password !== password2) { msg.textContent = 'Пароли не совпадают'; return; }
+  if (password !== password2) { msg.className = 'msg msg-error'; msg.textContent = 'Пароли не совпадают'; return; }
 
   try {
     const r = await fetch('/api/register', {
@@ -72,13 +74,15 @@ document.getElementById('registerForm').addEventListener('submit', async e => {
     const data = await r.json();
     if (r.ok) {
       localStorage.setItem('luminar_token', data.token);
-      msg.className = 'success-msg';
-      msg.textContent = 'Аккаунт создан!';
+      msg.className = 'msg msg-success';
+      msg.textContent = 'Аккаунт создан! Перенаправление...';
       setTimeout(() => location.href = '/buy', 600);
     } else {
+      msg.className = 'msg msg-error';
       msg.textContent = data.error || 'Ошибка регистрации';
     }
   } catch (err) {
+    msg.className = 'msg msg-error';
     msg.textContent = 'Ошибка сети';
   }
 });
