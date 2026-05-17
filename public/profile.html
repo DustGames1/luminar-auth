@@ -47,12 +47,20 @@
     <!-- Settings -->
     <div id="tab-settings" class="hidden">
       <div class="activate-card">
-        <label>Avatar URL</label>
+        <label>Avatar</label>
         <div class="activate-row">
-          <input type="text" id="avatarUrl" placeholder="https://...">
-          <button class="btn btn-purple" onclick="updateAvatar()">Save</button>
+          <input type="file" id="avatarFile" accept="image/*" style="display:none;">
+          <button class="btn btn-dark" onclick="document.getElementById('avatarFile').click()" style="flex:1;">📁 Choose File</button>
+          <button class="btn btn-purple" onclick="uploadAvatar()">Upload</button>
         </div>
         <div id="avatarMsg" class="form-msg"></div>
+        <div style="margin-top:12px;">
+          <label style="font-size:11px;color:var(--text-3);">Or paste URL:</label>
+          <div class="activate-row" style="margin-top:6px;">
+            <input type="text" id="avatarUrl" placeholder="https://...">
+            <button class="btn btn-purple" onclick="updateAvatar()">Save</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -98,6 +106,7 @@ fetch('/api/version').then(r=>r.text()).then(v=>{document.getElementById('versio
 document.querySelectorAll('.profile-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.profile-tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');document.querySelectorAll('[id^="tab-"]').forEach(t=>t.classList.add('hidden'));document.getElementById('tab-'+tab.dataset.tab).classList.remove('hidden');});});
 
 async function updateAvatar(){const url=document.getElementById('avatarUrl').value.trim(),msg=document.getElementById('avatarMsg');if(!url){msg.className='form-msg err';msg.textContent='Enter URL';return;}const r=await fetch('/api/me/avatar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({avatar_url:url})});if(r.ok){msg.className='form-msg ok';msg.textContent='Saved!';document.getElementById('avatar').src=url;}else{const d=await r.json();msg.className='form-msg err';msg.textContent=d.error||'Error';}}
+async function uploadAvatar(){const msg=document.getElementById('avatarMsg');const file=document.getElementById('avatarFile').files[0];if(!file){msg.className='form-msg err';msg.textContent='Choose a file first';return;}if(file.size>1500000){msg.className='form-msg err';msg.textContent='File too large (max 1.5MB)';return;}const reader=new FileReader();reader.onload=async function(){const dataUrl=reader.result;const r=await fetch('/api/me/avatar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({avatar_url:dataUrl})});if(r.ok){msg.className='form-msg ok';msg.textContent='Uploaded!';document.getElementById('avatar').src=dataUrl;}else{const d=await r.json();msg.className='form-msg err';msg.textContent=d.error||'Error';}};reader.readAsDataURL(file);}
 async function activate(){const key=document.getElementById('licenseKey').value.trim(),msg=document.getElementById('activateMsg');if(!key){msg.className='form-msg err';msg.textContent='Enter key';return;}const r=await fetch('/api/me/activate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({key})});const d=await r.json();if(r.ok){msg.className='form-msg ok';msg.textContent='+'+d.days+' days!';document.getElementById('licenseKey').value='';setTimeout(loadProfile,500);}else{msg.className='form-msg err';msg.textContent=d.error||'Error';}}
 function downloadLoader(){const msg=document.getElementById('downloadMsg');if(!userData||!userData.subscription||!userData.subscription.active){msg.className='form-msg err';msg.textContent='Need subscription';setTimeout(()=>location.href='/buy',1200);return;}msg.className='form-msg ok';msg.textContent='Starting...';window.location.href='/api/download/loader?token='+encodeURIComponent(token);}
 function logout(){localStorage.removeItem('luminar_token');location.href='/';}

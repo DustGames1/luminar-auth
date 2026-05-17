@@ -81,7 +81,7 @@ const app = express();
 app.set('trust proxy', 1);
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors());
-app.use(express.json({ limit: '64kb' }));
+app.use(express.json({ limit: '2mb' }));
 
 // Serve static admin panel
 app.use(express.static(path.join(__dirname, 'public')));
@@ -351,8 +351,8 @@ app.post('/api/me/avatar', async (req, res) => {
     const token = auth.substring(7);
     const payload = jwt.verify(token, JWT_SECRET);
     const { avatar_url } = req.body || {};
-    if (!avatar_url || typeof avatar_url !== 'string' || avatar_url.length > 2000)
-      return res.status(400).json({ error: 'Invalid avatar URL' });
+    if (!avatar_url || typeof avatar_url !== 'string' || avatar_url.length > 500000)
+      return res.status(400).json({ error: 'Invalid avatar' });
     await pool.query('UPDATE users SET avatar_url = $1 WHERE username = $2', [avatar_url, payload.username]);
     res.json({ ok: true });
   } catch (e) {
