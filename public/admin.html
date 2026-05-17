@@ -6,502 +6,401 @@
 <title>Admin — Luminar</title>
 <link rel="stylesheet" href="/style.css">
 <style>
-/* ═══ Admin-specific styles ═══ */
-.admin-layout {
+/* ═══ Admin Layout ═══ */
+.adm {
   display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 16px;
-  max-width: 1300px;
-  margin: 30px auto;
-  padding: 0 20px;
+  grid-template-columns: 200px 1fr;
+  gap: 12px;
+  max-width: 1260px;
+  margin: 100px auto 60px;
+  padding: 0 24px;
 }
 
-.admin-sidebar {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 12px;
+.adm-nav {
+  background: var(--surface-1);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 10px;
   height: fit-content;
   position: sticky;
-  top: 100px;
+  top: 90px;
 }
 
-.admin-menu-item {
+.adm-nav-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 11px 14px;
-  border-radius: var(--radius-sm);
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
   cursor: pointer;
-  color: var(--text-secondary);
-  font-size: 13px;
+  color: var(--white-50);
+  font-size: 12.5px;
   font-weight: 500;
-  transition: var(--transition);
+  transition: 0.2s;
   margin-bottom: 2px;
 }
 
-.admin-menu-item:hover { background: var(--accent-soft); color: #fff; }
-.admin-menu-item.active { background: #fff; color: var(--bg-primary); font-weight: 700; }
+.adm-nav-item:hover { background: var(--white-04); color: var(--white); }
+.adm-nav-item.active { background: var(--white); color: var(--bg); font-weight: 700; }
 
-.admin-main { display: flex; flex-direction: column; gap: 14px; }
+.adm-body { display: flex; flex-direction: column; gap: 12px; }
 
-.admin-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 24px;
+.adm-card {
+  background: var(--surface-1);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 22px;
 }
 
-.admin-card-title {
-  font-size: 16px;
+.adm-card-head {
+  font-size: 15px;
   font-weight: 700;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   display: flex;
   align-items: center;
   gap: 8px;
-  letter-spacing: -0.3px;
 }
 
-.admin-toolbar {
+.adm-bar {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) auto;
-  gap: 8px;
-  margin-bottom: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) auto;
+  gap: 6px;
+  margin-bottom: 12px;
 }
 
-.admin-toolbar input {
-  background: var(--bg-input);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 11px 14px;
-  color: #fff;
-  font-size: 13px;
+.adm-bar input {
+  background: var(--surface-2);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: var(--white);
+  font-size: 12.5px;
   outline: none;
-  transition: var(--transition);
+  transition: 0.2s;
 }
+.adm-bar input:focus { border-color: var(--white-15); }
+.adm-bar input::placeholder { color: var(--white-30); }
 
-.admin-toolbar input:focus { border-color: var(--border-active); }
-.admin-toolbar input::placeholder { color: var(--text-dim); }
-
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-}
-
-.admin-table th,
-.admin-table td {
-  text-align: left;
-  padding: 11px 12px;
-  border-bottom: 1px solid var(--border);
-}
-
-.admin-table th {
-  color: var(--text-muted);
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 10px;
-  letter-spacing: 1px;
-}
-
-.admin-table tbody tr:hover { background: rgba(255, 255, 255, 0.015); }
-
-.admin-table .actions { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
-
-.act-btn {
-  position: relative;
-  width: 30px;
-  height: 30px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--accent-soft);
-  color: var(--text-secondary);
-  cursor: pointer;
-  font-size: 13px;
-  transition: var(--transition);
-  padding: 0;
-}
-
-.act-btn:hover {
-  transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--border-hover);
-  color: #fff;
-}
-
-.act-btn.green { background: var(--green-soft); border-color: rgba(16, 185, 129, 0.25); color: var(--green); }
-.act-btn.green:hover { background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); }
-.act-btn.red { background: var(--red-soft); border-color: rgba(239, 68, 68, 0.25); color: var(--red); }
-.act-btn.red:hover { background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); }
-
-.act-btn[data-tip]::after {
-  content: attr(data-tip);
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%) translateY(3px);
-  background: var(--bg-primary);
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 5px;
-  font-size: 10px;
-  font-weight: 600;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s, transform 0.15s;
-  border: 1px solid var(--border);
-  z-index: 10;
-}
-
-.act-btn[data-tip]:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
-.act-btn svg { width: 14px; height: 14px; stroke-width: 2.2; display: block; }
-
-.badge {
-  display: inline-block;
-  padding: 3px 9px;
-  border-radius: 5px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.badge-active { background: var(--green-soft); color: var(--green); }
-.badge-banned { background: var(--red-soft); color: var(--red); }
-.badge-expired { background: var(--yellow-soft); color: var(--yellow); }
-.badge-used { background: rgba(120, 120, 140, 0.12); color: #8888a0; }
-
-.keys-result {
-  margin-top: 12px;
-  padding: 14px;
-  background: var(--green-soft);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  border-radius: var(--radius-md);
-}
-
-.keys-result pre {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  color: var(--green);
-  margin-top: 8px;
-  user-select: all;
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
-.admin-stats {
+.adm-stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-bottom: 14px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
-.admin-stat-box {
-  background: var(--bg-input);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 16px;
+.adm-stat {
+  background: var(--surface-2);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 14px;
 }
+.adm-stat .n { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+.adm-stat .l { font-size: 9.5px; color: var(--white-30); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 700; margin-top: 2px; }
 
-.admin-stat-box .num { font-size: 24px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
-.admin-stat-box .lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-top: 3px; }
+/* Table */
+.tbl { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+.tbl th, .tbl td { text-align: left; padding: 10px 10px; border-bottom: 1px solid var(--glass-border); }
+.tbl th { color: var(--white-30); font-weight: 700; text-transform: uppercase; font-size: 9.5px; letter-spacing: 1px; }
+.tbl tbody tr:hover { background: var(--white-04); }
 
-.error-box { color: var(--red); font-size: 12px; margin-top: 10px; }
-.success-box { color: var(--green); font-size: 12px; margin-top: 10px; }
+.tbl .acts { display: flex; gap: 4px; flex-wrap: wrap; }
+
+.ab {
+  width: 28px; height: 28px;
+  display: inline-grid; place-items: center;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+  background: var(--white-04);
+  color: var(--white-50);
+  cursor: pointer;
+  transition: 0.2s;
+  position: relative;
+}
+.ab:hover { background: var(--white-08); color: var(--white); border-color: var(--white-15); transform: translateY(-1px); }
+.ab.g { background: rgba(52,211,153,0.08); border-color: rgba(52,211,153,0.2); color: var(--green); }
+.ab.g:hover { background: rgba(52,211,153,0.15); }
+.ab.r { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.2); color: var(--red); }
+.ab.r:hover { background: rgba(248,113,113,0.15); }
+.ab svg { width: 13px; height: 13px; stroke-width: 2.2; }
+
+.ab[data-t]::after {
+  content: attr(data-t);
+  position: absolute; bottom: calc(100% + 5px); left: 50%;
+  transform: translateX(-50%) translateY(3px);
+  background: var(--bg); color: var(--white); padding: 3px 7px;
+  border-radius: 5px; font-size: 9.5px; font-weight: 600;
+  white-space: nowrap; pointer-events: none; opacity: 0;
+  transition: 0.15s; border: 1px solid var(--glass-border); z-index: 10;
+}
+.ab[data-t]:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.badge { display: inline-block; padding: 2px 8px; border-radius: 5px; font-size: 9.5px; font-weight: 700; letter-spacing: 0.5px; }
+.b-active { background: rgba(52,211,153,0.1); color: var(--green); }
+.b-banned { background: rgba(248,113,113,0.1); color: var(--red); }
+.b-expired { background: rgba(251,191,36,0.1); color: var(--yellow); }
+.b-used { background: var(--white-04); color: var(--white-30); }
+
+.keys-out { margin-top: 10px; padding: 12px; background: rgba(52,211,153,0.05); border: 1px solid rgba(52,211,153,0.15); border-radius: 10px; }
+.keys-out pre { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--green); margin-top: 6px; user-select: all; white-space: pre-wrap; }
+
+.err-box { color: var(--red); font-size: 11.5px; margin-top: 8px; }
+.ok-box { color: var(--green); font-size: 11.5px; margin-top: 8px; }
 
 @media (max-width: 768px) {
-  .admin-layout { grid-template-columns: 1fr; }
-  .admin-sidebar { position: static; }
-  .admin-stats { grid-template-columns: repeat(2, 1fr); }
+  .adm { grid-template-columns: 1fr; margin-top: 80px; }
+  .adm-nav { position: static; }
+  .adm-stats { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
 <body>
 
-<header class="nav">
-  <div class="nav-inner">
-    <a href="/" class="nav-logo">
-      <span class="nav-logo-mark">L</span>
-      Luminar
-    </a>
-    <nav class="nav-links">
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="topbar-logo"><span class="topbar-logo-icon">L</span> Luminar</a>
+    <nav class="topbar-nav">
       <a href="/">Главная</a>
       <a href="/profile">Профиль</a>
       <a href="/admin" class="active">Admin</a>
     </nav>
-    <div class="nav-actions">
-      <a href="#" onclick="logout()" class="btn btn-ghost btn-sm">Выйти</a>
+    <div class="topbar-right">
+      <a href="#" onclick="logout()" class="btn btn-outline btn-sm">Выйти</a>
     </div>
-  </div>
-</header>
-
-<!-- Login -->
-<div id="login-screen" class="auth-wrapper">
-  <div class="auth-card">
-    <h2>Admin Panel</h2>
-    <p class="auth-subtitle">Введите admin key для доступа</p>
-    <div class="form-group">
-      <label>Admin Key</label>
-      <input class="form-input" type="password" id="adminKey" placeholder="Введите ключ">
-    </div>
-    <button onclick="login()" class="btn btn-white btn-block">Войти</button>
-    <div id="loginError" class="msg msg-error"></div>
   </div>
 </div>
 
-<!-- Main -->
-<div id="main-screen" class="hidden">
-  <div class="admin-layout">
-    <aside class="admin-sidebar">
-      <div class="admin-menu-item active" data-section="dashboard">Обзор</div>
-      <div class="admin-menu-item" data-section="users">Пользователи</div>
-      <div class="admin-menu-item" data-section="keys">Ключи</div>
-      <div class="admin-menu-item" data-section="version">Версия</div>
+<!-- Auth -->
+<div id="auth-screen" class="auth-page">
+  <div class="auth-box">
+    <h2>Admin</h2>
+    <p class="sub">Введите ключ доступа</p>
+    <div class="field">
+      <label>Admin Key</label>
+      <input type="password" id="adminKey" placeholder="••••••••">
+    </div>
+    <button onclick="login()" class="btn btn-fill btn-block btn-lg">Войти</button>
+    <div id="loginErr" class="auth-msg err"></div>
+  </div>
+</div>
+
+<!-- Panel -->
+<div id="panel" class="hidden">
+  <div class="adm">
+    <aside class="adm-nav">
+      <div class="adm-nav-item active" data-s="dash">Обзор</div>
+      <div class="adm-nav-item" data-s="users">Юзеры</div>
+      <div class="adm-nav-item" data-s="keys">Ключи</div>
+      <div class="adm-nav-item" data-s="ver">Версия</div>
     </aside>
 
-    <div class="admin-main">
-
+    <div class="adm-body">
       <!-- Dashboard -->
-      <div id="section-dashboard" class="section-block">
-        <div class="admin-card">
-          <div class="admin-card-title">Статистика</div>
-          <div class="admin-stats">
-            <div class="admin-stat-box"><div class="num" id="statTotal">—</div><div class="lbl">Всего</div></div>
-            <div class="admin-stat-box"><div class="num" id="statActive">—</div><div class="lbl">Активных</div></div>
-            <div class="admin-stat-box"><div class="num" id="statBanned">—</div><div class="lbl">Забанено</div></div>
-            <div class="admin-stat-box"><div class="num" id="statKeys">—</div><div class="lbl">Свободных ключей</div></div>
+      <div id="s-dash" class="s-block">
+        <div class="adm-card">
+          <div class="adm-card-head">Статистика</div>
+          <div class="adm-stats">
+            <div class="adm-stat"><div class="n" id="sT">—</div><div class="l">Всего</div></div>
+            <div class="adm-stat"><div class="n" id="sA">—</div><div class="l">Активных</div></div>
+            <div class="adm-stat"><div class="n" id="sB">—</div><div class="l">Банов</div></div>
+            <div class="adm-stat"><div class="n" id="sK">—</div><div class="l">Ключей</div></div>
           </div>
         </div>
-
-        <div class="admin-card">
-          <div class="admin-card-title">Создать пользователя</div>
-          <div class="admin-toolbar">
-            <input type="text" id="newUser" placeholder="Username">
-            <input type="password" id="newPass" placeholder="Password">
-            <input type="number" id="newDays" placeholder="Дней" value="30">
-            <button onclick="createUser()" class="btn btn-white btn-sm">Создать</button>
+        <div class="adm-card">
+          <div class="adm-card-head">Новый пользователь</div>
+          <div class="adm-bar">
+            <input type="text" id="nU" placeholder="username">
+            <input type="password" id="nP" placeholder="password">
+            <input type="number" id="nD" placeholder="дней" value="30">
+            <button onclick="createUser()" class="btn btn-fill btn-sm">Создать</button>
           </div>
-          <div id="createMsg"></div>
+          <div id="cMsg"></div>
         </div>
       </div>
 
       <!-- Users -->
-      <div id="section-users" class="section-block hidden">
-        <div class="admin-card">
-          <div class="admin-card-title">Пользователи <button onclick="loadUsers()" class="btn btn-ghost btn-sm" style="margin-left:auto;">Обновить</button></div>
-          <table class="admin-table">
-            <thead>
-              <tr><th>ID</th><th>Username</th><th>Роль</th><th>Подписка</th><th>HWID</th><th>Статус</th><th>Действия</th></tr>
-            </thead>
-            <tbody id="usersBody"></tbody>
+      <div id="s-users" class="s-block hidden">
+        <div class="adm-card">
+          <div class="adm-card-head">Пользователи <button onclick="loadUsers()" class="btn btn-glass btn-sm" style="margin-left:auto;">↻</button></div>
+          <table class="tbl">
+            <thead><tr><th>ID</th><th>User</th><th>Роль</th><th>Подписка</th><th>HWID</th><th>Статус</th><th>Действия</th></tr></thead>
+            <tbody id="uBody"></tbody>
           </table>
         </div>
       </div>
 
       <!-- Keys -->
-      <div id="section-keys" class="section-block hidden">
-        <div class="admin-card">
-          <div class="admin-card-title">Создать ключи</div>
-          <div class="admin-toolbar">
-            <input type="number" id="keyDays" placeholder="Дней" value="30">
-            <input type="number" id="keyCount" placeholder="Кол-во" value="1">
-            <input type="text" id="keyNote" placeholder="Заметка">
-            <button onclick="createKeys()" class="btn btn-white btn-sm">Создать</button>
+      <div id="s-keys" class="s-block hidden">
+        <div class="adm-card">
+          <div class="adm-card-head">Генерация ключей</div>
+          <div class="adm-bar">
+            <input type="number" id="kD" placeholder="дней" value="30">
+            <input type="number" id="kC" placeholder="кол-во" value="1">
+            <input type="text" id="kN" placeholder="заметка">
+            <button onclick="genKeys()" class="btn btn-fill btn-sm">Создать</button>
           </div>
-          <div id="keysOutput"></div>
+          <div id="kOut"></div>
         </div>
-
-        <div class="admin-card">
-          <div class="admin-card-title">Все ключи <button onclick="loadKeys()" class="btn btn-ghost btn-sm" style="margin-left:auto;">Обновить</button></div>
-          <table class="admin-table">
-            <thead>
-              <tr><th>ID</th><th>Ключ</th><th>Дней</th><th>Статус</th><th>Использован</th><th>Заметка</th><th></th></tr>
-            </thead>
-            <tbody id="keysBody"></tbody>
+        <div class="adm-card">
+          <div class="adm-card-head">Все ключи <button onclick="loadKeys()" class="btn btn-glass btn-sm" style="margin-left:auto;">↻</button></div>
+          <table class="tbl">
+            <thead><tr><th>ID</th><th>Ключ</th><th>Дней</th><th>Статус</th><th>Кем</th><th>Note</th><th></th></tr></thead>
+            <tbody id="kBody"></tbody>
           </table>
         </div>
       </div>
 
       <!-- Version -->
-      <div id="section-version" class="section-block hidden">
-        <div class="admin-card">
-          <div class="admin-card-title">Версия клиента</div>
-          <p style="color:var(--text-muted); font-size:13px; margin-bottom:14px;">Лоадер сравнивает эту версию с локальной и обновляет клиент автоматически</p>
-          <div class="admin-toolbar">
-            <input type="text" id="versionInput" placeholder="1.0.0">
-            <button onclick="updateVersion()" class="btn btn-white btn-sm">Обновить</button>
+      <div id="s-ver" class="s-block hidden">
+        <div class="adm-card">
+          <div class="adm-card-head">Версия клиента</div>
+          <p style="color:var(--white-30);font-size:12px;margin-bottom:12px;">Лоадер сверяет версию и обновляет клиент автоматически</p>
+          <div class="adm-bar">
+            <input type="text" id="vI" placeholder="1.0.0">
+            <button onclick="setVer()" class="btn btn-fill btn-sm">Обновить</button>
           </div>
-          <div id="versionMsg"></div>
+          <div id="vMsg"></div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
 
 <script>
-let ADMIN_KEY = localStorage.getItem('adminKey') || '';
-let allUsers = [];
-let allKeys = [];
+let AK = localStorage.getItem('adminKey')||'';
+let users=[], keys=[];
 
-async function api(method, path, body) {
-  const opts = { method, headers: { 'x-admin-key': ADMIN_KEY } };
-  if (body) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
-  const r = await fetch(path, opts);
-  return { ok: r.ok, status: r.status, data: await r.json().catch(() => ({})) };
+async function api(m,p,b){
+  const o={method:m,headers:{'x-admin-key':AK}};
+  if(b){o.headers['Content-Type']='application/json';o.body=JSON.stringify(b);}
+  const r=await fetch(p,o);
+  return {ok:r.ok,data:await r.json().catch(()=>({}))};
 }
 
-function login() {
-  const key = document.getElementById('adminKey').value.trim();
-  if (!key) { document.getElementById('loginError').textContent = 'Введите ключ'; return; }
-  ADMIN_KEY = key;
-  localStorage.setItem('adminKey', key);
-  checkAuth();
+function login(){
+  const k=document.getElementById('adminKey').value.trim();
+  if(!k){document.getElementById('loginErr').textContent='Введите ключ';return;}
+  AK=k; localStorage.setItem('adminKey',k); checkAuth();
 }
 
-async function checkAuth() {
-  if (!ADMIN_KEY) return;
-  const r = await api('GET', '/api/admin/users');
-  if (!r.ok) {
-    document.getElementById('loginError').textContent = 'Неверный ключ';
-    ADMIN_KEY = ''; localStorage.removeItem('adminKey'); return;
-  }
-  document.getElementById('login-screen').classList.add('hidden');
-  document.getElementById('main-screen').classList.remove('hidden');
+async function checkAuth(){
+  if(!AK)return;
+  const r=await api('GET','/api/admin/users');
+  if(!r.ok){document.getElementById('loginErr').textContent='Неверный ключ';AK='';localStorage.removeItem('adminKey');return;}
+  document.getElementById('auth-screen').classList.add('hidden');
+  document.getElementById('panel').classList.remove('hidden');
   loadUsers(); loadKeys();
 }
 
-function logout() { localStorage.removeItem('adminKey'); ADMIN_KEY = ''; location.reload(); }
+function logout(){localStorage.removeItem('adminKey');AK='';location.reload();}
 
-// Sidebar
-document.querySelectorAll('.admin-menu-item').forEach(item => {
-  item.addEventListener('click', () => {
-    document.querySelectorAll('.admin-menu-item').forEach(m => m.classList.remove('active'));
-    item.classList.add('active');
-    document.querySelectorAll('.section-block').forEach(s => s.classList.add('hidden'));
-    document.getElementById('section-' + item.dataset.section).classList.remove('hidden');
+// Nav
+document.querySelectorAll('.adm-nav-item').forEach(i=>{
+  i.addEventListener('click',()=>{
+    document.querySelectorAll('.adm-nav-item').forEach(x=>x.classList.remove('active'));
+    i.classList.add('active');
+    document.querySelectorAll('.s-block').forEach(x=>x.classList.add('hidden'));
+    document.getElementById('s-'+i.dataset.s).classList.remove('hidden');
   });
 });
 
 // Users
-async function loadUsers() {
-  const r = await api('GET', '/api/admin/users');
-  if (!r.ok) return;
-  allUsers = r.data.users;
-  renderUsers(); updateStats();
+async function loadUsers(){
+  const r=await api('GET','/api/admin/users'); if(!r.ok)return;
+  users=r.data.users; renderUsers(); updStats();
 }
 
-function renderUsers() {
-  const tbody = document.getElementById('usersBody');
-  tbody.innerHTML = '';
-  for (const u of allUsers) {
-    const sub = u.subscription;
-    const tr = document.createElement('tr');
-    let status, until;
-    if (u.banned) status = '<span class="badge badge-banned">BANNED</span>';
-    else if (sub.active) { status = '<span class="badge badge-active">ACTIVE</span>'; until = new Date(Number(sub.until)).toLocaleDateString() + ' (' + sub.daysLeft + 'd)'; }
-    else { status = '<span class="badge badge-expired">EXPIRED</span>'; until = '—'; }
-
-    tr.innerHTML = `
-      <td>${u.id}</td>
-      <td><strong style="color:#fff;">${u.username}</strong></td>
-      <td>${u.role || '—'}</td>
-      <td>${until || '—'}</td>
-      <td title="${u.hwid || ''}">${u.hwid ? u.hwid.substring(0, 8) + '…' : '<span class="text-red">—</span>'}</td>
-      <td>${status}</td>
-      <td class="actions">
-        <button onclick="giveSub(${u.id})" class="act-btn green" data-tip="+ Подписка"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></button>
-        <button onclick="removeSub(${u.id})" class="act-btn red" data-tip="- Подписка"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg></button>
-        <button onclick="setRole(${u.id})" class="act-btn" data-tip="Роль"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a4 4 0 100-8 4 4 0 000 8z"/><path d="M5 21a7 7 0 0114 0"/></svg></button>
-        <button onclick="resetHwid(${u.id})" class="act-btn" data-tip="HWID"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0115.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></svg></button>
+function renderUsers(){
+  const tb=document.getElementById('uBody'); tb.innerHTML='';
+  for(const u of users){
+    const sub=u.subscription; const tr=document.createElement('tr');
+    let st,until;
+    if(u.banned) st='<span class="badge b-banned">BAN</span>';
+    else if(sub.active){st='<span class="badge b-active">OK</span>';until=new Date(Number(sub.until)).toLocaleDateString()+' ('+sub.daysLeft+'d)';}
+    else{st='<span class="badge b-expired">EXP</span>';until='—';}
+    tr.innerHTML=`
+      <td>${u.id}</td><td><b style="color:#fff">${u.username}</b></td><td>${u.role||'—'}</td>
+      <td>${until||'—'}</td><td title="${u.hwid||''}">${u.hwid?u.hwid.slice(0,8)+'…':'<span class="c-red">—</span>'}</td><td>${st}</td>
+      <td class="acts">
+        <button onclick="giveSub(${u.id})" class="ab g" data-t="+Sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></button>
+        <button onclick="rmSub(${u.id})" class="ab r" data-t="-Sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg></button>
+        <button onclick="setRole(${u.id})" class="ab" data-t="Role"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5 21a7 7 0 0114 0"/></svg></button>
+        <button onclick="rstHwid(${u.id})" class="ab" data-t="HWID"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0115.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></svg></button>
         ${u.banned
-          ? `<button onclick="unbanUser(${u.id})" class="act-btn green" data-tip="Разбан"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></button>`
-          : `<button onclick="banUser(${u.id})" class="act-btn red" data-tip="Бан"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg></button>`}
-        <button onclick="deleteUser(${u.id})" class="act-btn red" data-tip="Удалить"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+          ?`<button onclick="unban(${u.id})" class="ab g" data-t="Unban"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></button>`
+          :`<button onclick="ban(${u.id})" class="ab r" data-t="Ban"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg></button>`}
+        <button onclick="delUser(${u.id})" class="ab r" data-t="Del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
       </td>`;
-    tbody.appendChild(tr);
+    tb.appendChild(tr);
   }
 }
 
-function updateStats() {
-  document.getElementById('statTotal').textContent = allUsers.length;
-  document.getElementById('statActive').textContent = allUsers.filter(u => u.subscription && u.subscription.active && !u.banned).length;
-  document.getElementById('statBanned').textContent = allUsers.filter(u => u.banned).length;
-  document.getElementById('statKeys').textContent = allKeys.filter(k => !k.used_at).length;
+function updStats(){
+  document.getElementById('sT').textContent=users.length;
+  document.getElementById('sA').textContent=users.filter(u=>u.subscription&&u.subscription.active&&!u.banned).length;
+  document.getElementById('sB').textContent=users.filter(u=>u.banned).length;
+  document.getElementById('sK').textContent=keys.filter(k=>!k.used_at).length;
 }
 
-async function createUser() {
-  const username = document.getElementById('newUser').value.trim();
-  const password = document.getElementById('newPass').value;
-  const days = parseInt(document.getElementById('newDays').value) || 0;
-  const msg = document.getElementById('createMsg');
-  if (!username || !password) { msg.className = 'error-box'; msg.textContent = 'Заполните поля'; return; }
-  const r = await api('POST', '/api/admin/users', { username, password, days });
-  if (r.ok) { msg.className = 'success-box'; msg.textContent = 'Создан'; document.getElementById('newUser').value = ''; document.getElementById('newPass').value = ''; loadUsers(); }
-  else { msg.className = 'error-box'; msg.textContent = r.data.error || 'Ошибка'; }
+async function createUser(){
+  const u=document.getElementById('nU').value.trim(),p=document.getElementById('nP').value,d=parseInt(document.getElementById('nD').value)||0;
+  const msg=document.getElementById('cMsg');
+  if(!u||!p){msg.className='err-box';msg.textContent='Заполните';return;}
+  const r=await api('POST','/api/admin/users',{username:u,password:p,days:d});
+  if(r.ok){msg.className='ok-box';msg.textContent='OK';document.getElementById('nU').value='';document.getElementById('nP').value='';loadUsers();}
+  else{msg.className='err-box';msg.textContent=r.data.error||'Err';}
 }
 
-async function giveSub(id) { const d = prompt('Дней?', '30'); if (!d) return; await api('POST', '/api/admin/subscribe/' + id, { days: parseInt(d) }); loadUsers(); }
-async function removeSub(id) { if (!confirm('Забрать подписку?')) return; await api('POST', '/api/admin/unsubscribe/' + id); loadUsers(); }
-async function setRole(id) { const r = prompt('Роль (Admin, VIP, Coder, пусто):'); if (r === null) return; await api('POST', '/api/admin/role/' + id, { role: r }); loadUsers(); }
-async function resetHwid(id) { if (!confirm('Сбросить HWID?')) return; await api('POST', '/api/admin/reset-hwid/' + id); loadUsers(); }
-async function banUser(id) { if (!confirm('Забанить?')) return; await api('POST', '/api/admin/ban/' + id); loadUsers(); }
-async function unbanUser(id) { await api('POST', '/api/admin/unban/' + id); loadUsers(); }
-async function deleteUser(id) { if (!confirm('Удалить НАВСЕГДА?')) return; await api('DELETE', '/api/admin/users/' + id); loadUsers(); }
+async function giveSub(id){const d=prompt('Дней?','30');if(!d)return;await api('POST','/api/admin/subscribe/'+id,{days:+d});loadUsers();}
+async function rmSub(id){if(!confirm('Забрать?'))return;await api('POST','/api/admin/unsubscribe/'+id);loadUsers();}
+async function setRole(id){const r=prompt('Роль:');if(r===null)return;await api('POST','/api/admin/role/'+id,{role:r});loadUsers();}
+async function rstHwid(id){if(!confirm('Сброс HWID?'))return;await api('POST','/api/admin/reset-hwid/'+id);loadUsers();}
+async function ban(id){if(!confirm('Бан?'))return;await api('POST','/api/admin/ban/'+id);loadUsers();}
+async function unban(id){await api('POST','/api/admin/unban/'+id);loadUsers();}
+async function delUser(id){if(!confirm('Удалить?'))return;await api('DELETE','/api/admin/users/'+id);loadUsers();}
 
 // Keys
-async function createKeys() {
-  const days = parseInt(document.getElementById('keyDays').value);
-  const count = parseInt(document.getElementById('keyCount').value);
-  const note = document.getElementById('keyNote').value.trim();
-  const out = document.getElementById('keysOutput');
-  if (!days || days < 1) { out.innerHTML = '<div class="error-box">Укажите дни</div>'; return; }
-  const r = await api('POST', '/api/admin/keys', { days, count, note });
-  if (r.ok) { out.innerHTML = `<div class="keys-result"><strong style="color:var(--green);">Создано: ${r.data.keys.length}</strong><pre>${r.data.keys.join('\n')}</pre></div>`; loadKeys(); }
-  else { out.innerHTML = '<div class="error-box">' + (r.data.error || 'Ошибка') + '</div>'; }
+async function genKeys(){
+  const d=+document.getElementById('kD').value,c=+document.getElementById('kC').value,n=document.getElementById('kN').value.trim();
+  const out=document.getElementById('kOut');
+  if(!d||d<1){out.innerHTML='<div class="err-box">Дни?</div>';return;}
+  const r=await api('POST','/api/admin/keys',{days:d,count:c,note:n});
+  if(r.ok){out.innerHTML=`<div class="keys-out"><b style="color:var(--green)">Создано: ${r.data.keys.length}</b><pre>${r.data.keys.join('\n')}</pre></div>`;loadKeys();}
+  else out.innerHTML='<div class="err-box">'+(r.data.error||'Err')+'</div>';
 }
 
-async function loadKeys() {
-  const r = await api('GET', '/api/admin/keys');
-  if (!r.ok) return;
-  allKeys = r.data.keys;
-  const tbody = document.getElementById('keysBody');
-  tbody.innerHTML = '';
-  for (const k of allKeys) {
-    const used = k.used_at;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
+async function loadKeys(){
+  const r=await api('GET','/api/admin/keys');if(!r.ok)return;
+  keys=r.data.keys;
+  const tb=document.getElementById('kBody');tb.innerHTML='';
+  for(const k of keys){
+    const u=k.used_at;const tr=document.createElement('tr');
+    tr.innerHTML=`
       <td>${k.id}</td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:${used ? '#8888a0' : 'var(--yellow)'};">${k.key}</td>
+      <td class="mono" style="font-size:10.5px;color:${u?'var(--white-30)':'var(--yellow)'}">${k.key}</td>
       <td>${k.days}</td>
-      <td>${used ? '<span class="badge badge-used">USED</span>' : '<span class="badge badge-active">FREE</span>'}</td>
-      <td>${used ? k.used_by + ' · ' + new Date(Number(used)).toLocaleDateString() : '—'}</td>
-      <td>${k.note || '—'}</td>
-      <td class="actions"><button onclick="deleteKey(${k.id})" class="act-btn red" data-tip="Удалить"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button></td>`;
-    tbody.appendChild(tr);
+      <td>${u?'<span class="badge b-used">USED</span>':'<span class="badge b-active">FREE</span>'}</td>
+      <td>${u?k.used_by+' · '+new Date(Number(u)).toLocaleDateString():'—'}</td>
+      <td>${k.note||'—'}</td>
+      <td class="acts"><button onclick="delKey(${k.id})" class="ab r" data-t="Del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></td>`;
+    tb.appendChild(tr);
   }
-  updateStats();
+  updStats();
 }
 
-async function deleteKey(id) { if (!confirm('Удалить ключ?')) return; await api('DELETE', '/api/admin/keys/' + id); loadKeys(); }
+async function delKey(id){if(!confirm('Удалить?'))return;await api('DELETE','/api/admin/keys/'+id);loadKeys();}
 
 // Version
-async function updateVersion() {
-  const v = document.getElementById('versionInput').value.trim();
-  const msg = document.getElementById('versionMsg');
-  if (!v) { msg.className = 'error-box'; msg.textContent = 'Введите версию'; return; }
-  const r = await api('POST', '/api/admin/version', { version: v });
-  if (r.ok) { msg.className = 'success-box'; msg.textContent = 'Обновлено: ' + v; }
-  else { msg.className = 'error-box'; msg.textContent = r.data.error || 'Ошибка'; }
+async function setVer(){
+  const v=document.getElementById('vI').value.trim(),msg=document.getElementById('vMsg');
+  if(!v){msg.className='err-box';msg.textContent='?';return;}
+  const r=await api('POST','/api/admin/version',{version:v});
+  if(r.ok){msg.className='ok-box';msg.textContent='OK: '+v;}
+  else{msg.className='err-box';msg.textContent=r.data.error||'Err';}
 }
 
-fetch('/api/version').then(r => r.text()).then(v => { document.getElementById('versionInput').value = v; });
-document.getElementById('adminKey').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+fetch('/api/version').then(r=>r.text()).then(v=>{document.getElementById('vI').value=v;});
+document.getElementById('adminKey').addEventListener('keypress',e=>{if(e.key==='Enter')login();});
 checkAuth();
 </script>
-
 </body>
 </html>

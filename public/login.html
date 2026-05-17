@@ -8,44 +8,40 @@
 </head>
 <body>
 
-<header class="nav">
-  <div class="nav-inner">
-    <a href="/" class="nav-logo">
-      <span class="nav-logo-mark">L</span>
-      Luminar
-    </a>
-    <nav class="nav-links">
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="topbar-logo"><span class="topbar-logo-icon">L</span> Luminar</a>
+    <nav class="topbar-nav">
       <a href="/">Главная</a>
       <a href="/buy">Тарифы</a>
     </nav>
-    <div class="nav-actions">
-      <a href="/login" class="btn btn-ghost btn-sm">Войти</a>
-      <a href="/register" class="btn btn-white btn-sm">Регистрация</a>
+    <div class="topbar-right">
+      <a href="/register" class="btn btn-fill btn-sm">Регистрация</a>
     </div>
   </div>
-</header>
+</div>
 
-<div class="auth-wrapper">
-  <div class="auth-card">
-    <h2>Авторизация</h2>
-    <p class="auth-subtitle">Войдите в свой аккаунт Luminar</p>
+<div class="auth-page">
+  <div class="auth-box">
+    <h2>Вход</h2>
+    <p class="sub">Войдите в аккаунт Luminar</p>
 
-    <div class="auth-tabs">
-      <a href="/login" class="auth-tab active">Вход</a>
-      <a href="/register" class="auth-tab">Регистрация</a>
+    <div class="auth-switch">
+      <a href="/login" class="on">Вход</a>
+      <a href="/register">Регистрация</a>
     </div>
 
     <form id="loginForm">
-      <div class="form-group">
-        <label>Юзернейм</label>
-        <input class="form-input" type="text" id="username" placeholder="Ваш логин" required autocomplete="username">
+      <div class="field">
+        <label>Логин</label>
+        <input type="text" id="username" placeholder="username" required autocomplete="username">
       </div>
-      <div class="form-group">
+      <div class="field">
         <label>Пароль</label>
-        <input class="form-input" type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+        <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
       </div>
-      <button type="submit" class="btn btn-white btn-block">Войти</button>
-      <div id="msg" class="msg"></div>
+      <button type="submit" class="btn btn-fill btn-block btn-lg">Войти</button>
+      <div id="msg" class="auth-msg"></div>
     </form>
   </div>
 </div>
@@ -54,8 +50,7 @@
 document.getElementById('loginForm').addEventListener('submit', async e => {
   e.preventDefault();
   const msg = document.getElementById('msg');
-  msg.className = 'msg';
-  msg.textContent = '';
+  msg.className = 'auth-msg'; msg.textContent = '';
 
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
@@ -69,19 +64,13 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
     const data = await r.json();
     if (r.ok) {
       localStorage.setItem('luminar_token', data.token);
-      msg.className = 'msg msg-success';
-      msg.textContent = 'Успешно! Перенаправление...';
-      setTimeout(() => location.href = '/profile', 600);
+      msg.className = 'auth-msg ok'; msg.textContent = 'Успешно!';
+      setTimeout(() => location.href = '/profile', 500);
     } else {
-      msg.className = 'msg msg-error';
-      msg.textContent = data.error || 'Ошибка входа';
+      msg.className = 'auth-msg err'; msg.textContent = data.error || 'Ошибка';
     }
-  } catch (err) {
-    msg.className = 'msg msg-error';
-    msg.textContent = 'Ошибка сети';
-  }
+  } catch { msg.className = 'auth-msg err'; msg.textContent = 'Ошибка сети'; }
 });
 </script>
-
 </body>
 </html>

@@ -8,62 +8,58 @@
 </head>
 <body>
 
-<header class="nav">
-  <div class="nav-inner">
-    <a href="/" class="nav-logo">
-      <span class="nav-logo-mark">L</span>
-      Luminar
-    </a>
-    <nav class="nav-links">
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="topbar-logo"><span class="topbar-logo-icon">L</span> Luminar</a>
+    <nav class="topbar-nav">
       <a href="/">Главная</a>
       <a href="/buy">Тарифы</a>
     </nav>
-    <div class="nav-actions">
-      <a href="/login" class="btn btn-ghost btn-sm">Войти</a>
-      <a href="/register" class="btn btn-white btn-sm">Регистрация</a>
+    <div class="topbar-right">
+      <a href="/login" class="btn btn-outline btn-sm">Войти</a>
     </div>
   </div>
-</header>
+</div>
 
-<div class="auth-wrapper">
-  <div class="auth-card">
-    <h2>Создать аккаунт</h2>
-    <p class="auth-subtitle">Зарегистрируйтесь для доступа к Luminar</p>
+<div class="auth-page">
+  <div class="auth-box">
+    <h2>Регистрация</h2>
+    <p class="sub">Создайте аккаунт Luminar</p>
 
-    <div class="auth-tabs">
-      <a href="/login" class="auth-tab">Вход</a>
-      <a href="/register" class="auth-tab active">Регистрация</a>
+    <div class="auth-switch">
+      <a href="/login">Вход</a>
+      <a href="/register" class="on">Регистрация</a>
     </div>
 
-    <form id="registerForm">
-      <div class="form-group">
-        <label>Юзернейм</label>
-        <input class="form-input" type="text" id="username" placeholder="3-16 символов, латиница/цифры" required autocomplete="username">
+    <form id="regForm">
+      <div class="field">
+        <label>Логин</label>
+        <input type="text" id="username" placeholder="3-16 символов, a-z 0-9 _" required autocomplete="username">
       </div>
-      <div class="form-group">
+      <div class="field">
         <label>Пароль</label>
-        <input class="form-input" type="password" id="password" placeholder="Минимум 6 символов" required autocomplete="new-password">
+        <input type="password" id="password" placeholder="минимум 6 символов" required autocomplete="new-password">
       </div>
-      <div class="form-group">
+      <div class="field">
         <label>Повтор пароля</label>
-        <input class="form-input" type="password" id="password2" placeholder="••••••••" required autocomplete="new-password">
+        <input type="password" id="password2" placeholder="••••••••" required autocomplete="new-password">
       </div>
-      <button type="submit" class="btn btn-white btn-block">Создать аккаунт</button>
-      <div id="msg" class="msg"></div>
+      <button type="submit" class="btn btn-fill btn-block btn-lg">Создать аккаунт</button>
+      <div id="msg" class="auth-msg"></div>
     </form>
   </div>
 </div>
 
 <script>
-document.getElementById('registerForm').addEventListener('submit', async e => {
+document.getElementById('regForm').addEventListener('submit', async e => {
   e.preventDefault();
   const msg = document.getElementById('msg');
-  msg.className = 'msg';
+  msg.className = 'auth-msg';
 
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
   const password2 = document.getElementById('password2').value;
-  if (password !== password2) { msg.className = 'msg msg-error'; msg.textContent = 'Пароли не совпадают'; return; }
+  if (password !== password2) { msg.className = 'auth-msg err'; msg.textContent = 'Пароли не совпадают'; return; }
 
   try {
     const r = await fetch('/api/register', {
@@ -74,19 +70,13 @@ document.getElementById('registerForm').addEventListener('submit', async e => {
     const data = await r.json();
     if (r.ok) {
       localStorage.setItem('luminar_token', data.token);
-      msg.className = 'msg msg-success';
-      msg.textContent = 'Аккаунт создан! Перенаправление...';
-      setTimeout(() => location.href = '/buy', 600);
+      msg.className = 'auth-msg ok'; msg.textContent = 'Создан!';
+      setTimeout(() => location.href = '/buy', 500);
     } else {
-      msg.className = 'msg msg-error';
-      msg.textContent = data.error || 'Ошибка регистрации';
+      msg.className = 'auth-msg err'; msg.textContent = data.error || 'Ошибка';
     }
-  } catch (err) {
-    msg.className = 'msg msg-error';
-    msg.textContent = 'Ошибка сети';
-  }
+  } catch { msg.className = 'auth-msg err'; msg.textContent = 'Ошибка сети'; }
 });
 </script>
-
 </body>
 </html>

@@ -3,164 +3,155 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Luminar — Премиум клиент для Minecraft</title>
+<title>Luminar — Премиум клиент Minecraft</title>
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
-<header class="nav">
-  <div class="nav-inner">
-    <a href="/" class="nav-logo">
-      <span class="nav-logo-mark">L</span>
+<!-- Navbar -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="topbar-logo">
+      <span class="topbar-logo-icon">L</span>
       Luminar
     </a>
-    <nav class="nav-links">
+    <nav class="topbar-nav">
       <a href="/" class="active">Главная</a>
       <a href="/buy">Тарифы</a>
       <a href="https://t.me/offersheart" target="_blank">Telegram</a>
     </nav>
-    <div class="nav-actions" id="navAuth">
-      <a href="/login" class="btn btn-ghost btn-sm">Войти</a>
-      <a href="/register" class="btn btn-white btn-sm">Начать</a>
+    <div class="topbar-right" id="navAuth">
+      <a href="/login" class="btn btn-outline btn-sm">Войти</a>
+      <a href="/register" class="btn btn-fill btn-sm">Начать</a>
     </div>
-  </div>
-</header>
-
-<section class="hero">
-  <div class="hero-badge">
-    <span class="hero-badge-dot"></span>
-    v1.0 — стабильный билд
-  </div>
-  <h1>Доминируй на сервере<br>с <span class="highlight">Luminar</span></h1>
-  <p class="hero-desc">Премиум клиент для Minecraft с продвинутыми обходами античитов, мощной KillAura и стильным интерфейсом. Для тех, кто играет на победу.</p>
-  <div class="hero-actions">
-    <a href="/register" class="btn btn-white btn-lg">Начать бесплатно</a>
-    <a href="https://t.me/offersheart" class="btn btn-ghost btn-lg">Telegram</a>
-  </div>
-</section>
-
-<div class="stats">
-  <div class="stat-card">
-    <div class="stat-num">7K+</div>
-    <div class="stat-label">Игроков</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-num">99%</div>
-    <div class="stat-label">Аптайм</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-num">24/7</div>
-    <div class="stat-label">Поддержка</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-num">∞</div>
-    <div class="stat-label">Обновления</div>
   </div>
 </div>
 
-<section class="section">
-  <div class="section-header">
-    <span class="section-tag">Возможности</span>
-    <h2>Всё что нужно для победы</h2>
-    <p>Современные функции, надёжная защита, частые обновления</p>
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-chip">
+    <span class="hero-chip-dot"></span>
+    v1.0 — stable release
   </div>
-  <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icon">⚔️</div>
+  <h1>Играй. Побеждай.<br><span class="fade">Доминируй.</span></h1>
+  <p class="hero-text">Премиум Minecraft клиент с обходами античитов нового поколения, мощной KillAura и минималистичным интерфейсом.</p>
+  <div class="hero-btns">
+    <a href="/register" class="btn btn-fill btn-lg">Начать бесплатно</a>
+    <a href="https://t.me/offersheart" class="btn btn-outline btn-lg">Telegram</a>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-visual-grid"></div>
+  </div>
+</section>
+
+<!-- Stats -->
+<div class="bento-stats">
+  <div class="bento-stat"><div class="val">7K+</div><div class="lbl">Игроков</div></div>
+  <div class="bento-stat"><div class="val">99%</div><div class="lbl">Аптайм</div></div>
+  <div class="bento-stat"><div class="val">24/7</div><div class="lbl">Саппорт</div></div>
+  <div class="bento-stat"><div class="val">∞</div><div class="lbl">Апдейты</div></div>
+</div>
+
+<!-- Features -->
+<section class="sec">
+  <div class="sec-head">
+    <span class="sec-chip">Features</span>
+    <h2>Всё для победы</h2>
+    <p>Современные модули, надёжная защита, частые обновления</p>
+  </div>
+  <div class="bento-grid">
+    <div class="bento-card wide">
+      <div class="ico">⚔️</div>
       <h3>SpookyTime KillAura</h3>
-      <p>Ультра-быстрая аура с продвинутой системой ротации, обходящая популярные античиты на серверах FunTime, Holyworld и других.</p>
+      <p>Ультра-быстрая аура с продвинутой ротацией. Обходит FunTime, Holyworld, Vulcan и другие популярные античиты.</p>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon">🛡️</div>
-      <h3>HWID защита</h3>
-      <p>Жёсткая привязка к железу, обфускация классов и шифрование строк делают невозможным взлом и реверс клиента.</p>
+    <div class="bento-card">
+      <div class="ico">🛡️</div>
+      <h3>HWID Lock</h3>
+      <p>Привязка к железу + обфускация классов. Реверс невозможен.</p>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon">🚀</div>
-      <h3>Авто-обновления</h3>
-      <p>Лоадер сам проверяет версию и устанавливает обновления. Всегда актуальная версия без ручных действий.</p>
+    <div class="bento-card">
+      <div class="ico">🚀</div>
+      <h3>Auto-Update</h3>
+      <p>Лоадер сам обновляет клиент. Всегда свежая версия.</p>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon">🎨</div>
-      <h3>Премиум HUD</h3>
-      <p>Современный интерфейс с MSDF шрифтами, плавными анимациями и полной кастомизацией каждого элемента.</p>
+    <div class="bento-card">
+      <div class="ico">🎨</div>
+      <h3>Premium HUD</h3>
+      <p>MSDF шрифты, плавные анимации, полная кастомизация.</p>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon">⚡</div>
-      <h3>Высокий FPS</h3>
-      <p>Оптимизированный рендер, кэширование шейдеров и встроенная OptiFine. Стабильные 200+ FPS.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">💬</div>
-      <h3>Сообщество</h3>
-      <p>7000+ игроков в Telegram. Конфигурации, помощь с настройкой и быстрые ответы на вопросы.</p>
+    <div class="bento-card wide">
+      <div class="ico">⚡</div>
+      <h3>200+ FPS</h3>
+      <p>Оптимизированный рендер, кэш шейдеров, встроенная OptiFine. Стабильная производительность на любом железе без просадок.</p>
     </div>
   </div>
 </section>
 
-<section class="section">
-  <div class="section-header">
-    <span class="section-tag">Цены</span>
-    <h2>Выбери свой тариф</h2>
-    <p>Прозрачные цены и мгновенная активация подписки</p>
+<!-- Pricing -->
+<section class="sec">
+  <div class="sec-head">
+    <span class="sec-chip">Pricing</span>
+    <h2>Тарифы</h2>
+    <p>Прозрачные цены, мгновенная активация</p>
   </div>
-  <div class="pricing-grid">
-    <div class="price-card">
-      <div class="price-icon">📦</div>
+  <div class="price-grid">
+    <div class="p-card">
+      <div class="p-icon">📦</div>
       <h3>30 дней</h3>
-      <div class="price-desc">Подписка на клиент Luminar сроком на 30 дней</div>
-      <div class="price-amount">349<small>RUB</small></div>
-      <a href="/buy" class="btn btn-ghost">Выбрать</a>
+      <div class="p-desc">Месячная подписка на Luminar</div>
+      <div class="p-price">349<small>₽</small></div>
+      <a href="/buy" class="btn btn-outline btn-block">Выбрать</a>
     </div>
-    <div class="price-card featured">
-      <div class="price-icon">⚡</div>
+    <div class="p-card hot">
+      <div class="p-icon">⚡</div>
       <h3>365 дней</h3>
-      <div class="price-desc">Самый популярный тариф на год игры</div>
-      <div class="price-amount">499<small>RUB</small></div>
-      <a href="/buy" class="btn btn-white">Купить</a>
+      <div class="p-desc">Год игры по лучшей цене</div>
+      <div class="p-price">499<small>₽</small></div>
+      <a href="/buy" class="btn btn-fill btn-block">Купить</a>
     </div>
-    <div class="price-card">
-      <div class="price-icon">👑</div>
+    <div class="p-card">
+      <div class="p-icon">👑</div>
       <h3>Lifetime</h3>
-      <div class="price-desc">Подписка навсегда без ежемесячных платежей</div>
-      <div class="price-amount">599<small>RUB</small></div>
-      <a href="/buy" class="btn btn-ghost">Выбрать</a>
+      <div class="p-desc">Навсегда. Без платежей.</div>
+      <div class="p-price">599<small>₽</small></div>
+      <a href="/buy" class="btn btn-outline btn-block">Выбрать</a>
     </div>
   </div>
 </section>
 
-<footer class="footer">
-  <div class="footer-grid">
-    <div class="footer-col">
-      <div class="footer-brand">
-        <span class="footer-brand-mark">L</span>
+<!-- Footer -->
+<footer class="ft">
+  <div class="ft-grid">
+    <div class="ft-col">
+      <div class="ft-brand">
+        <span class="ft-brand-ico">L</span>
         <h3>Luminar</h3>
       </div>
-      <p style="color:var(--text-muted); font-size:13px; line-height:1.7; max-width:300px;">Премиум клиент для Minecraft. Доминируй на серверах и наслаждайся игрой.</p>
+      <p style="color:var(--white-30); font-size:12px; line-height:1.7; max-width:280px;">Премиум клиент для Minecraft. Обходи античиты, доминируй на серверах.</p>
     </div>
-    <div class="footer-col">
+    <div class="ft-col">
       <h4>Навигация</h4>
       <a href="/">Главная</a>
       <a href="/buy">Тарифы</a>
       <a href="/login">Войти</a>
       <a href="/register">Регистрация</a>
     </div>
-    <div class="footer-col">
+    <div class="ft-col">
       <h4>Связь</h4>
       <a href="https://t.me/offersheart" target="_blank">Telegram</a>
       <a href="#">Discord</a>
-      <a href="#">YouTube</a>
     </div>
-    <div class="footer-col">
+    <div class="ft-col">
       <h4>Инфо</h4>
-      <a href="#">Политика</a>
-      <a href="#">Условия</a>
       <a href="#">FAQ</a>
+      <a href="#">Условия</a>
     </div>
   </div>
-  <div class="footer-bottom">
-    <span>© 2026 Luminar. Все права защищены.</span>
-    <span>by <strong style="color:#fff;">DustGames</strong></span>
+  <div class="ft-bottom">
+    <span>© 2026 Luminar</span>
+    <span>by <strong style="color:var(--white);">DustGames</strong></span>
   </div>
 </footer>
 
@@ -171,13 +162,10 @@ if (token) {
     .then(r => r.ok ? r.json() : null)
     .then(data => {
       if (data && data.user) {
-        document.getElementById('navAuth').innerHTML = `
-          <a href="/profile" class="btn btn-white btn-sm">${data.user.username}</a>
-        `;
+        document.getElementById('navAuth').innerHTML = `<a href="/profile" class="btn btn-fill btn-sm">${data.user.username}</a>`;
       }
     });
 }
 </script>
-
 </body>
 </html>

@@ -8,98 +8,72 @@
 </head>
 <body>
 
-<header class="nav">
-  <div class="nav-inner">
-    <a href="/" class="nav-logo">
-      <span class="nav-logo-mark">L</span>
-      Luminar
-    </a>
-    <nav class="nav-links">
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="topbar-logo"><span class="topbar-logo-icon">L</span> Luminar</a>
+    <nav class="topbar-nav">
       <a href="/">Главная</a>
       <a href="/buy" class="active">Тарифы</a>
       <a href="https://t.me/offersheart" target="_blank">Telegram</a>
     </nav>
-    <div class="nav-actions" id="navAuth">
-      <a href="/login" class="btn btn-ghost btn-sm">Войти</a>
-      <a href="/register" class="btn btn-white btn-sm">Регистрация</a>
+    <div class="topbar-right" id="navAuth">
+      <a href="/login" class="btn btn-outline btn-sm">Войти</a>
+      <a href="/register" class="btn btn-fill btn-sm">Начать</a>
     </div>
   </div>
-</header>
+</div>
 
-<section class="section" style="text-align:center;">
-  <div class="section-header">
-    <span class="section-tag">Продукты</span>
-    <h2>Выберите тариф</h2>
-    <p>Прозрачные цены и мгновенная активация. Сравните и выберите подходящий.</p>
+<section class="sec" style="text-align:center; padding-top:140px;">
+  <div class="sec-head">
+    <span class="sec-chip">Store</span>
+    <h2>Выберите план</h2>
+    <p>Мгновенная активация после оплаты</p>
   </div>
 
-  <div class="pricing-tabs">
-    <div class="tab active" onclick="switchTab('subs')">Подписки</div>
-    <div class="tab" onclick="switchTab('other')">Другое</div>
+  <div class="price-tabs">
+    <div class="ptab active" onclick="switchTab('subs')">Подписки</div>
+    <div class="ptab" onclick="switchTab('other')">Другое</div>
   </div>
 
-  <div id="subs-tab" class="pricing-grid">
-    <div class="price-card">
-      <div class="price-icon">📦</div>
+  <div id="subs-tab" class="price-grid">
+    <div class="p-card">
+      <div class="p-icon">📦</div>
       <h3>30 дней</h3>
-      <div class="price-desc">Подписка на клиент Luminar сроком на 30 дней.</div>
-      <div class="price-amount">349<small>RUB</small></div>
-      <button class="btn btn-ghost" onclick="buyPlan(30, 349)">Купить</button>
+      <div class="p-desc">Месяц доступа к Luminar</div>
+      <div class="p-price">349<small>₽</small></div>
+      <button class="btn btn-outline btn-block" onclick="buyPlan(30,349)">Купить</button>
     </div>
-    <div class="price-card featured">
-      <div class="price-icon">⚡</div>
+    <div class="p-card hot">
+      <div class="p-icon">⚡</div>
       <h3>365 дней</h3>
-      <div class="price-desc">Самый популярный тариф на год игры.</div>
-      <div class="price-amount">499<small>RUB</small></div>
-      <button class="btn btn-white" onclick="buyPlan(365, 499)">Купить</button>
+      <div class="p-desc">Год по лучшей цене</div>
+      <div class="p-price">499<small>₽</small></div>
+      <button class="btn btn-fill btn-block" onclick="buyPlan(365,499)">Купить</button>
     </div>
-    <div class="price-card">
-      <div class="price-icon">👑</div>
+    <div class="p-card">
+      <div class="p-icon">👑</div>
       <h3>Lifetime</h3>
-      <div class="price-desc">Lifetime подписка на клиент Luminar.</div>
-      <div class="price-amount">599<small>RUB</small></div>
-      <button class="btn btn-ghost" onclick="buyPlan(9999, 599)">Купить</button>
+      <div class="p-desc">Навсегда. Один платёж.</div>
+      <div class="p-price">599<small>₽</small></div>
+      <button class="btn btn-outline btn-block" onclick="buyPlan(9999,599)">Купить</button>
     </div>
   </div>
 
-  <div id="other-tab" class="pricing-grid" style="display:none;">
-    <div class="price-card">
-      <div class="price-icon">🔄</div>
+  <div id="other-tab" class="price-grid" style="display:none;">
+    <div class="p-card">
+      <div class="p-icon">🔄</div>
       <h3>Сброс HWID</h3>
-      <div class="price-desc">Сброс привязки оборудования к аккаунту.</div>
-      <div class="price-amount">149<small>RUB</small></div>
-      <button class="btn btn-ghost" onclick="buyHwidReset()">Купить</button>
+      <div class="p-desc">Отвязка оборудования</div>
+      <div class="p-price">149<small>₽</small></div>
+      <button class="btn btn-outline btn-block" onclick="buyHwid()">Купить</button>
     </div>
   </div>
 </section>
 
-<footer class="footer">
-  <div class="footer-grid">
-    <div class="footer-col">
-      <div class="footer-brand">
-        <span class="footer-brand-mark">L</span>
-        <h3>Luminar</h3>
-      </div>
-      <p style="color:var(--text-muted); font-size:13px;">Премиум клиент для Minecraft.</p>
-    </div>
-    <div class="footer-col">
-      <h4>Навигация</h4>
-      <a href="/">Главная</a>
-      <a href="/buy">Тарифы</a>
-    </div>
-    <div class="footer-col">
-      <h4>Связь</h4>
-      <a href="https://t.me/offersheart" target="_blank">Telegram</a>
-    </div>
-    <div class="footer-col">
-      <h4>Аккаунт</h4>
-      <a href="/login">Войти</a>
-      <a href="/register">Регистрация</a>
-    </div>
-  </div>
-  <div class="footer-bottom">
+<footer class="ft">
+  <div class="ft-bottom">
     <span>© 2026 Luminar</span>
-    <span>by <strong style="color:#fff;">DustGames</strong></span>
+    <span>by <strong style="color:var(--white);">DustGames</strong></span>
   </div>
 </footer>
 
@@ -108,37 +82,28 @@ const PAYMENT_URL = 'https://funpay.com/users/19926313/';
 const token = localStorage.getItem('luminar_token');
 
 if (token) {
-  fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } })
-    .then(r => r.ok ? r.json() : null)
-    .then(data => {
-      if (data && data.user) {
-        document.getElementById('navAuth').innerHTML = `
-          <a href="/profile" class="btn btn-white btn-sm">${data.user.username}</a>
-        `;
-      }
-    });
+  fetch('/api/me', { headers:{'Authorization':'Bearer '+token} })
+    .then(r=>r.ok?r.json():null)
+    .then(d=>{ if(d&&d.user) document.getElementById('navAuth').innerHTML=`<a href="/profile" class="btn btn-fill btn-sm">${d.user.username}</a>`; });
 }
 
-function switchTab(tab) {
-  document.querySelectorAll('.pricing-tabs .tab').forEach(t => t.classList.remove('active'));
+function switchTab(t) {
+  document.querySelectorAll('.ptab').forEach(x=>x.classList.remove('active'));
   event.target.classList.add('active');
-  document.getElementById('subs-tab').style.display = tab === 'subs' ? 'grid' : 'none';
-  document.getElementById('other-tab').style.display = tab === 'other' ? 'grid' : 'none';
+  document.getElementById('subs-tab').style.display = t==='subs'?'grid':'none';
+  document.getElementById('other-tab').style.display = t==='other'?'grid':'none';
 }
 
-function buyPlan(days, price) {
-  if (!token) { alert('Сначала войдите или зарегистрируйтесь'); location.href = '/login'; return; }
-  const label = days === 9999 ? 'Lifetime' : days + ' дней';
-  if (confirm(`Купить ${label} за ${price}₽?\n\nПосле оплаты подписка активируется.`)) {
-    window.open(PAYMENT_URL, '_blank');
-  }
+function buyPlan(days,price) {
+  if (!token) { alert('Сначала войдите'); location.href='/login'; return; }
+  const l = days===9999?'Lifetime':days+' дней';
+  if (confirm(`${l} за ${price}₽?`)) window.open(PAYMENT_URL,'_blank');
 }
 
-function buyHwidReset() {
-  if (!token) { alert('Сначала войдите или зарегистрируйтесь'); location.href = '/login'; return; }
-  if (confirm('Купить сброс HWID за 149₽?')) { window.open(PAYMENT_URL, '_blank'); }
+function buyHwid() {
+  if (!token) { alert('Сначала войдите'); location.href='/login'; return; }
+  if (confirm('Сброс HWID за 149₽?')) window.open(PAYMENT_URL,'_blank');
 }
 </script>
-
 </body>
 </html>
