@@ -395,20 +395,27 @@ app.post('/api/me/email', async (req, res) => {
   try {
     const auth = req.headers['authorization'];
     if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'No token' });
-    const token = auth.substring(7);
-    const payload = jwt.verify(token, JWT_SECRET);
+    const tkn = auth.substring(7);
+    let payload;
+    try { payload = jwt.verify(tkn, JWT_SECRET); } catch(e) { return res.status(401).json({ error: 'Token expired, please re-login' }); }
+    
     const { email } = req.body || {};
     if (!email || !validEmail(email)) return res.status(400).json({ error: 'Invalid email' });
 
     // Check if email already taken by another user
-    const exists = await pool.query('SELECT username FROM users WHERE email = $1', [email.toLowerCase().trim()]);
-    if (exists.rows.length > 0 && exists.rows[0].username !== payload.username) return res.status(409).json({ error: 'Email already in use' });
-
-    await pool.query('UPDATE users SET email = $1 WHERE username = $2', [email.toLowerCase().trim(), payload.username]);
+    try {
+      const exists = await pool.query('SELECT username FROM users WHERE email = $1', [email.toLowerCase().trim()]);
+      if (exists.rows.length > 0 && exists.rows[0].username !== payload.username) return res.status(409).json({ error: 'Email already in use' });
+      await pool.query('UPDATE users SET email = $1 WHERE username = $2', [email.toLowerCase().trim(), payload.username]);
+    } catch(dbErr) {
+      console.error('/api/me/email DB error:', dbErr.message);
+      return res.status(500).json({ error: 'DB error: ' + dbErr.message });
+    }
+    
     res.json({ ok: true });
   } catch (e) {
     console.error('/api/me/email error:', e.message);
-    res.status(401).json({ error: 'Invalid token' });
+    res.status(500).json({ error: 'Server error: ' + e.message });
   }
 });
 
