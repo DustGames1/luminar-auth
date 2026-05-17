@@ -36,10 +36,10 @@
   transition: 0.2s;
   margin-bottom: 4px;
 }
-.admin-side .menu-item:hover { background: rgba(255, 149, 0, 0.06); color: var(--accent-light); }
+.admin-side .menu-item:hover { background: rgba(123, 204, 135, 0.06); color: var(--accent); }
 .admin-side .menu-item.active {
-  background: linear-gradient(135deg, var(--accent-2), var(--accent-3));
-  color: #1a0f00;
+  background: var(--accent);
+  color: var(--bg);
   font-weight: 700;
 }
 
@@ -73,9 +73,9 @@
   margin-bottom: 14px;
 }
 .toolbar input {
-  background: rgba(255, 149, 0, 0.03);
-  border: 1px solid var(--border-light);
-  border-radius: 10px;
+  background: #1a1a1a;
+  border: 1.4px solid var(--border);
+  border-radius: 12px;
   padding: 11px 14px;
   color: #fff;
   font-size: 13px;
@@ -102,7 +102,7 @@ th {
   font-size: 10px;
   letter-spacing: 1px;
 }
-tbody tr:hover { background: rgba(255, 149, 0, 0.02); }
+tbody tr:hover { background: rgba(123, 204, 135, 0.02); }
 
 td .actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 td .actions .act-btn {
@@ -125,10 +125,10 @@ td .actions .act-btn {
 }
 td .actions .act-btn:hover {
   transform: translateY(-1px);
-  background: rgba(255, 149, 0, 0.08);
+  background: rgba(123, 204, 135, 0.08);
   border-color: var(--accent);
-  color: var(--accent-light);
-  box-shadow: 0 4px 12px rgba(255, 149, 0, 0.15);
+  color: var(--accent);
+  box-shadow: 0 4px 12px rgba(123, 204, 135, 0.15);
 }
 td .actions .act-btn:active { transform: translateY(0); }
 
@@ -157,14 +157,14 @@ td .actions .act-btn.red:hover {
 }
 
 td .actions .act-btn.accent {
-  background: linear-gradient(135deg, var(--accent-2), var(--accent-3));
+  background: var(--accent);
   border: none;
-  color: #1a0f00;
+  color: var(--bg);
   font-weight: 700;
 }
 td .actions .act-btn.accent:hover {
   filter: brightness(1.1);
-  box-shadow: 0 4px 14px rgba(255, 149, 0, 0.4);
+  box-shadow: 0 4px 14px rgba(123, 204, 135, 0.4);
 }
 
 /* Tooltip */
@@ -242,18 +242,16 @@ td .actions .act-btn svg {
   margin-bottom: 14px;
 }
 .stat-box {
-  background: rgba(255, 149, 0, 0.03);
+  background: #1a1a1a;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 14px;
 }
 .stat-box .num {
   font-size: 22px;
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--accent-2), var(--accent-3));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: 'Unbounded', sans-serif;
 }
 .stat-box .lbl { color: var(--text-dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; font-weight: 600; }
 
