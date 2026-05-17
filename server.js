@@ -90,6 +90,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 
 const limiter = rateLimit({ windowMs: 60000, limit: 30, standardHeaders: true, legacyHeaders: false });
+
+// Ensure DB is initialized before any API request (critical for Vercel)
+let dbInitialized = false;
+async function ensureDB() {
+  if (!dbInitialized) {
+    await initDB();
+    dbInitialized = true;
+  }
+}
+app.use(async (req, res, next) => {
+  try { await ensureDB(); } catch (e) { console.error('DB init error', e); }
+  next();
+});
+
 app.use('/api/', limiter);
 
 // ---- Helpers ----
@@ -532,19 +546,6 @@ app.get('/buy', (req, res) => res.sendFile(path.join(__dirname, 'public', 'buy.h
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 
 // ---- Start ----
-let dbInitialized = false;
-async function ensureDB() {
-  if (!dbInitialized) {
-    await initDB();
-    dbInitialized = true;
-  }
-}
-
-// Init DB on first request (Vercel) or directly (local/Render)
-app.use(async (req, res, next) => {
-  try { await ensureDB(); } catch (e) { console.error('DB init error', e); }
-  next();
-});
 
 if (!process.env.VERCEL) {
   initDB().then(() => {
