@@ -22,9 +22,9 @@
   --red: #f87171;
   --yellow: #fbbf24;
 
-  --radius: 6px;
-  --radius-lg: 8px;
-  --radius-pill: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 10px;
 }
 
 /* Light theme */
