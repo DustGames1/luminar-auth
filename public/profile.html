@@ -39,7 +39,6 @@
     <div id="tab-account">
       <div class="profile-info">
         <div class="info-card"><div class="ic-label">Registration</div><div class="ic-value" id="regDate">—</div></div>
-        <div class="info-card"><div class="ic-label">UID</div><div class="ic-value" id="uidVal">—</div></div>
         <div class="info-card"><div class="ic-label">Email</div><div class="ic-value" id="emailVal">—</div></div>
         <div class="info-card"><div class="ic-label">Hwid</div><div class="ic-value" id="hwidVal">—</div></div>
       </div>
@@ -94,8 +93,8 @@ if(localStorage.getItem('theme')==='light'){document.documentElement.dataset.the
 
 const token=localStorage.getItem('luminar_token');if(!token)location.href='/login';let userData=null;
 async function loadProfile(){const r=await fetch('/api/me',{headers:{'Authorization':'Bearer '+token}});if(!r.ok){localStorage.removeItem('luminar_token');location.href='/login';return;}const data=await r.json();userData=data.user;const u=userData;
-document.getElementById('username').textContent=u.username;
-document.getElementById('navUser').textContent=u.username;document.getElementById('uidVal').textContent=u.id;
+document.getElementById('username').innerHTML=u.username+' <span style="color:var(--text-3)">['+u.id+']</span>';
+document.getElementById('navUser').textContent=u.username;
 document.getElementById('regDate').textContent=new Date(Number(u.created_at)).toLocaleDateString();
 document.getElementById('emailVal').textContent=u.email||'Not set';
 const pf=document.getElementById('prefixText');if(u.prefix){pf.textContent=u.prefix;}else{pf.textContent='';}
