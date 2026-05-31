@@ -825,8 +825,6 @@ app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'public', '
 app.get('/verify-email', (req, res) => res.sendFile(path.join(__dirname, 'public', 'verify-email.html')));
 app.get('/profile', (req, res) => res.sendFile(path.join(__dirname, 'public', 'profile.html')));
 app.get('/buy', (req, res) => res.sendFile(path.join(__dirname, 'public', 'buy.html')));
-app.get('/tickets', (req, res) => res.sendFile(path.join(__dirname, 'public', 'tickets.html')));
-app.get('/ticket/:id', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ticket.html')));
 app.get('/admin-new', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin-new.html')));
 
 // ---- Products API ----

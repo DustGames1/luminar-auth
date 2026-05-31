@@ -304,11 +304,6 @@ textarea.input {
         <span class="menu-icon">▣</span>
         <span>Баны</span>
       </div>
-      <div class="menu-item" data-page="tickets">
-        <span class="menu-icon">▣</span>
-        <span>Тикеты</span>
-        <span class="badge" id="ticketBadge">0</span>
-      </div>
       <div class="menu-item" data-page="products">
         <span class="menu-icon">▣</span>
         <span>Продукты</span>
@@ -396,14 +391,6 @@ textarea.input {
       </div>
     </div>
 
-    <div id="page-tickets" class="page hidden">
-      <div class="page-header">
-        <h1 class="page-title">▣ Тикеты</h1>
-      </div>
-      <div class="card">
-        <div id="ticketsContent">Тикетов нет</div>
-      </div>
-    </div>
 
     <div id="page-products" class="page hidden">
       <div class="page-header">
@@ -1113,47 +1100,6 @@ async function loadBans() {
 }
 
 // Tickets
-let tickets = [];
-async function loadTickets() {
-  const r = await api('GET', '/api/admin/tickets');
-  if (!r.ok) return;
-  tickets = r.data.tickets;
-  
-  // Update badge
-  const openTickets = tickets.filter(t => t.status === 'open').length;
-  document.getElementById('ticketBadge').textContent = openTickets;
-  
-  const content = document.getElementById('ticketsContent');
-  if (tickets.length === 0) {
-    content.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-3);">Тикетов нет</div>';
-    return;
-  }
-  
-  let html = '<div class="table-container"><table><thead><tr><th>ID</th><th>Пользователь</th><th>Тема</th><th>Статус</th><th>Создан</th><th>Обновлён</th><th></th></tr></thead><tbody>';
-  for (const t of tickets) {
-    let statusBadge = '';
-    if (t.status === 'open') statusBadge = '<span class="status-badge status-active">Открыт</span>';
-    else if (t.status === 'answered') statusBadge = '<span class="status-badge" style="background:rgba(76,154,255,0.15);color:var(--primary);">Отвечен</span>';
-    else if (t.status === 'closed') statusBadge = '<span class="status-badge status-inactive">Закрыт</span>';
-    
-    html += `<tr>
-      <td>#${t.id}</td>
-      <td><b>${t.username}</b></td>
-      <td>${t.title}</td>
-      <td>${statusBadge}</td>
-      <td>${formatDate(t.created_at)}</td>
-      <td>${formatDate(t.updated_at)}</td>
-      <td><button class="btn btn-primary btn-sm" onclick="viewTicket(${t.id})">Открыть</button></td>
-    </tr>`;
-  }
-  html += '</tbody></table></div>';
-  content.innerHTML = html;
-}
-
-function viewTicket(id) {
-  // For now, just show alert. Later we can create a modal to view/reply to tickets
-  alert('Просмотр тикета #' + id + '\n\nФункция в разработке. Пока тикеты можно просматривать через API.');
-}
 
 // Update navigation to load data
 document.querySelectorAll('.menu-item').forEach(item => {
@@ -1162,7 +1108,6 @@ document.querySelectorAll('.menu-item').forEach(item => {
     if (page === 'products') loadProducts();
     else if (page === 'promocodes') loadPromocodes();
     else if (page === 'changelog') loadChangelog();
-    else if (page === 'tickets') loadTickets();
     else if (page === 'bans') loadBans();
   });
 });
