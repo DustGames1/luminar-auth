@@ -162,10 +162,10 @@ app.post('/api/login', async (req, res) => {
 
     let user;
     if (isLoader) {
-      // Loader login uses username+password
+      // Loader login uses username+password (case-insensitive username)
       if (!validUsername(username) || !validPassword(password))
         return res.status(400).json({ error: 'Bad request' });
-      const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+      const result = await pool.query('SELECT * FROM users WHERE LOWER(username) = LOWER($1)', [username]);
       user = result.rows[0];
     } else {
       // Web login: try email first, then fallback to username (for old accounts without email)
@@ -179,8 +179,8 @@ app.post('/api/login', async (req, res) => {
         const result = await pool.query('SELECT * FROM users WHERE email = $1', [loginField.toLowerCase()]);
         user = result.rows[0];
       } else {
-        // Otherwise search by username (legacy accounts without email)
-        const result = await pool.query('SELECT * FROM users WHERE username = $1', [loginField]);
+        // Otherwise search by username (legacy accounts without email) - case-insensitive
+        const result = await pool.query('SELECT * FROM users WHERE LOWER(username) = LOWER($1)', [loginField]);
         user = result.rows[0];
       }
     }
