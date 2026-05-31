@@ -7,84 +7,124 @@
 ✅ Страница ввода кода `/verify-email`
 ✅ Повторная отправка кода
 ✅ Блокировка входа для неподтвержденных аккаунтов
+✅ Поддержка Gmail, Mail.ru, Yandex и других SMTP
 
 ---
 
-## Настройка Gmail SMTP
+## 🚀 Быстрая настройка (Mail.ru - РЕКОМЕНДУЕТСЯ)
 
-### 1️⃣ Создайте App Password в Gmail:
+### Почему Mail.ru?
+- ✅ Бесплатно
+- ✅ Не требует App Password
+- ✅ Работает сразу
+- ✅ Поддержка русского языка
 
-1. Откройте https://myaccount.google.com/security
-2. Включите **2-Step Verification** (если еще не включено)
-3. Перейдите в **App passwords**: https://myaccount.google.com/apppasswords
-4. Выберите:
-   - **App:** Mail
-   - **Device:** Other (Custom name) → введите "Luminar"
-5. Нажмите **Generate**
-6. Скопируйте сгенерированный пароль (16 символов)
+### Настройка Mail.ru:
 
-### 2️⃣ Добавьте переменные окружения на Vercel:
+1. **Создайте почту на Mail.ru** (если нет):
+   - Перейдите на https://mail.ru
+   - Зарегистрируйте новую почту (например: `luminar@mail.ru`)
 
-1. Откройте Vercel → Settings → Environment Variables
-2. Добавьте:
+2. **Включите SMTP в настройках:**
+   - Войдите в почту
+   - Настройки → Почтовые клиенты
+   - Включите "Доступ по протоколу IMAP/POP3/SMTP"
 
-```
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASS=your-app-password-16-chars
-EMAIL_FROM=Luminar <noreply@luminar.com>
-```
+3. **Добавьте на Vercel:**
+   - Settings → Environment Variables
+   - Добавьте:
+   ```
+   EMAIL_SERVICE=mail.ru
+   EMAIL_USER=luminar@mail.ru
+   EMAIL_PASS=ваш_пароль_от_почты
+   EMAIL_FROM=Luminar <luminar@mail.ru>
+   ```
+   - Нажмите **Save**
+   - Сделайте **Redeploy**
 
-3. Нажмите **Save**
-4. Сделайте **Redeploy**
+4. **Готово!** Письма будут отправляться с вашей почты Mail.ru
 
 ---
 
-## Альтернативные SMTP сервисы
+## Альтернативные варианты:
 
-### Mailgun (бесплатно до 5000 писем/месяц):
+### 1️⃣ Yandex Mail (Яндекс.Почта)
+
+**Настройка:**
+1. Создайте почту на https://mail.yandex.ru
+2. Включите SMTP в настройках
+3. Добавьте на Vercel:
+   ```
+   EMAIL_SERVICE=yandex
+   EMAIL_USER=luminar@yandex.ru
+   EMAIL_PASS=ваш_пароль
+   EMAIL_FROM=Luminar <luminar@yandex.ru>
+   ```
+
+---
+
+### 2️⃣ Gmail (требует App Password)
+
+**Настройка:**
+1. Откройте https://myaccount.google.com/apppasswords
+2. Включите 2FA (если еще не включено)
+3. Создайте App Password для "Mail"
+4. Скопируйте 16-символьный пароль
+5. Добавьте на Vercel:
+   ```
+   EMAIL_SERVICE=gmail
+   EMAIL_USER=your-email@gmail.com
+   EMAIL_PASS=app-password-16-chars
+   EMAIL_FROM=Luminar <noreply@luminar.com>
+   ```
+
+---
+
+### 3️⃣ Mailgun (для больших объемов)
+
+**Бесплатно до 5000 писем/месяц**
 
 1. Зарегистрируйтесь на https://www.mailgun.com/
 2. Получите SMTP credentials
-3. Измените в `server.js`:
+3. Добавьте на Vercel:
+   ```
+   EMAIL_SERVICE=custom
+   SMTP_HOST=smtp.mailgun.org
+   SMTP_PORT=587
+   SMTP_SECURE=false
+   EMAIL_USER=postmaster@your-domain.mailgun.org
+   EMAIL_PASS=your-mailgun-password
+   EMAIL_FROM=Luminar <noreply@your-domain.com>
+   ```
 
-```javascript
-transporter = nodemailer.createTransport({
-  host: 'smtp.mailgun.org',
-  port: 587,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
-```
+---
 
-### SendGrid (бесплатно до 100 писем/день):
+### 4️⃣ SendGrid (для больших объемов)
+
+**Бесплатно до 100 писем/день**
 
 1. Зарегистрируйтесь на https://sendgrid.com/
 2. Создайте API Key
-3. Измените в `server.js`:
-
-```javascript
-transporter = nodemailer.createTransport({
-  host: 'smtp.sendgrid.net',
-  port: 587,
-  auth: {
-    user: 'apikey',
-    pass: process.env.EMAIL_PASS // Your SendGrid API Key
-  }
-});
-```
+3. Добавьте на Vercel:
+   ```
+   EMAIL_SERVICE=custom
+   SMTP_HOST=smtp.sendgrid.net
+   SMTP_PORT=587
+   SMTP_SECURE=false
+   EMAIL_USER=apikey
+   EMAIL_PASS=your-sendgrid-api-key
+   EMAIL_FROM=Luminar <noreply@your-domain.com>
+   ```
 
 ---
 
 ## Режим разработки (без email)
 
 Если переменные `EMAIL_USER` и `EMAIL_PASS` не установлены:
-- Код подтверждения выводится в консоль сервера
-- Код возвращается в ответе API (только для разработки)
-- Пользователь может увидеть код на странице регистрации
-
-**⚠️ В production обязательно настройте email!**
+- ✅ Код выводится в консоль сервера
+- ✅ Код возвращается в ответе API
+- ✅ Код показывается на странице регистрации
+- ⚠️ **Не подходит для production!**
 
 ---
 

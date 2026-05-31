@@ -30,17 +30,37 @@ const TOKEN_TTL = '7d';
 const EMAIL_USER = process.env.EMAIL_USER || '';
 const EMAIL_PASS = process.env.EMAIL_PASS || '';
 const EMAIL_FROM = process.env.EMAIL_FROM || 'noreply@luminar.com';
+const EMAIL_SERVICE = process.env.EMAIL_SERVICE || 'gmail'; // gmail, mail.ru, yandex, custom
 
 // Create email transporter
 let transporter = null;
 if (EMAIL_USER && EMAIL_PASS) {
-  transporter = nodemailer.createTransport({
-    service: 'gmail', // or 'smtp.gmail.com'
+  const transportConfig = {
     auth: {
       user: EMAIL_USER,
       pass: EMAIL_PASS
     }
-  });
+  };
+
+  // Configure based on service
+  if (EMAIL_SERVICE === 'mail.ru') {
+    transportConfig.host = 'smtp.mail.ru';
+    transportConfig.port = 465;
+    transportConfig.secure = true;
+  } else if (EMAIL_SERVICE === 'yandex') {
+    transportConfig.host = 'smtp.yandex.ru';
+    transportConfig.port = 465;
+    transportConfig.secure = true;
+  } else if (EMAIL_SERVICE === 'gmail') {
+    transportConfig.service = 'gmail';
+  } else {
+    // Custom SMTP
+    transportConfig.host = process.env.SMTP_HOST || 'smtp.gmail.com';
+    transportConfig.port = parseInt(process.env.SMTP_PORT || '587');
+    transportConfig.secure = process.env.SMTP_SECURE === 'true';
+  }
+
+  transporter = nodemailer.createTransport(transportConfig);
 }
 
 // Helper function to send verification email
@@ -910,6 +930,56 @@ app.post('/api/promocode/use', async (req, res) => {
 });
 
 // ---- Tickets API ----
+// Create ticket
+app.post('/api/tickets/create', async (req, res) => {
+  try {
+    const auth = req.headers['authorization'];
+    if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'No token' });
+    const token = auth.substring(7);
+    const payload = jwt.verify(token, JWT_SECRET);
+    
+    const { title, message } = req.body || {};
+    if (!title || !message) return res.status(400).json({ error: 'title and message required' });
+    
+    const userResult = await pool.query('SELECT * FROM users WHERE username = $1', [payload.username]);
+    const user = userResult.rows[0];
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    
+    const now = Date.now();
+    const ticketResult = await pool.query(
+      'INSERT INTO tickets (user_id, username, title, status, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
+      [user.id, user.username, title, 'open', now, now]
+    );
+    const ticketId = ticketResult.rows[0].id;
+    
+    await pool.query(
+      'INSERT INTO ticket_messages (ticket_id, user_id, username, message, is_admin, created_at) VALUES ($1, $2, $3, $4, $5, $6)',
+      [ticketId, user.id, user.username, message, 0, now]
+    );
+    
+    res.json({ ok: true, ticketId });
+  } catch (e) {
+    console.error('Create ticket error:', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Get my tickets
+app.get('/api/tickets/my', async (req, res) => {
+  try {
+    const auth = req.headers['authorization'];
+    if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'No token' });
+    const token = auth.substring(7);
+    const payload = jwt.verify(token, JWT_SECRET);
+    
+    const result = await pool.query('SELECT * FROM tickets WHERE username = $1 ORDER BY updated_at DESC', [payload.username]);
+    res.json({ tickets: result.rows });
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Legacy endpoint (keep for compatibility)
 app.post('/api/tickets', async (req, res) => {
   try {
     const auth = req.headers['authorization'];
