@@ -25,15 +25,84 @@
   <div id="other-tab" class="price-grid" style="display:none;">
     <div style="text-align:center;padding:40px;color:var(--text-3);">Загрузка...</div>
   </div>
-
-  <div style="max-width:400px;margin:40px auto;">
-    <div style="display:flex;gap:8px;">
-      <input type="text" id="promocodeInput" placeholder="Промокод" style="flex:1;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:14px;">
-      <button class="btn btn-purple" onclick="applyPromocode()">Применить</button>
-    </div>
-    <div id="promocodeMsg" style="margin-top:8px;font-size:13px;"></div>
-  </div>
 </section>
+
+<!-- Payment Modal -->
+<div id="paymentModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;align-items:center;justify-content:center;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;width:90%;max-width:600px;position:relative;">
+    <button onclick="closePaymentModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text-3);font-size:28px;cursor:pointer;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:8px;">×</button>
+    
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
+      <div>
+        <h3 id="modalProductName" style="font-size:24px;margin-bottom:8px;">Подписка на 30 дней</h3>
+        <div style="display:flex;align-items:baseline;gap:8px;">
+          <div id="modalPrice" style="font-size:32px;font-weight:700;">200 RUB</div>
+          <div id="modalOldPrice" style="font-size:16px;color:var(--text-3);text-decoration:line-through;display:none;"></div>
+        </div>
+      </div>
+      <div style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);border-radius:12px;display:flex;align-items:center;justify-content:center;padding:20px;">
+        <div style="text-align:center;color:#fff;">
+          <div style="font-size:48px;margin-bottom:8px;">🎮</div>
+          <div style="font-size:12px;opacity:0.9;" id="modalProductType">ПОДПИСКА НА 30 ДНЕЙ</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:24px;">
+      <div style="font-size:11px;font-weight:600;color:var(--text-3);margin-bottom:12px;text-transform:uppercase;">Описание</div>
+      <p id="modalDescription" style="color:var(--text-2);font-size:14px;">Подписка на клиент EclipseDLS с длительностью в 30 дней.</p>
+    </div>
+
+    <div style="margin-bottom:24px;">
+      <div style="font-size:11px;font-weight:600;color:var(--text-3);margin-bottom:12px;text-transform:uppercase;">Оплата</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <button class="payment-method active" data-method="card" onclick="selectPaymentMethod('card')" style="padding:14px;background:var(--surface-2);border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:0.2s;display:flex;align-items:center;gap:10px;color:var(--text);font-size:14px;font-weight:600;">
+          <span style="font-size:20px;">⚡</span> СБП / Карта
+        </button>
+        <button class="payment-method" data-method="ticket" onclick="selectPaymentMethod('ticket')" style="padding:14px;background:var(--surface-2);border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:0.2s;display:flex;align-items:center;gap:10px;color:var(--text);font-size:14px;font-weight:600;">
+          <span style="font-size:20px;">💳</span> Ticket
+        </button>
+      </div>
+      <button class="payment-method" data-method="funpay" onclick="selectPaymentMethod('funpay')" style="width:100%;padding:14px;background:var(--surface-2);border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:0.2s;display:flex;align-items:center;gap:10px;color:var(--text);font-size:14px;font-weight:600;">
+        <span style="font-size:20px;">🔗</span> FunPay
+      </button>
+    </div>
+
+    <div id="paymentInfo" style="background:rgba(76,154,255,0.1);border:1px solid rgba(76,154,255,0.3);border-radius:10px;padding:14px;margin-bottom:24px;">
+      <div style="display:flex;align-items:start;gap:10px;">
+        <span style="font-size:18px;">ℹ️</span>
+        <div style="font-size:13px;color:var(--text-2);">
+          <div style="font-weight:600;margin-bottom:4px;">При оплате введите email: <span id="userEmail" style="color:var(--primary);">user@example.com</span></div>
+          <div>Подписка активируется автоматически после оплаты.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:24px;">
+      <div style="font-size:11px;font-weight:600;color:var(--text-3);margin-bottom:12px;text-transform:uppercase;">Промокод</div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="modalPromocodeInput" placeholder="Введите промокод" style="flex:1;padding:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;">
+        <button class="btn btn-purple" onclick="applyModalPromocode()">Применить</button>
+      </div>
+      <div id="modalPromocodeMsg" style="margin-top:8px;font-size:13px;"></div>
+    </div>
+
+    <button id="finalBuyBtn" class="btn btn-purple" style="width:100%;padding:16px;font-size:16px;font-weight:700;" onclick="completePurchase()">
+      💳 Купить за <span id="finalPrice">200</span> RUB
+    </button>
+  </div>
+</div>
+
+<style>
+.payment-method.active {
+  border-color: var(--primary) !important;
+  background: rgba(76, 154, 255, 0.1) !important;
+}
+.payment-method:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+</style>
 
 <footer class="footer">
   <div class="footer-grid">
@@ -51,8 +120,11 @@ const PAY='https://funpay.com/users/19926313/',token=localStorage.getItem('lumin
 let products = [];
 let currentDiscount = 0;
 let currentPromocode = null;
+let selectedProduct = null;
+let selectedPaymentMethod = 'card';
+let userEmail = '';
 
-if(token){fetch('/api/me',{headers:{'Authorization':'Bearer '+token}}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.user)document.getElementById('navAuth').innerHTML=`<button class="theme-toggle" onclick="toggleTheme()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button><a href="/profile" class="btn btn-purple">${d.user.username}</a>`;});}
+if(token){fetch('/api/me',{headers:{'Authorization':'Bearer '+token}}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.user){document.getElementById('navAuth').innerHTML=`<button class="theme-toggle" onclick="toggleTheme()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button><a href="/profile" class="btn btn-purple">${d.user.username}</a>`;userEmail=d.user.email||d.user.username+'@luminar.com';document.getElementById('userEmail').textContent=userEmail;}});}
 
 // Load products
 fetch('/api/products').then(r=>r.json()).then(d=>{
@@ -71,13 +143,11 @@ function renderProducts() {
     subsTab.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-3);">Нет продуктов</div>';
   } else {
     subsTab.innerHTML = subs.map(p => {
-      const finalPrice = currentDiscount > 0 ? Math.round(p.price * (1 - currentDiscount / 100)) : p.price;
-      const hasDiscount = currentDiscount > 0;
       return `<div class="price-card">
-        <div class="price-amount">${finalPrice}<small>₽</small>${hasDiscount ? `<div style="font-size:14px;color:var(--text-3);text-decoration:line-through;">${p.price}₽</div>` : ''}</div>
+        <div class="price-amount">${p.price}<small>₽</small></div>
         <div class="price-name">${p.name}</div>
         ${p.description ? `<p style="font-size:12px;color:var(--text-3);margin:8px 0;">${p.description}</p>` : ''}
-        <button class="btn btn-purple btn-block" onclick="buy(${p.id}, ${p.days}, ${finalPrice}, '${p.name}')">🛒 Purchase</button>
+        <button class="btn btn-purple btn-block" onclick="openPaymentModal(${p.id})">🛒 Purchase</button>
       </div>`;
     }).join('');
   }
@@ -86,21 +156,102 @@ function renderProducts() {
     otherTab.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-3);">Нет продуктов</div>';
   } else {
     otherTab.innerHTML = other.map(p => {
-      const finalPrice = currentDiscount > 0 ? Math.round(p.price * (1 - currentDiscount / 100)) : p.price;
-      const hasDiscount = currentDiscount > 0;
       return `<div class="price-card">
-        <div class="price-amount">${finalPrice}<small>₽</small>${hasDiscount ? `<div style="font-size:14px;color:var(--text-3);text-decoration:line-through;">${p.price}₽</div>` : ''}</div>
+        <div class="price-amount">${p.price}<small>₽</small></div>
         <div class="price-name">${p.name}</div>
         ${p.description ? `<p style="font-size:12px;color:var(--text-3);margin:8px 0;">${p.description}</p>` : ''}
-        <button class="btn btn-purple btn-block" onclick="buy(${p.id}, ${p.days}, ${finalPrice}, '${p.name}')">🛒 Purchase</button>
+        <button class="btn btn-purple btn-block" onclick="openPaymentModal(${p.id})">🛒 Purchase</button>
       </div>`;
     }).join('');
   }
 }
 
-async function applyPromocode() {
-  const code = document.getElementById('promocodeInput').value.trim();
-  const msg = document.getElementById('promocodeMsg');
+function openPaymentModal(productId) {
+  if(!token){alert('Sign in first');location.href='/login';return;}
+  
+  selectedProduct = products.find(p => p.id === productId);
+  if (!selectedProduct) return;
+  
+  // Reset state
+  currentDiscount = 0;
+  currentPromocode = null;
+  selectedPaymentMethod = 'card';
+  
+  // Update modal content
+  document.getElementById('modalProductName').textContent = selectedProduct.name;
+  document.getElementById('modalDescription').textContent = selectedProduct.description || 'Описание отсутствует';
+  document.getElementById('modalProductType').textContent = selectedProduct.name.toUpperCase();
+  updateModalPrice();
+  
+  // Reset payment method selection
+  document.querySelectorAll('.payment-method').forEach(btn => btn.classList.remove('active'));
+  document.querySelector('[data-method="card"]').classList.add('active');
+  
+  // Clear promocode input
+  document.getElementById('modalPromocodeInput').value = '';
+  document.getElementById('modalPromocodeMsg').innerHTML = '';
+  
+  // Show modal
+  document.getElementById('paymentModal').style.display = 'flex';
+}
+
+function closePaymentModal() {
+  document.getElementById('paymentModal').style.display = 'none';
+}
+
+function selectPaymentMethod(method) {
+  selectedPaymentMethod = method;
+  document.querySelectorAll('.payment-method').forEach(btn => btn.classList.remove('active'));
+  document.querySelector(`[data-method="${method}"]`).classList.add('active');
+  
+  // Update info text based on method
+  const infoDiv = document.getElementById('paymentInfo');
+  if (method === 'funpay') {
+    infoDiv.innerHTML = `<div style="display:flex;align-items:start;gap:10px;">
+      <span style="font-size:18px;">ℹ️</span>
+      <div style="font-size:13px;color:var(--text-2);">
+        <div style="font-weight:600;margin-bottom:4px;">Вы будете перенаправлены на FunPay</div>
+        <div>После оплаты свяжитесь с продавцом для активации.</div>
+      </div>
+    </div>`;
+  } else if (method === 'ticket') {
+    infoDiv.innerHTML = `<div style="display:flex;align-items:start;gap:10px;">
+      <span style="font-size:18px;">ℹ️</span>
+      <div style="font-size:13px;color:var(--text-2);">
+        <div style="font-weight:600;margin-bottom:4px;">Оплата через тикет</div>
+        <div>Создайте тикет с подтверждением оплаты для активации.</div>
+      </div>
+    </div>`;
+  } else {
+    infoDiv.innerHTML = `<div style="display:flex;align-items:start;gap:10px;">
+      <span style="font-size:18px;">ℹ️</span>
+      <div style="font-size:13px;color:var(--text-2);">
+        <div style="font-weight:600;margin-bottom:4px;">При оплате введите email: <span id="userEmail" style="color:var(--primary);">${userEmail}</span></div>
+        <div>Подписка активируется автоматически после оплаты.</div>
+      </div>
+    </div>`;
+  }
+}
+
+function updateModalPrice() {
+  if (!selectedProduct) return;
+  
+  const finalPrice = currentDiscount > 0 ? Math.round(selectedProduct.price * (1 - currentDiscount / 100)) : selectedProduct.price;
+  
+  document.getElementById('modalPrice').textContent = finalPrice + ' RUB';
+  document.getElementById('finalPrice').textContent = finalPrice;
+  
+  if (currentDiscount > 0) {
+    document.getElementById('modalOldPrice').textContent = selectedProduct.price + ' RUB';
+    document.getElementById('modalOldPrice').style.display = 'block';
+  } else {
+    document.getElementById('modalOldPrice').style.display = 'none';
+  }
+}
+
+async function applyModalPromocode() {
+  const code = document.getElementById('modalPromocodeInput').value.trim();
+  const msg = document.getElementById('modalPromocodeMsg');
   
   if (!code) {
     msg.innerHTML = '<span style="color:var(--red);">Введите промокод</span>';
@@ -119,7 +270,7 @@ async function applyPromocode() {
       currentDiscount = data.discount;
       currentPromocode = code;
       msg.innerHTML = `<span style="color:var(--green);">✓ Промокод применён! Скидка ${data.discount}%</span>`;
-      renderProducts();
+      updateModalPrice();
     } else {
       msg.innerHTML = `<span style="color:var(--red);">${data.error || 'Неверный промокод'}</span>`;
     }
@@ -128,22 +279,40 @@ async function applyPromocode() {
   }
 }
 
-function sw(t){document.querySelectorAll('.ptab').forEach(x=>x.classList.remove('active'));event.target.classList.add('active');document.getElementById('subs-tab').style.display=t==='subs'?'grid':'none';document.getElementById('other-tab').style.display=t==='other'?'grid':'none';}
-
-async function buy(id, days, price, name){
-  if(!token){alert('Sign in first');location.href='/login';return;}
+async function completePurchase() {
+  if (!selectedProduct) return;
   
-  if(confirm(`${name} за ${price}₽?`)) {
-    // Use promocode if applied
-    if (currentPromocode) {
-      await fetch('/api/promocode/use', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: currentPromocode })
-      });
-    }
-    window.open(PAY,'_blank');
+  const finalPrice = currentDiscount > 0 ? Math.round(selectedProduct.price * (1 - currentDiscount / 100)) : selectedProduct.price;
+  
+  // Use promocode if applied
+  if (currentPromocode) {
+    await fetch('/api/promocode/use', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: currentPromocode })
+    });
+  }
+  
+  // Handle different payment methods
+  if (selectedPaymentMethod === 'funpay') {
+    window.open(PAY, '_blank');
+    closePaymentModal();
+  } else if (selectedPaymentMethod === 'ticket') {
+    alert('Создайте тикет в профиле с подтверждением оплаты');
+    closePaymentModal();
+    location.href = '/profile';
+  } else {
+    // Card/SBP payment - redirect to payment gateway
+    alert('Интеграция с платёжной системой в разработке');
+    closePaymentModal();
   }
 }
+
+function sw(t){document.querySelectorAll('.ptab').forEach(x=>x.classList.remove('active'));event.target.classList.add('active');document.getElementById('subs-tab').style.display=t==='subs'?'grid':'none';document.getElementById('other-tab').style.display=t==='other'?'grid':'none';}
+
+// Close modal on outside click
+document.getElementById('paymentModal')?.addEventListener('click', (e) => {
+  if (e.target.id === 'paymentModal') closePaymentModal();
+});
 </script>
 </body></html>
