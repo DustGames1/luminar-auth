@@ -538,6 +538,58 @@ textarea.input {
   </div>
 </div>
 
+<div id="editUserModal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Редактировать пользователя</h3>
+      <button class="modal-close" onclick="closeModal('editUserModal')">×</button>
+    </div>
+    <div id="editUserContent">
+      <div class="form-group">
+        <label class="form-label">Пользователь</label>
+        <div id="editUserName" style="font-weight:700;font-size:16px;margin-top:8px;"></div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Выдать подписку</label>
+        <div style="display:flex;gap:8px;">
+          <input type="number" id="editUserDays" class="input" placeholder="Дней" value="30" style="flex:1;">
+          <button class="btn btn-primary" onclick="giveSubscription()">Выдать</button>
+        </div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:6px;">Добавит дни к текущей подписке</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Сбросить HWID</label>
+        <button class="btn btn-danger" style="width:100%;" onclick="resetHwid()">🔓 Сбросить HWID</button>
+        <div style="font-size:12px;color:var(--text-3);margin-top:6px;">Пользователь сможет войти с другого устройства</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Роль</label>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="editUserRole" class="input" placeholder="admin, moderator, vip..." style="flex:1;">
+          <button class="btn btn-primary" onclick="setRole()">Установить</button>
+        </div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:6px;">Оставьте пустым для обычного пользователя</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Префикс</label>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="editUserPrefix" class="input" placeholder="[VIP], [ADMIN]..." style="flex:1;">
+          <button class="btn btn-primary" onclick="setPrefix()">Установить</button>
+        </div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:6px;">Отображается в игре перед ником</div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-danger" onclick="closeModal('editUserModal')">Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 let AK = localStorage.getItem('adminKey') || '';
 let users = [], keys = [], products = [], promocodes = [], changelog = [];
@@ -701,6 +753,71 @@ async function banUser(id) {
 async function unbanUser(id) {
   await api('POST', '/api/admin/unban/' + id);
   loadUsers();
+}
+
+function editUser(id) {
+  const user = users.find(u => u.id === id);
+  if (!user) return;
+  
+  currentEditUserId = id;
+  document.getElementById('editUserName').textContent = user.username;
+  document.getElementById('editUserRole').value = user.role || '';
+  document.getElementById('editUserPrefix').value = user.prefix || '';
+  document.getElementById('editUserModal').classList.remove('hidden');
+}
+
+let currentEditUserId = null;
+
+async function giveSubscription() {
+  const days = +document.getElementById('editUserDays').value;
+  if (!days || days < 1) return alert('Введите количество дней');
+  
+  const r = await api('POST', `/api/admin/subscribe/${currentEditUserId}`, { days });
+  if (r.ok) {
+    alert(`Подписка выдана на ${days} дней!`);
+    loadUsers();
+    closeModal('editUserModal');
+  } else {
+    alert('Ошибка: ' + (r.data.error || 'Unknown'));
+  }
+}
+
+async function resetHwid() {
+  if (!confirm('Сбросить HWID? Пользователь сможет войти с другого устройства.')) return;
+  
+  const r = await api('POST', `/api/admin/reset-hwid/${currentEditUserId}`);
+  if (r.ok) {
+    alert('HWID сброшен!');
+    loadUsers();
+  } else {
+    alert('Ошибка: ' + (r.data.error || 'Unknown'));
+  }
+}
+
+async function setRole() {
+  const role = document.getElementById('editUserRole').value.trim();
+  
+  const r = await api('POST', `/api/admin/role/${currentEditUserId}`, { role: role || null });
+  if (r.ok) {
+    alert('Роль установлена!');
+    loadUsers();
+    closeModal('editUserModal');
+  } else {
+    alert('Ошибка: ' + (r.data.error || 'Unknown'));
+  }
+}
+
+async function setPrefix() {
+  const prefix = document.getElementById('editUserPrefix').value.trim();
+  
+  const r = await api('POST', `/api/admin/prefix/${currentEditUserId}`, { prefix: prefix || null });
+  if (r.ok) {
+    alert('Префикс установлен!');
+    loadUsers();
+    closeModal('editUserModal');
+  } else {
+    alert('Ошибка: ' + (r.data.error || 'Unknown'));
+  }
 }
 
 // Init
