@@ -16,14 +16,7 @@
       <div><div class="user-name" id="username">...</div><div class="user-prefix" id="prefixText" style="font-size:11px;color:var(--purple);font-weight:600;margin-top:2px;"></div><div class="user-sub" id="subText">Loading...</div></div>
       <button class="copy-icon" onclick="logout()" title="Logout">⏻</button>
     </div>
-    <div class="activate-card">
-      <label>Activate License-Key</label>
-      <div class="activate-row">
-        <input type="text" id="licenseKey" placeholder="🔑 Enter key...">
-        <button class="btn btn-purple" onclick="activate()">● Activate</button>
-      </div>
-      <div id="activateMsg" class="form-msg"></div>
-    </div>
+    <a href="/tickets" class="btn btn-dark btn-block">🎫 Support Tickets</a>
     <a id="adminBtn" href="/admin-new" class="btn btn-dark btn-block" style="display:none;">⚙ Admin Panel</a>
   </div>
 
@@ -47,6 +40,14 @@
     <!-- Settings -->
     <div id="tab-settings" class="hidden">
       <div class="activate-card">
+        <label>Activate License-Key</label>
+        <div class="activate-row">
+          <input type="text" id="licenseKey" placeholder="🔑 Enter key...">
+          <button class="btn btn-purple" onclick="activate()">● Activate</button>
+        </div>
+        <div id="activateMsg" class="form-msg"></div>
+      </div>
+      <div class="activate-card" style="margin-top:12px;">
         <label>Avatar</label>
         <div class="activate-row">
           <input type="file" id="avatarFile" accept="image/*" style="display:none;">
