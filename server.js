@@ -18,11 +18,18 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
 const path = require('path');
+const { YooCheckout } = require('@a2seven/yoo-checkout');
+const { v4: uuidv4 } = require('uuid');
 
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-production';
 const ADMIN_KEY = process.env.ADMIN_KEY || 'change-me-admin-key';
 const TOKEN_TTL = '7d';
+
+// YooKassa configuration
+const YOOKASSA_SHOP_ID = process.env.YOOKASSA_SHOP_ID || '';
+const YOOKASSA_SECRET_KEY = process.env.YOOKASSA_SECRET_KEY || '';
+const checkout = new YooCheckout({ shopId: YOOKASSA_SHOP_ID, secretKey: YOOKASSA_SECRET_KEY });
 
 // ---- DB ----
 const pool = new Pool({
@@ -117,6 +124,24 @@ async function initDB() {
       message TEXT NOT NULL,
       is_admin INTEGER DEFAULT 0,
       created_at BIGINT NOT NULL
+    );
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS payments (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL,
+      username TEXT NOT NULL,
+      product_id INTEGER NOT NULL,
+      product_name TEXT NOT NULL,
+      amount DECIMAL(10,2) NOT NULL,
+      original_amount DECIMAL(10,2) NOT NULL,
+      discount INTEGER DEFAULT 0,
+      promocode TEXT,
+      payment_id TEXT UNIQUE NOT NULL,
+      status TEXT DEFAULT 'pending',
+      days INTEGER NOT NULL,
+      created_at BIGINT NOT NULL,
+      paid_at BIGINT
     );
   `);
   console.log('Database initialized');
@@ -831,6 +856,179 @@ app.post('/api/admin/tickets/:id/reply', adminOnly, async (req, res) => {
 app.post('/api/admin/tickets/:id/close', adminOnly, async (req, res) => {
   await pool.query('UPDATE tickets SET status = $1 WHERE id = $2', ['closed', req.params.id]);
   res.json({ ok: true });
+});
+
+// ---- YooKassa Payment Integration ----
+
+// Create payment
+app.post('/api/payment/create', async (req, res) => {
+  try {
+    const auth = req.headers['authorization'];
+    if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'No token' });
+    const token = auth.substring(7);
+    const payload = jwt.verify(token, JWT_SECRET);
+    
+    const { productId, promocode } = req.body || {};
+    if (!productId) return res.status(400).json({ error: 'Product ID required' });
+    
+    // Get user
+    const userResult = await pool.query('SELECT * FROM users WHERE username = $1', [payload.username]);
+    const user = userResult.rows[0];
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    
+    // Get product
+    const productResult = await pool.query('SELECT * FROM products WHERE id = $1', [productId]);
+    const product = productResult.rows[0];
+    if (!product) return res.status(404).json({ error: 'Product not found' });
+    
+    let finalAmount = product.price;
+    let discount = 0;
+    let promoCode = null;
+    
+    // Apply promocode if provided
+    if (promocode) {
+      const promoResult = await pool.query('SELECT * FROM promocodes WHERE code = $1', [promocode.toUpperCase()]);
+      const promo = promoResult.rows[0];
+      
+      if (promo) {
+        // Check validity
+        if (promo.expires_at && promo.expires_at < Date.now()) {
+          return res.status(400).json({ error: 'Промокод истёк' });
+        }
+        if (promo.uses_left !== null && promo.uses_left <= 0) {
+          return res.status(400).json({ error: 'Промокод исчерпан' });
+        }
+        
+        discount = promo.discount;
+        finalAmount = Math.round(product.price * (1 - discount / 100));
+        promoCode = promo.code;
+      }
+    }
+    
+    // Create YooKassa payment
+    const idempotenceKey = uuidv4();
+    const payment = await checkout.createPayment({
+      amount: {
+        value: finalAmount.toFixed(2),
+        currency: 'RUB'
+      },
+      confirmation: {
+        type: 'redirect',
+        return_url: `${req.protocol}://${req.get('host')}/profile?payment=success`
+      },
+      capture: true,
+      description: `${product.name} - ${user.username}`,
+      metadata: {
+        user_id: user.id,
+        username: user.username,
+        product_id: product.id,
+        days: product.days,
+        promocode: promoCode || ''
+      }
+    }, idempotenceKey);
+    
+    // Save payment to database
+    await pool.query(
+      'INSERT INTO payments (user_id, username, product_id, product_name, amount, original_amount, discount, promocode, payment_id, status, days, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)',
+      [user.id, user.username, product.id, product.name, finalAmount, product.price, discount, promoCode, payment.id, 'pending', product.days, Date.now()]
+    );
+    
+    res.json({ 
+      ok: true, 
+      paymentId: payment.id,
+      confirmationUrl: payment.confirmation.confirmation_url,
+      amount: finalAmount
+    });
+  } catch (e) {
+    console.error('Payment create error:', e);
+    res.status(500).json({ error: 'Payment creation failed: ' + e.message });
+  }
+});
+
+// YooKassa webhook for payment notifications
+app.post('/api/payment/webhook', async (req, res) => {
+  try {
+    const { type, object } = req.body;
+    
+    if (type === 'payment.succeeded') {
+      const paymentId = object.id;
+      const metadata = object.metadata;
+      
+      // Get payment from database
+      const paymentResult = await pool.query('SELECT * FROM payments WHERE payment_id = $1', [paymentId]);
+      const payment = paymentResult.rows[0];
+      
+      if (!payment) {
+        console.error('Payment not found:', paymentId);
+        return res.status(404).json({ error: 'Payment not found' });
+      }
+      
+      if (payment.status === 'succeeded') {
+        // Already processed
+        return res.json({ ok: true });
+      }
+      
+      // Update payment status
+      await pool.query('UPDATE payments SET status = $1, paid_at = $2 WHERE payment_id = $3', 
+        ['succeeded', Date.now(), paymentId]);
+      
+      // Add subscription to user
+      const userResult = await pool.query('SELECT * FROM users WHERE id = $1', [payment.user_id]);
+      const user = userResult.rows[0];
+      
+      if (user) {
+        const now = Date.now();
+        const base = (user.sub_until && user.sub_until > now) ? Number(user.sub_until) : now;
+        const newUntil = base + payment.days * 86400000;
+        
+        await pool.query('UPDATE users SET sub_until = $1 WHERE id = $2', [newUntil, user.id]);
+        
+        // Use promocode if applied
+        if (payment.promocode) {
+          await pool.query(
+            'UPDATE promocodes SET uses_left = CASE WHEN uses_left IS NULL THEN NULL ELSE uses_left - 1 END WHERE code = $1',
+            [payment.promocode]
+          );
+        }
+      }
+    }
+    
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('Webhook error:', e);
+    res.status(500).json({ error: 'Webhook processing failed' });
+  }
+});
+
+// Check payment status
+app.get('/api/payment/status/:paymentId', async (req, res) => {
+  try {
+    const auth = req.headers['authorization'];
+    if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'No token' });
+    const token = auth.substring(7);
+    const payload = jwt.verify(token, JWT_SECRET);
+    
+    const paymentResult = await pool.query('SELECT * FROM payments WHERE payment_id = $1 AND username = $2', 
+      [req.params.paymentId, payload.username]);
+    const payment = paymentResult.rows[0];
+    
+    if (!payment) return res.status(404).json({ error: 'Payment not found' });
+    
+    res.json({ 
+      ok: true, 
+      status: payment.status,
+      amount: payment.amount,
+      product: payment.product_name
+    });
+  } catch (e) {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+});
+
+// Admin: view all payments
+app.get('/api/admin/payments', adminOnly, async (req, res) => {
+  const result = await pool.query('SELECT * FROM payments ORDER BY created_at DESC LIMIT 100');
+  res.json({ payments: result.rows });
 });
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));

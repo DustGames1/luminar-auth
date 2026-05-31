@@ -284,17 +284,16 @@ async function completePurchase() {
   
   const finalPrice = currentDiscount > 0 ? Math.round(selectedProduct.price * (1 - currentDiscount / 100)) : selectedProduct.price;
   
-  // Use promocode if applied
-  if (currentPromocode) {
-    await fetch('/api/promocode/use', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code: currentPromocode })
-    });
-  }
-  
   // Handle different payment methods
   if (selectedPaymentMethod === 'funpay') {
+    // Use promocode if applied
+    if (currentPromocode) {
+      await fetch('/api/promocode/use', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: currentPromocode })
+      });
+    }
     window.open(PAY, '_blank');
     closePaymentModal();
   } else if (selectedPaymentMethod === 'ticket') {
@@ -302,9 +301,31 @@ async function completePurchase() {
     closePaymentModal();
     location.href = '/profile';
   } else {
-    // Card/SBP payment - redirect to payment gateway
-    alert('Интеграция с платёжной системой в разработке');
-    closePaymentModal();
+    // Card/SBP payment via YooKassa
+    try {
+      const response = await fetch('/api/payment/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          productId: selectedProduct.id,
+          promocode: currentPromocode
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.confirmationUrl) {
+        // Redirect to YooKassa payment page
+        window.location.href = data.confirmationUrl;
+      } else {
+        alert('Ошибка создания платежа: ' + (data.error || 'Unknown error'));
+      }
+    } catch (e) {
+      alert('Ошибка: ' + e.message);
+    }
   }
 }
 
