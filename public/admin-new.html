@@ -208,6 +208,71 @@ tr:hover {
   color: #fff;
   border-color: var(--danger);
 }
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 500px;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text-3);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+.modal-close:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.form-group {
+  margin-bottom: 16px;
+}
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+textarea.input {
+  min-height: 100px;
+  resize: vertical;
+  font-family: inherit;
+}
 </style>
 </head>
 <body>
@@ -370,6 +435,104 @@ tr:hover {
       </div>
     </div>
   </main>
+</div>
+
+<!-- Modals -->
+<div id="productModal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Создать продукт</h3>
+      <button class="modal-close" onclick="closeModal('productModal')">×</button>
+    </div>
+    <form id="productForm" onsubmit="submitProduct(event)">
+      <div class="form-group">
+        <label class="form-label">Название *</label>
+        <input type="text" name="name" class="input" required placeholder="Подписка на 30 дней">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Описание</label>
+        <textarea name="description" class="input" placeholder="Полный доступ к клиенту"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Цена (₽) *</label>
+        <input type="number" name="price" class="input" required placeholder="199">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Дней подписки *</label>
+        <input type="number" name="days" class="input" required placeholder="30">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Категория</label>
+        <input type="text" name="category" class="input" placeholder="Подписка" value="Подписка">
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" style="flex:1;">Создать</button>
+        <button type="button" class="btn btn-danger" onclick="closeModal('productModal')">Отмена</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="promocodeModal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Создать промокод</h3>
+      <button class="modal-close" onclick="closeModal('promocodeModal')">×</button>
+    </div>
+    <form id="promocodeForm" onsubmit="submitPromocode(event)">
+      <div class="form-group">
+        <label class="form-label">Код *</label>
+        <input type="text" name="code" class="input" required placeholder="SALE20" style="text-transform:uppercase;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Скидка (%) *</label>
+        <input type="number" name="discount" class="input" required placeholder="20" min="1" max="100">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Количество использований</label>
+        <input type="number" name="uses_left" class="input" placeholder="Оставьте пустым для ∞">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Срок действия (дней)</label>
+        <input type="number" name="expires_days" class="input" placeholder="Оставьте пустым для ∞">
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" style="flex:1;">Создать</button>
+        <button type="button" class="btn btn-danger" onclick="closeModal('promocodeModal')">Отмена</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="changelogModal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Добавить запись</h3>
+      <button class="modal-close" onclick="closeModal('changelogModal')">×</button>
+    </div>
+    <form id="changelogForm" onsubmit="submitChangelog(event)">
+      <div class="form-group">
+        <label class="form-label">Версия *</label>
+        <input type="text" name="version" class="input" required placeholder="1.0.0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Дата *</label>
+        <input type="date" name="date" class="input" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Тег</label>
+        <input type="text" name="tag" class="input" placeholder="ОБНОВЛЕНО" value="ОБНОВЛЕНО">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Текст изменений *</label>
+        <textarea name="text" class="input" required placeholder="Список изменений..."></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" style="flex:1;">Добавить</button>
+        <button type="button" class="btn btn-danger" onclick="closeModal('changelogModal')">Отмена</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script>
@@ -545,7 +708,6 @@ async function loadProducts() {
       <td>${p.days}</td>
       <td>${p.category}</td>
       <td>
-        <button class="btn btn-primary btn-sm" onclick="editProduct(${p.id})">✏️</button>
         <button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.id})">🗑</button>
       </td>
     </tr>`;
@@ -555,25 +717,31 @@ async function loadProducts() {
 }
 
 function showCreateProductModal() {
-  const name = prompt('Название продукта:');
-  if (!name) return;
-  const description = prompt('Описание:');
-  const price = prompt('Цена (₽):');
-  const days = prompt('Дней подписки:');
-  const category = prompt('Категория:', 'Подписка');
-  
-  if (!price || !days) {
-    alert('Заполните все поля');
-    return;
-  }
-  
-  createProduct({ name, description, price: +price, days: +days, category });
+  document.getElementById('productModal').classList.remove('hidden');
+  document.getElementById('productForm').reset();
+  // Set today's date for changelog
+  const today = new Date().toISOString().split('T')[0];
+  document.querySelector('#changelogForm input[name="date"]').value = today;
 }
 
-async function createProduct(data) {
+function closeModal(modalId) {
+  document.getElementById(modalId).classList.add('hidden');
+}
+
+async function submitProduct(e) {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const data = {
+    name: formData.get('name'),
+    description: formData.get('description'),
+    price: +formData.get('price'),
+    days: +formData.get('days'),
+    category: formData.get('category') || 'Подписка'
+  };
+  
   const r = await api('POST', '/api/admin/products', data);
   if (r.ok) {
-    alert('Продукт создан!');
+    closeModal('productModal');
     loadProducts();
   } else {
     alert('Ошибка: ' + (r.data.error || 'Unknown'));
@@ -620,31 +788,25 @@ async function loadPromocodes() {
 }
 
 function showCreatePromocodeModal() {
-  const code = prompt('Код промокода (например: SALE20):');
-  if (!code) return;
-  const discount = prompt('Скидка (%):');
-  const uses = prompt('Количество использований (оставьте пустым для ∞):');
-  const days = prompt('Срок действия (дней, оставьте пустым для ∞):');
-  
-  if (!discount) {
-    alert('Укажите скидку');
-    return;
-  }
-  
-  const data = {
-    code: code.toUpperCase(),
-    discount: +discount,
-    uses_left: uses ? +uses : null,
-    expires_at: days ? Date.now() + (+days * 86400000) : null
-  };
-  
-  createPromocode(data);
+  document.getElementById('promocodeModal').classList.remove('hidden');
+  document.getElementById('promocodeForm').reset();
 }
 
-async function createPromocode(data) {
+async function submitPromocode(e) {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const expiresDays = formData.get('expires_days');
+  
+  const data = {
+    code: formData.get('code').toUpperCase(),
+    discount: +formData.get('discount'),
+    uses_left: formData.get('uses_left') ? +formData.get('uses_left') : null,
+    expires_at: expiresDays ? Date.now() + (+expiresDays * 86400000) : null
+  };
+  
   const r = await api('POST', '/api/admin/promocodes', data);
   if (r.ok) {
-    alert('Промокод создан!');
+    closeModal('promocodeModal');
     loadPromocodes();
   } else {
     alert('Ошибка: ' + (r.data.error || 'Unknown'));
@@ -681,20 +843,26 @@ async function loadChangelog() {
 }
 
 function showCreateChangelogModal() {
-  const version = prompt('Версия (например: 1.0.0):');
-  if (!version) return;
-  const text = prompt('Текст изменений:');
-  if (!text) return;
-  const date = prompt('Дата (YYYY-MM-DD):', new Date().toISOString().slice(0, 10));
-  const tag = prompt('Тег:', 'ОБНОВЛЕНО');
-  
-  createChangelog({ version, text, date, tag });
+  document.getElementById('changelogModal').classList.remove('hidden');
+  document.getElementById('changelogForm').reset();
+  const today = new Date().toISOString().split('T')[0];
+  document.querySelector('#changelogForm input[name="date"]').value = today;
 }
 
-async function createChangelog(data) {
+async function submitChangelog(e) {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  
+  const data = {
+    version: formData.get('version'),
+    date: formData.get('date'),
+    tag: formData.get('tag') || 'ОБНОВЛЕНО',
+    text: formData.get('text')
+  };
+  
   const r = await api('POST', '/api/admin/changelog', data);
   if (r.ok) {
-    alert('Запись добавлена!');
+    closeModal('changelogModal');
     loadChangelog();
   } else {
     alert('Ошибка: ' + (r.data.error || 'Unknown'));
