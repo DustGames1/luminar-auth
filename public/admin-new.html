@@ -293,32 +293,32 @@ textarea.input {
     </div>
     <nav class="sidebar-menu">
       <div class="menu-item active" data-page="keys">
-        <span class="menu-icon">🔑</span>
+        <span class="menu-icon">▣</span>
         <span>Ключи</span>
       </div>
       <div class="menu-item" data-page="users">
-        <span class="menu-icon">👥</span>
+        <span class="menu-icon">▣</span>
         <span>Пользователи</span>
       </div>
       <div class="menu-item" data-page="bans">
-        <span class="menu-icon">🚫</span>
+        <span class="menu-icon">▣</span>
         <span>Баны</span>
       </div>
       <div class="menu-item" data-page="tickets">
-        <span class="menu-icon">💬</span>
+        <span class="menu-icon">▣</span>
         <span>Тикеты</span>
         <span class="badge" id="ticketBadge">0</span>
       </div>
       <div class="menu-item" data-page="products">
-        <span class="menu-icon">💎</span>
+        <span class="menu-icon">▣</span>
         <span>Продукты</span>
       </div>
       <div class="menu-item" data-page="promocodes">
-        <span class="menu-icon">🎫</span>
+        <span class="menu-icon">▣</span>
         <span>Промокоды</span>
       </div>
       <div class="menu-item" data-page="changelog">
-        <span class="menu-icon">📋</span>
+        <span class="menu-icon">▣</span>
         <span>Ченджлог</span>
       </div>
     </nav>
@@ -329,7 +329,7 @@ textarea.input {
     <!-- Keys Page -->
     <div id="page-keys" class="page">
       <div class="page-header">
-        <h1 class="page-title">🔑 Ключи</h1>
+        <h1 class="page-title">▣ Ключи</h1>
         <button class="btn btn-primary" onclick="showCreateKeyModal()">+ Создать</button>
       </div>
       <div class="card">
@@ -363,7 +363,7 @@ textarea.input {
     <!-- Users Page -->
     <div id="page-users" class="page hidden">
       <div class="page-header">
-        <h1 class="page-title">👥 Пользователи</h1>
+        <h1 class="page-title">▣ Пользователи</h1>
         <button class="btn btn-primary" onclick="showCreateUserModal()">+ Обновить</button>
       </div>
       <div class="card">
@@ -389,7 +389,7 @@ textarea.input {
     <!-- Other pages will be added here -->
     <div id="page-bans" class="page hidden">
       <div class="page-header">
-        <h1 class="page-title">🚫 Баны</h1>
+        <h1 class="page-title">▣ Баны</h1>
       </div>
       <div class="card">
         <div id="bansContent">Забаненных нет</div>
@@ -398,7 +398,7 @@ textarea.input {
 
     <div id="page-tickets" class="page hidden">
       <div class="page-header">
-        <h1 class="page-title">💬 Тикеты</h1>
+        <h1 class="page-title">▣ Тикеты</h1>
       </div>
       <div class="card">
         <div id="ticketsContent">Тикетов нет</div>
@@ -407,7 +407,7 @@ textarea.input {
 
     <div id="page-products" class="page hidden">
       <div class="page-header">
-        <h1 class="page-title">💎 Продукты</h1>
+        <h1 class="page-title">▣ Продукты</h1>
         <button class="btn btn-primary" onclick="showCreateProductModal()">+ Создать продукт</button>
       </div>
       <div class="card">
@@ -417,7 +417,7 @@ textarea.input {
 
     <div id="page-promocodes" class="page hidden">
       <div class="page-header">
-        <h1 class="page-title">🎫 Промокоды</h1>
+        <h1 class="page-title">▣ Промокоды</h1>
         <button class="btn btn-primary" onclick="showCreatePromocodeModal()">+ Создать промокод</button>
       </div>
       <div class="card">
@@ -427,7 +427,7 @@ textarea.input {
 
     <div id="page-changelog" class="page hidden">
       <div class="page-header">
-        <h1 class="page-title">📋 Ченджлог</h1>
+        <h1 class="page-title">▣ Ченджлог</h1>
         <button class="btn btn-primary" onclick="showCreateChangelogModal()">+ Добавить запись</button>
       </div>
       <div class="card">
@@ -633,7 +633,7 @@ async function loadKeys() {
       <td><span class="status-badge ${used ? 'status-inactive' : 'status-active'}">${used ? 'Использован' : 'Активен'}</span></td>
       <td>${used ? k.used_by : '—'}</td>
       <td>${new Date(k.created_at).toLocaleDateString()}</td>
-      <td><button class="btn btn-danger btn-sm" onclick="deleteKey(${k.id})">🗑</button></td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteKey(${k.id})">×</button></td>
     `;
     tbody.appendChild(tr);
   }
@@ -667,10 +667,10 @@ async function loadUsers() {
       <td>${subText}</td>
       <td>${new Date(u.created_at).toLocaleDateString()}</td>
       <td>
-        <button class="btn btn-primary btn-sm" onclick="editUser(${u.id})">✏️</button>
+        <button class="btn btn-primary btn-sm" onclick="editUser(${u.id})">✎</button>
         ${u.banned ? 
           `<button class="btn btn-sm" style="background:var(--success);color:#fff;" onclick="unbanUser(${u.id})">✓</button>` :
-          `<button class="btn btn-danger btn-sm" onclick="banUser(${u.id})">🚫</button>`
+          `<button class="btn btn-danger btn-sm" onclick="banUser(${u.id})">×</button>`
         }
       </td>
     `;
@@ -711,7 +711,7 @@ async function loadProducts() {
       <td>${p.days}</td>
       <td>${p.category}</td>
       <td>
-        <button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.id})">🗑</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.id})">×</button>
       </td>
     </tr>`;
   }
@@ -783,7 +783,7 @@ async function loadPromocodes() {
       <td>${new Date(p.created_at).toLocaleDateString()}</td>
       <td>${p.expires_at ? new Date(p.expires_at).toLocaleDateString() : '∞'}</td>
       <td>${status}</td>
-      <td><button class="btn btn-danger btn-sm" onclick="deletePromocode(${p.id})">🗑</button></td>
+      <td><button class="btn btn-danger btn-sm" onclick="deletePromocode(${p.id})">×</button></td>
     </tr>`;
   }
   html += '</tbody></table></div>';
@@ -838,7 +838,7 @@ async function loadChangelog() {
       <td><b>${c.version}</b></td>
       <td>${c.date}</td>
       <td style="max-width:400px;">${c.text}</td>
-      <td><button class="btn btn-danger btn-sm" onclick="deleteChangelog(${c.id})">🗑</button></td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteChangelog(${c.id})">×</button></td>
     </tr>`;
   }
   html += '</tbody></table></div>';
@@ -903,7 +903,7 @@ async function loadTickets() {
       <td><span class="status-badge ${statusClass}">${statusText}</span></td>
       <td>${new Date(t.created_at).toLocaleDateString()}</td>
       <td>
-        <button class="btn btn-primary btn-sm" onclick="viewTicket(${t.id})">👁️</button>
+        <button class="btn btn-primary btn-sm" onclick="viewTicket(${t.id})">→</button>
         ${t.status === 'open' ? `<button class="btn btn-danger btn-sm" onclick="closeTicket(${t.id})">✓</button>` : ''}
       </td>
     </tr>`;
