@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin Panel — Luminar</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0a0b0d;
+  --surface: #13151a;
+  --surface-2: #1a1d24;
+  --border: #2a2d35;
+  --text: #e4e6eb;
+  --text-2: #b0b3ba;
+  --text-3: #6b6e76;
+  --primary: #4c9aff;
+  --primary-hover: #6bb0ff;
+  --success: #4ade80;
+  --danger: #f87171;
+  --warning: #fbbf24;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+.admin-layout {
+  display: flex;
+  height: 100vh;
+}
+.sidebar {
+  width: 240px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+}
+.sidebar-header {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.sidebar-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+.sidebar-menu {
+  flex: 1;
+  overflow-y: auto;
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: 0.2s;
+  border-left: 3px solid transparent;
+  font-size: 14px;
+}
+.menu-item:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.menu-item.active {
+  background: var(--surface-2);
+  color: var(--primary);
+  border-left-color: var(--primary);
+}
+.menu-icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.7;
+}
+.menu-item.active .menu-icon {
+  opacity: 1;
+}
+.badge {
+  margin-left: auto;
+  background: var(--primary);
+  color: #000;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30px 40px;
+}
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+.page-title {
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-primary {
+  background: var(--primary);
+  color: #000;
+}
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.table-container {
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th, td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+th {
+  color: var(--text-3);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+tr:hover {
+  background: var(--surface-2);
+}
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.status-active { background: rgba(74, 222, 128, 0.15); color: var(--success); }
+.status-inactive { background: rgba(248, 113, 113, 0.15); color: var(--danger); }
+.status-pending { background: rgba(251, 191, 36, 0.15); color: var(--warning); }
+.hidden { display: none !important; }
+.input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+}
+.input:focus {
+  border-color: var(--primary);
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.logout-btn {
+  padding: 12px 20px;
+  margin: 20px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+.logout-btn:hover {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="admin-layout" style="align-items:center;justify-content:center;">
+  <div class="card" style="width:400px;">
+    <h2 style="margin-bottom:20px;">Admin Panel</h2>
+    <input type="password" id="adminKey" class="input" placeholder="Admin Key" style="margin-bottom:12px;">
+    <button onclick="login()" class="btn btn-primary" style="width:100%;">Войти</button>
+    <div id="loginErr" style="color:var(--danger);margin-top:12px;font-size:13px;"></div>
+  </div>
+</div>
+
+<div id="adminPanel" class="admin-layout hidden">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Admin Panel</div>
+    </div>
+    <nav class="sidebar-menu">
+      <div class="menu-item active" data-page="keys">
+        <span class="menu-icon">🔑</span>
+        <span>Ключи</span>
+      </div>
+      <div class="menu-item" data-page="users">
+        <span class="menu-icon">👥</span>
+        <span>Пользователи</span>
+      </div>
+      <div class="menu-item" data-page="bans">
+        <span class="menu-icon">🚫</span>
+        <span>Баны</span>
+      </div>
+      <div class="menu-item" data-page="tickets">
+        <span class="menu-icon">💬</span>
+        <span>Тикеты</span>
+        <span class="badge" id="ticketBadge">0</span>
+      </div>
+      <div class="menu-item" data-page="products">
+        <span class="menu-icon">💎</span>
+        <span>Продукты</span>
+      </div>
+      <div class="menu-item" data-page="promocodes">
+        <span class="menu-icon">🎫</span>
+        <span>Промокоды</span>
+      </div>
+      <div class="menu-item" data-page="changelog">
+        <span class="menu-icon">📋</span>
+        <span>Ченджлог</span>
+      </div>
+    </nav>
+    <button class="logout-btn" onclick="logout()">Выйти</button>
+  </aside>
+
+  <main class="main-content">
+    <!-- Keys Page -->
+    <div id="page-keys" class="page">
+      <div class="page-header">
+        <h1 class="page-title">🔑 Ключи</h1>
+        <button class="btn btn-primary" onclick="showCreateKeyModal()">+ Создать</button>
+      </div>
+      <div class="card">
+        <div class="form-grid">
+          <input type="number" id="keyDays" class="input" placeholder="Дней" value="30">
+          <input type="number" id="keyCount" class="input" placeholder="Количество" value="1">
+          <input type="text" id="keyNote" class="input" placeholder="Заметка">
+          <button class="btn btn-primary" onclick="generateKeys()">Создать</button>
+        </div>
+        <div id="keyOutput"></div>
+      </div>
+      <div class="card">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Ключ</th>
+                <th>Тип</th>
+                <th>Статус</th>
+                <th>Использован</th>
+                <th>Создан</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="keysTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users Page -->
+    <div id="page-users" class="page hidden">
+      <div class="page-header">
+        <h1 class="page-title">👥 Пользователи</h1>
+        <button class="btn btn-primary" onclick="showCreateUserModal()">+ Обновить</button>
+      </div>
+      <div class="card">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Email</th>
+                <th>Роль</th>
+                <th>Подписка</th>
+                <th>Регистрация</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody id="usersTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Other pages will be added here -->
+    <div id="page-bans" class="page hidden">
+      <div class="page-header">
+        <h1 class="page-title">🚫 Баны</h1>
+      </div>
+      <div class="card">
+        <div id="bansContent">Забаненных нет</div>
+      </div>
+    </div>
+
+    <div id="page-tickets" class="page hidden">
+      <div class="page-header">
+        <h1 class="page-title">💬 Тикеты</h1>
+      </div>
+      <div class="card">
+        <div id="ticketsContent">Тикетов нет</div>
+      </div>
+    </div>
+
+    <div id="page-products" class="page hidden">
+      <div class="page-header">
+        <h1 class="page-title">💎 Продукты</h1>
+        <button class="btn btn-primary" onclick="showCreateProductModal()">+ Создать продукт</button>
+      </div>
+      <div class="card">
+        <div id="productsContent">Загрузка...</div>
+      </div>
+    </div>
+
+    <div id="page-promocodes" class="page hidden">
+      <div class="page-header">
+        <h1 class="page-title">🎫 Промокоды</h1>
+        <button class="btn btn-primary" onclick="showCreatePromocodeModal()">+ Создать промокод</button>
+      </div>
+      <div class="card">
+        <div id="promocodesContent">Промокодов нет</div>
+      </div>
+    </div>
+
+    <div id="page-changelog" class="page hidden">
+      <div class="page-header">
+        <h1 class="page-title">📋 Ченджлог</h1>
+        <button class="btn btn-primary" onclick="showCreateChangelogModal()">+ Добавить запись</button>
+      </div>
+      <div class="card">
+        <div id="changelogContent">Загрузка...</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+let AK = localStorage.getItem('adminKey') || '';
+let users = [], keys = [], products = [], promocodes = [], changelog = [];
+
+async function api(method, path, body) {
+  const options = {
+    method,
+    headers: { 'x-admin-key': AK }
+  };
+  if (body) {
+    options.headers['Content-Type'] = 'application/json';
+    options.body = JSON.stringify(body);
+  }
+  const res = await fetch(path, options);
+  return { ok: res.ok, data: await res.json().catch(() => ({})) };
+}
+
+function login() {
+  const key = document.getElementById('adminKey').value.trim();
+  if (!key) {
+    document.getElementById('loginErr').textContent = 'Введите ключ';
+    return;
+  }
+  AK = key;
+  localStorage.setItem('adminKey', key);
+  checkAuth();
+}
+
+async function checkAuth() {
+  if (!AK) return;
+  const r = await api('GET', '/api/admin/users');
+  if (!r.ok) {
+    document.getElementById('loginErr').textContent = 'Неверный ключ';
+    AK = '';
+    localStorage.removeItem('adminKey');
+    return;
+  }
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('adminPanel').classList.remove('hidden');
+  loadKeys();
+  loadUsers();
+}
+
+function logout() {
+  localStorage.removeItem('adminKey');
+  AK = '';
+  location.reload();
+}
+
+// Navigation
+document.querySelectorAll('.menu-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.getElementById('page-' + item.dataset.page).classList.remove('hidden');
+  });
+});
+
+// Keys
+async function generateKeys() {
+  const days = +document.getElementById('keyDays').value;
+  const count = +document.getElementById('keyCount').value;
+  const note = document.getElementById('keyNote').value.trim();
+  const output = document.getElementById('keyOutput');
+  
+  if (!days) {
+    output.innerHTML = '<div style="color:var(--danger)">Укажите количество дней</div>';
+    return;
+  }
+  
+  const r = await api('POST', '/api/admin/keys', { days, count, note });
+  if (r.ok) {
+    output.innerHTML = `<div style="color:var(--success);margin-top:12px;"><b>Создано: ${r.data.keys.length}</b><pre style="margin-top:8px;background:var(--surface-2);padding:12px;border-radius:6px;font-size:12px;">${r.data.keys.join('\n')}</pre></div>`;
+    loadKeys();
+  } else {
+    output.innerHTML = '<div style="color:var(--danger)">' + (r.data.error || 'Ошибка') + '</div>';
+  }
+}
+
+async function loadKeys() {
+  const r = await api('GET', '/api/admin/keys');
+  if (!r.ok) return;
+  keys = r.data.keys;
+  const tbody = document.getElementById('keysTable');
+  tbody.innerHTML = '';
+  for (const k of keys) {
+    const tr = document.createElement('tr');
+    const used = k.used_at;
+    tr.innerHTML = `
+      <td style="font-family:monospace;font-size:11px;">${k.key}</td>
+      <td>${k.days} дней</td>
+      <td><span class="status-badge ${used ? 'status-inactive' : 'status-active'}">${used ? 'Использован' : 'Активен'}</span></td>
+      <td>${used ? k.used_by : '—'}</td>
+      <td>${new Date(k.created_at).toLocaleDateString()}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteKey(${k.id})">🗑</button></td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+async function deleteKey(id) {
+  if (!confirm('Удалить ключ?')) return;
+  await api('DELETE', '/api/admin/keys/' + id);
+  loadKeys();
+}
+
+// Users
+async function loadUsers() {
+  const r = await api('GET', '/api/admin/users');
+  if (!r.ok) return;
+  users = r.data.users;
+  const tbody = document.getElementById('usersTable');
+  tbody.innerHTML = '';
+  for (const u of users) {
+    const tr = document.createElement('tr');
+    const sub = u.subscription;
+    let subText = '—';
+    if (sub.active) {
+      subText = `${sub.daysLeft} дней`;
+    }
+    tr.innerHTML = `
+      <td>${u.id}</td>
+      <td><b>${u.username}</b></td>
+      <td>${u.email || '—'}</td>
+      <td>${u.role || 'User'}</td>
+      <td>${subText}</td>
+      <td>${new Date(u.created_at).toLocaleDateString()}</td>
+      <td>
+        <button class="btn btn-primary btn-sm" onclick="editUser(${u.id})">✏️</button>
+        ${u.banned ? 
+          `<button class="btn btn-sm" style="background:var(--success);color:#fff;" onclick="unbanUser(${u.id})">✓</button>` :
+          `<button class="btn btn-danger btn-sm" onclick="banUser(${u.id})">🚫</button>`
+        }
+      </td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+async function banUser(id) {
+  if (!confirm('Забанить?')) return;
+  await api('POST', '/api/admin/ban/' + id);
+  loadUsers();
+}
+
+async function unbanUser(id) {
+  await api('POST', '/api/admin/unban/' + id);
+  loadUsers();
+}
+
+// Init
+checkAuth();
+
+// Products
+async function loadProducts() {
+  const r = await api('GET', '/api/admin/products');
+  if (!r.ok) return;
+  products = r.data.products;
+  const content = document.getElementById('productsContent');
+  if (products.length === 0) {
+    content.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-3);">Продуктов нет</div>';
+    return;
+  }
+  let html = '<div class="table-container"><table><thead><tr><th>Название</th><th>Описание</th><th>Цена (₽)</th><th>Дней</th><th>Категория</th><th></th></tr></thead><tbody>';
+  for (const p of products) {
+    html += `<tr>
+      <td><b>${p.name}</b></td>
+      <td>${p.description || '—'}</td>
+      <td>${p.price} ₽</td>
+      <td>${p.days}</td>
+      <td>${p.category}</td>
+      <td>
+        <button class="btn btn-primary btn-sm" onclick="editProduct(${p.id})">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.id})">🗑</button>
+      </td>
+    </tr>`;
+  }
+  html += '</tbody></table></div>';
+  content.innerHTML = html;
+}
+
+function showCreateProductModal() {
+  const name = prompt('Название продукта:');
+  if (!name) return;
+  const description = prompt('Описание:');
+  const price = prompt('Цена (₽):');
+  const days = prompt('Дней подписки:');
+  const category = prompt('Категория:', 'Подписка');
+  
+  if (!price || !days) {
+    alert('Заполните все поля');
+    return;
+  }
+  
+  createProduct({ name, description, price: +price, days: +days, category });
+}
+
+async function createProduct(data) {
+  const r = await api('POST', '/api/admin/products', data);
+  if (r.ok) {
+    alert('Продукт создан!');
+    loadProducts();
+  } else {
+    alert('Ошибка: ' + (r.data.error || 'Unknown'));
+  }
+}
+
+async function deleteProduct(id) {
+  if (!confirm('Удалить продукт?')) return;
+  await api('DELETE', '/api/admin/products/' + id);
+  loadProducts();
+}
+
+// Promocodes
+async function loadPromocodes() {
+  const r = await api('GET', '/api/admin/promocodes');
+  if (!r.ok) return;
+  promocodes = r.data.promocodes;
+  const content = document.getElementById('promocodesContent');
+  if (promocodes.length === 0) {
+    content.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-3);">Промокодов нет</div>';
+    return;
+  }
+  let html = '<div class="table-container"><table><thead><tr><th>Код</th><th>Скидка</th><th>Использований</th><th>Период</th><th>Срок действия</th><th>Статус</th><th></th></tr></thead><tbody>';
+  for (const p of promocodes) {
+    const now = Date.now();
+    const expired = p.expires_at && p.expires_at < now;
+    const exhausted = p.uses_left !== null && p.uses_left <= 0;
+    let status = '<span class="status-badge status-active">Активен</span>';
+    if (expired) status = '<span class="status-badge status-inactive">Истёк</span>';
+    else if (exhausted) status = '<span class="status-badge status-inactive">Исчерпан</span>';
+    
+    html += `<tr>
+      <td><b>${p.code}</b></td>
+      <td>${p.discount}%</td>
+      <td>${p.uses_left === null ? '∞' : p.uses_left}</td>
+      <td>${new Date(p.created_at).toLocaleDateString()}</td>
+      <td>${p.expires_at ? new Date(p.expires_at).toLocaleDateString() : '∞'}</td>
+      <td>${status}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="deletePromocode(${p.id})">🗑</button></td>
+    </tr>`;
+  }
+  html += '</tbody></table></div>';
+  content.innerHTML = html;
+}
+
+function showCreatePromocodeModal() {
+  const code = prompt('Код промокода (например: SALE20):');
+  if (!code) return;
+  const discount = prompt('Скидка (%):');
+  const uses = prompt('Количество использований (оставьте пустым для ∞):');
+  const days = prompt('Срок действия (дней, оставьте пустым для ∞):');
+  
+  if (!discount) {
+    alert('Укажите скидку');
+    return;
+  }
+  
+  const data = {
+    code: code.toUpperCase(),
+    discount: +discount,
+    uses_left: uses ? +uses : null,
+    expires_at: days ? Date.now() + (+days * 86400000) : null
+  };
+  
+  createPromocode(data);
+}
+
+async function createPromocode(data) {
+  const r = await api('POST', '/api/admin/promocodes', data);
+  if (r.ok) {
+    alert('Промокод создан!');
+    loadPromocodes();
+  } else {
+    alert('Ошибка: ' + (r.data.error || 'Unknown'));
+  }
+}
+
+async function deletePromocode(id) {
+  if (!confirm('Удалить промокод?')) return;
+  await api('DELETE', '/api/admin/promocodes/' + id);
+  loadPromocodes();
+}
+
+// Changelog
+async function loadChangelog() {
+  const r = await api('GET', '/api/changelog');
+  if (!r.ok) return;
+  changelog = r.data.entries;
+  const content = document.getElementById('changelogContent');
+  if (changelog.length === 0) {
+    content.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-3);">Записей нет</div>';
+    return;
+  }
+  let html = '<div class="table-container"><table><thead><tr><th>Версия</th><th>Дата</th><th>Текст</th><th></th></tr></thead><tbody>';
+  for (const c of changelog) {
+    html += `<tr>
+      <td><b>${c.version}</b></td>
+      <td>${c.date}</td>
+      <td style="max-width:400px;">${c.text}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteChangelog(${c.id})">🗑</button></td>
+    </tr>`;
+  }
+  html += '</tbody></table></div>';
+  content.innerHTML = html;
+}
+
+function showCreateChangelogModal() {
+  const version = prompt('Версия (например: 1.0.0):');
+  if (!version) return;
+  const text = prompt('Текст изменений:');
+  if (!text) return;
+  const date = prompt('Дата (YYYY-MM-DD):', new Date().toISOString().slice(0, 10));
+  const tag = prompt('Тег:', 'ОБНОВЛЕНО');
+  
+  createChangelog({ version, text, date, tag });
+}
+
+async function createChangelog(data) {
+  const r = await api('POST', '/api/admin/changelog', data);
+  if (r.ok) {
+    alert('Запись добавлена!');
+    loadChangelog();
+  } else {
+    alert('Ошибка: ' + (r.data.error || 'Unknown'));
+  }
+}
+
+async function deleteChangelog(id) {
+  if (!confirm('Удалить запись?')) return;
+  await api('DELETE', '/api/admin/changelog/' + id);
+  loadChangelog();
+}
+
+// Tickets
+async function loadTickets() {
+  const r = await api('GET', '/api/admin/tickets');
+  if (!r.ok) return;
+  const tickets = r.data.tickets;
+  const content = document.getElementById('ticketsContent');
+  const openTickets = tickets.filter(t => t.status === 'open');
+  document.getElementById('ticketBadge').textContent = openTickets.length;
+  
+  if (tickets.length === 0) {
+    content.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-3);">Тикетов нет</div>';
+    return;
+  }
+  
+  let html = '<div class="table-container"><table><thead><tr><th>ID</th><th>Пользователь</th><th>Тема</th><th>Статус</th><th>Создан</th><th></th></tr></thead><tbody>';
+  for (const t of tickets) {
+    const statusClass = t.status === 'open' ? 'status-active' : 'status-inactive';
+    const statusText = t.status === 'open' ? 'Открыт' : 'Закрыт';
+    html += `<tr>
+      <td><b>#${t.id}</b></td>
+      <td>${t.username}</td>
+      <td>${t.title}</td>
+      <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+      <td>${new Date(t.created_at).toLocaleDateString()}</td>
+      <td>
+        <button class="btn btn-primary btn-sm" onclick="viewTicket(${t.id})">👁️</button>
+        ${t.status === 'open' ? `<button class="btn btn-danger btn-sm" onclick="closeTicket(${t.id})">✓</button>` : ''}
+      </td>
+    </tr>`;
+  }
+  html += '</tbody></table></div>';
+  content.innerHTML = html;
+}
+
+async function viewTicket(id) {
+  const r = await api('GET', '/api/admin/tickets/' + id);
+  if (!r.ok) return alert('Ошибка загрузки тикета');
+  
+  const { ticket, messages } = r.data;
+  let html = `<h3>Тикет #${ticket.id}: ${ticket.title}</h3><p style="color:var(--text-3);margin-bottom:20px;">От: ${ticket.username}</p>`;
+  
+  for (const m of messages) {
+    const isAdmin = m.is_admin === 1;
+    html += `<div style="background:var(--surface-2);padding:12px;border-radius:8px;margin-bottom:12px;border-left:3px solid ${isAdmin ? 'var(--primary)' : 'var(--text-3)'};">
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:6px;">${m.username} • ${new Date(m.created_at).toLocaleString()}</div>
+      <div>${m.message}</div>
+    </div>`;
+  }
+  
+  if (ticket.status === 'open') {
+    html += `<div style="margin-top:20px;">
+      <textarea id="ticketReply" class="input" placeholder="Ваш ответ..." style="min-height:80px;margin-bottom:12px;"></textarea>
+      <button class="btn btn-primary" onclick="replyToTicket(${id})">Отправить</button>
+    </div>`;
+  }
+  
+  document.getElementById('ticketsContent').innerHTML = html;
+}
+
+async function replyToTicket(id) {
+  const message = document.getElementById('ticketReply').value.trim();
+  if (!message) return alert('Введите сообщение');
+  
+  const r = await api('POST', '/api/admin/tickets/' + id + '/reply', { message });
+  if (r.ok) {
+    viewTicket(id);
+  } else {
+    alert('Ошибка: ' + (r.data.error || 'Unknown'));
+  }
+}
+
+async function closeTicket(id) {
+  if (!confirm('Закрыть тикет?')) return;
+  await api('POST', '/api/admin/tickets/' + id + '/close');
+  loadTickets();
+}
+
+// Load bans
+async function loadBans() {
+  const r = await api('GET', '/api/admin/users');
+  if (!r.ok) return;
+  const banned = r.data.users.filter(u => u.banned);
+  const content = document.getElementById('bansContent');
+  
+  if (banned.length === 0) {
+    content.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-3);">Забаненных нет</div>';
+    return;
+  }
+  
+  let html = '<div class="table-container"><table><thead><tr><th>ID</th><th>Пользователь</th><th>Email</th><th>Дата бана</th><th></th></tr></thead><tbody>';
+  for (const u of banned) {
+    html += `<tr>
+      <td>${u.id}</td>
+      <td><b>${u.username}</b></td>
+      <td>${u.email || '—'}</td>
+      <td>${new Date(u.last_login || u.created_at).toLocaleDateString()}</td>
+      <td><button class="btn btn-sm" style="background:var(--success);color:#fff;" onclick="unbanUser(${u.id});loadBans();">Разбанить</button></td>
+    </tr>`;
+  }
+  html += '</tbody></table></div>';
+  content.innerHTML = html;
+}
+
+// Update navigation to load data
+document.querySelectorAll('.menu-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const page = item.dataset.page;
+    if (page === 'products') loadProducts();
+    else if (page === 'promocodes') loadPromocodes();
+    else if (page === 'changelog') loadChangelog();
+    else if (page === 'tickets') loadTickets();
+    else if (page === 'bans') loadBans();
+  });
+});
+</script>
+</body>
+</html>

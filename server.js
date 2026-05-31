@@ -76,6 +76,49 @@ async function initDB() {
       note TEXT
     );
   `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS products (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      description TEXT,
+      price INTEGER NOT NULL,
+      days INTEGER NOT NULL,
+      category TEXT DEFAULT 'Подписка',
+      created_at BIGINT NOT NULL
+    );
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS promocodes (
+      id SERIAL PRIMARY KEY,
+      code TEXT UNIQUE NOT NULL,
+      discount INTEGER NOT NULL,
+      uses_left INTEGER,
+      expires_at BIGINT,
+      created_at BIGINT NOT NULL
+    );
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS tickets (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL,
+      username TEXT NOT NULL,
+      title TEXT NOT NULL,
+      status TEXT DEFAULT 'open',
+      created_at BIGINT NOT NULL,
+      updated_at BIGINT NOT NULL
+    );
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS ticket_messages (
+      id SERIAL PRIMARY KEY,
+      ticket_id INTEGER NOT NULL,
+      user_id INTEGER,
+      username TEXT NOT NULL,
+      message TEXT NOT NULL,
+      is_admin INTEGER DEFAULT 0,
+      created_at BIGINT NOT NULL
+    );
+  `);
   console.log('Database initialized');
 }
 
@@ -551,6 +594,244 @@ app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'log
 app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'public', 'register.html')));
 app.get('/profile', (req, res) => res.sendFile(path.join(__dirname, 'public', 'profile.html')));
 app.get('/buy', (req, res) => res.sendFile(path.join(__dirname, 'public', 'buy.html')));
+app.get('/admin-new', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin-new.html')));
+
+// ---- Products API ----
+app.get('/api/products', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM products ORDER BY id DESC');
+    res.json({ products: result.rows });
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.post('/api/admin/products', adminOnly, async (req, res) => {
+  const { name, description, price, days, category } = req.body || {};
+  if (!name || !price || !days) return res.status(400).json({ error: 'name, price, days required' });
+  await pool.query('INSERT INTO products (name, description, price, days, category, created_at) VALUES ($1, $2, $3, $4, $5, $6)',
+    [name, description || '', price, days, category || 'Подписка', Date.now()]);
+  res.json({ ok: true });
+});
+
+app.get('/api/admin/products', adminOnly, async (req, res) => {
+  const result = await pool.query('SELECT * FROM products ORDER BY id DESC');
+  res.json({ products: result.rows });
+});
+
+app.put('/api/admin/products/:id', adminOnly, async (req, res) => {
+  const { name, description, price, days, category } = req.body || {};
+  await pool.query('UPDATE products SET name = $1, description = $2, price = $3, days = $4, category = $5 WHERE id = $6',
+    [name, description, price, days, category, req.params.id]);
+  res.json({ ok: true });
+});
+
+app.delete('/api/admin/products/:id', adminOnly, async (req, res) => {
+  await pool.query('DELETE FROM products WHERE id = $1', [req.params.id]);
+  res.json({ ok: true });
+});
+
+// ---- Promocodes API ----
+app.post('/api/admin/promocodes', adminOnly, async (req, res) => {
+  const { code, discount, uses_left, expires_at } = req.body || {};
+  if (!code || !discount) return res.status(400).json({ error: 'code and discount required' });
+  const exists = await pool.query('SELECT 1 FROM promocodes WHERE code = $1', [code.toUpperCase()]);
+  if (exists.rows.length > 0) return res.status(409).json({ error: 'Promocode already exists' });
+  await pool.query('INSERT INTO promocodes (code, discount, uses_left, expires_at, created_at) VALUES ($1, $2, $3, $4, $5)',
+    [code.toUpperCase(), discount, uses_left || null, expires_at || null, Date.now()]);
+  res.json({ ok: true });
+});
+
+app.get('/api/admin/promocodes', adminOnly, async (req, res) => {
+  const result = await pool.query('SELECT * FROM promocodes ORDER BY id DESC');
+  res.json({ promocodes: result.rows });
+});
+
+app.delete('/api/admin/promocodes/:id', adminOnly, async (req, res) => {
+  await pool.query('DELETE FROM promocodes WHERE id = $1', [req.params.id]);
+  res.json({ ok: true });
+});
+
+app.post('/api/promocode/check', async (req, res) => {
+  try {
+    const { code } = req.body || {};
+    if (!code) return res.status(400).json({ error: 'Code required' });
+    
+    const result = await pool.query('SELECT * FROM promocodes WHERE code = $1', [code.toUpperCase()]);
+    const promo = result.rows[0];
+    
+    if (!promo) return res.status(404).json({ error: 'Промокод не найден' });
+    
+    // Check if expired
+    if (promo.expires_at && promo.expires_at < Date.now()) {
+      return res.status(400).json({ error: 'Промокод истёк' });
+    }
+    
+    // Check uses
+    if (promo.uses_left !== null && promo.uses_left <= 0) {
+      return res.status(400).json({ error: 'Промокод исчерпан' });
+    }
+    
+    res.json({ ok: true, discount: promo.discount });
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.post('/api/promocode/use', async (req, res) => {
+  try {
+    const { code } = req.body || {};
+    if (!code) return res.status(400).json({ error: 'Code required' });
+    
+    const result = await pool.query('SELECT * FROM promocodes WHERE code = $1', [code.toUpperCase()]);
+    const promo = result.rows[0];
+    
+    if (!promo) return res.status(404).json({ error: 'Промокод не найден' });
+    
+    if (promo.uses_left !== null && promo.uses_left > 0) {
+      await pool.query('UPDATE promocodes SET uses_left = uses_left - 1 WHERE id = $1', [promo.id]);
+    }
+    
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// ---- Tickets API ----
+app.post('/api/tickets', async (req, res) => {
+  try {
+    const auth = req.headers['authorization'];
+    if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'No token' });
+    const token = auth.substring(7);
+    const payload = jwt.verify(token, JWT_SECRET);
+    
+    const { title, message } = req.body || {};
+    if (!title || !message) return res.status(400).json({ error: 'title and message required' });
+    
+    const userResult = await pool.query('SELECT * FROM users WHERE username = $1', [payload.username]);
+    const user = userResult.rows[0];
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    
+    const now = Date.now();
+    const ticketResult = await pool.query(
+      'INSERT INTO tickets (user_id, username, title, status, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
+      [user.id, user.username, title, 'open', now, now]
+    );
+    const ticketId = ticketResult.rows[0].id;
+    
+    await pool.query(
+      'INSERT INTO ticket_messages (ticket_id, user_id, username, message, is_admin, created_at) VALUES ($1, $2, $3, $4, $5, $6)',
+      [ticketId, user.id, user.username, message, 0, now]
+    );
+    
+    res.json({ ok: true, ticketId });
+  } catch (e) {
+    console.error('Create ticket error:', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.get('/api/tickets', async (req, res) => {
+  try {
+    const auth = req.headers['authorization'];
+    if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'No token' });
+    const token = auth.substring(7);
+    const payload = jwt.verify(token, JWT_SECRET);
+    
+    const result = await pool.query('SELECT * FROM tickets WHERE username = $1 ORDER BY updated_at DESC', [payload.username]);
+    res.json({ tickets: result.rows });
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.get('/api/tickets/:id', async (req, res) => {
+  try {
+    const auth = req.headers['authorization'];
+    if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'No token' });
+    const token = auth.substring(7);
+    const payload = jwt.verify(token, JWT_SECRET);
+    
+    const ticketResult = await pool.query('SELECT * FROM tickets WHERE id = $1', [req.params.id]);
+    const ticket = ticketResult.rows[0];
+    
+    if (!ticket) return res.status(404).json({ error: 'Ticket not found' });
+    if (ticket.username !== payload.username) return res.status(403).json({ error: 'Access denied' });
+    
+    const messagesResult = await pool.query('SELECT * FROM ticket_messages WHERE ticket_id = $1 ORDER BY created_at ASC', [req.params.id]);
+    
+    res.json({ ticket, messages: messagesResult.rows });
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.post('/api/tickets/:id/reply', async (req, res) => {
+  try {
+    const auth = req.headers['authorization'];
+    if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'No token' });
+    const token = auth.substring(7);
+    const payload = jwt.verify(token, JWT_SECRET);
+    
+    const { message } = req.body || {};
+    if (!message) return res.status(400).json({ error: 'message required' });
+    
+    const ticketResult = await pool.query('SELECT * FROM tickets WHERE id = $1', [req.params.id]);
+    const ticket = ticketResult.rows[0];
+    
+    if (!ticket) return res.status(404).json({ error: 'Ticket not found' });
+    if (ticket.username !== payload.username) return res.status(403).json({ error: 'Access denied' });
+    
+    const userResult = await pool.query('SELECT * FROM users WHERE username = $1', [payload.username]);
+    const user = userResult.rows[0];
+    
+    const now = Date.now();
+    await pool.query(
+      'INSERT INTO ticket_messages (ticket_id, user_id, username, message, is_admin, created_at) VALUES ($1, $2, $3, $4, $5, $6)',
+      [req.params.id, user.id, user.username, message, 0, now]
+    );
+    
+    await pool.query('UPDATE tickets SET updated_at = $1 WHERE id = $2', [now, req.params.id]);
+    
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.get('/api/admin/tickets', adminOnly, async (req, res) => {
+  const result = await pool.query('SELECT * FROM tickets ORDER BY updated_at DESC');
+  res.json({ tickets: result.rows });
+});
+
+app.get('/api/admin/tickets/:id', adminOnly, async (req, res) => {
+  const ticketResult = await pool.query('SELECT * FROM tickets WHERE id = $1', [req.params.id]);
+  const ticket = ticketResult.rows[0];
+  if (!ticket) return res.status(404).json({ error: 'Ticket not found' });
+  
+  const messagesResult = await pool.query('SELECT * FROM ticket_messages WHERE ticket_id = $1 ORDER BY created_at ASC', [req.params.id]);
+  res.json({ ticket, messages: messagesResult.rows });
+});
+
+app.post('/api/admin/tickets/:id/reply', adminOnly, async (req, res) => {
+  const { message } = req.body || {};
+  if (!message) return res.status(400).json({ error: 'message required' });
+  
+  const now = Date.now();
+  await pool.query(
+    'INSERT INTO ticket_messages (ticket_id, user_id, username, message, is_admin, created_at) VALUES ($1, $2, $3, $4, $5, $6)',
+    [req.params.id, null, 'Admin', message, 1, now]
+  );
+  
+  await pool.query('UPDATE tickets SET updated_at = $1 WHERE id = $2', [now, req.params.id]);
+  res.json({ ok: true });
+});
+
+app.post('/api/admin/tickets/:id/close', adminOnly, async (req, res) => {
+  await pool.query('UPDATE tickets SET status = $1 WHERE id = $2', ['closed', req.params.id]);
+  res.json({ ok: true });
+});
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 

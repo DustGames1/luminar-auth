@@ -19,13 +19,19 @@
   </div>
 
   <div id="subs-tab" class="price-grid">
-    <div class="price-card"><div class="price-amount">199<small>₽</small></div><div class="price-name">30 Days</div><button class="btn btn-purple btn-block" onclick="buy(30,199)">🛒 Purchase</button></div>
-    <div class="price-card"><div class="price-amount">379<small>₽</small></div><div class="price-name">365 Days</div><button class="btn btn-purple btn-block" onclick="buy(365,379)">🛒 Purchase</button></div>
-    <div class="price-card"><div class="price-amount">599<small>₽</small></div><div class="price-name">Lifetime</div><button class="btn btn-purple btn-block" onclick="buy(9999,599)">🛒 Purchase</button></div>
+    <div style="text-align:center;padding:40px;color:var(--text-3);">Загрузка...</div>
   </div>
 
   <div id="other-tab" class="price-grid" style="display:none;">
-    <div class="price-card"><div class="price-amount">149<small>₽</small></div><div class="price-name">HWID Reset</div><button class="btn btn-purple btn-block" onclick="buyH()">🛒 Purchase</button></div>
+    <div style="text-align:center;padding:40px;color:var(--text-3);">Загрузка...</div>
+  </div>
+
+  <div style="max-width:400px;margin:40px auto;">
+    <div style="display:flex;gap:8px;">
+      <input type="text" id="promocodeInput" placeholder="Промокод" style="flex:1;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:14px;">
+      <button class="btn btn-purple" onclick="applyPromocode()">Применить</button>
+    </div>
+    <div id="promocodeMsg" style="margin-top:8px;font-size:13px;"></div>
   </div>
 </section>
 
@@ -42,9 +48,102 @@
 function toggleTheme(){const t=document.documentElement;t.dataset.theme=t.dataset.theme==='light'?'':'light';localStorage.setItem('theme',t.dataset.theme);const btn=document.querySelector('.theme-toggle');btn.innerHTML=t.dataset.theme==='light'?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';}
 if(localStorage.getItem('theme')==='light'){document.documentElement.dataset.theme='light';document.querySelector('.theme-toggle').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';}
 const PAY='https://funpay.com/users/19926313/',token=localStorage.getItem('luminar_token');
+let products = [];
+let currentDiscount = 0;
+let currentPromocode = null;
+
 if(token){fetch('/api/me',{headers:{'Authorization':'Bearer '+token}}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.user)document.getElementById('navAuth').innerHTML=`<button class="theme-toggle" onclick="toggleTheme()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button><a href="/profile" class="btn btn-purple">${d.user.username}</a>`;});}
+
+// Load products
+fetch('/api/products').then(r=>r.json()).then(d=>{
+  products = d.products || [];
+  renderProducts();
+});
+
+function renderProducts() {
+  const subs = products.filter(p => p.category === 'Подписка');
+  const other = products.filter(p => p.category !== 'Подписка');
+  
+  const subsTab = document.getElementById('subs-tab');
+  const otherTab = document.getElementById('other-tab');
+  
+  if (subs.length === 0) {
+    subsTab.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-3);">Нет продуктов</div>';
+  } else {
+    subsTab.innerHTML = subs.map(p => {
+      const finalPrice = currentDiscount > 0 ? Math.round(p.price * (1 - currentDiscount / 100)) : p.price;
+      const hasDiscount = currentDiscount > 0;
+      return `<div class="price-card">
+        <div class="price-amount">${finalPrice}<small>₽</small>${hasDiscount ? `<div style="font-size:14px;color:var(--text-3);text-decoration:line-through;">${p.price}₽</div>` : ''}</div>
+        <div class="price-name">${p.name}</div>
+        ${p.description ? `<p style="font-size:12px;color:var(--text-3);margin:8px 0;">${p.description}</p>` : ''}
+        <button class="btn btn-purple btn-block" onclick="buy(${p.id}, ${p.days}, ${finalPrice}, '${p.name}')">🛒 Purchase</button>
+      </div>`;
+    }).join('');
+  }
+  
+  if (other.length === 0) {
+    otherTab.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-3);">Нет продуктов</div>';
+  } else {
+    otherTab.innerHTML = other.map(p => {
+      const finalPrice = currentDiscount > 0 ? Math.round(p.price * (1 - currentDiscount / 100)) : p.price;
+      const hasDiscount = currentDiscount > 0;
+      return `<div class="price-card">
+        <div class="price-amount">${finalPrice}<small>₽</small>${hasDiscount ? `<div style="font-size:14px;color:var(--text-3);text-decoration:line-through;">${p.price}₽</div>` : ''}</div>
+        <div class="price-name">${p.name}</div>
+        ${p.description ? `<p style="font-size:12px;color:var(--text-3);margin:8px 0;">${p.description}</p>` : ''}
+        <button class="btn btn-purple btn-block" onclick="buy(${p.id}, ${p.days}, ${finalPrice}, '${p.name}')">🛒 Purchase</button>
+      </div>`;
+    }).join('');
+  }
+}
+
+async function applyPromocode() {
+  const code = document.getElementById('promocodeInput').value.trim();
+  const msg = document.getElementById('promocodeMsg');
+  
+  if (!code) {
+    msg.innerHTML = '<span style="color:var(--red);">Введите промокод</span>';
+    return;
+  }
+  
+  try {
+    const r = await fetch('/api/promocode/check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code })
+    });
+    const data = await r.json();
+    
+    if (r.ok) {
+      currentDiscount = data.discount;
+      currentPromocode = code;
+      msg.innerHTML = `<span style="color:var(--green);">✓ Промокод применён! Скидка ${data.discount}%</span>`;
+      renderProducts();
+    } else {
+      msg.innerHTML = `<span style="color:var(--red);">${data.error || 'Неверный промокод'}</span>`;
+    }
+  } catch (e) {
+    msg.innerHTML = '<span style="color:var(--red);">Ошибка проверки промокода</span>';
+  }
+}
+
 function sw(t){document.querySelectorAll('.ptab').forEach(x=>x.classList.remove('active'));event.target.classList.add('active');document.getElementById('subs-tab').style.display=t==='subs'?'grid':'none';document.getElementById('other-tab').style.display=t==='other'?'grid':'none';}
-function buy(d,p){if(!token){alert('Sign in first');location.href='/login';return;}if(confirm(`${d===9999?'Lifetime':d+' days'} for ${p}₽?`))window.open(PAY,'_blank');}
-function buyH(){if(!token){alert('Sign in first');location.href='/login';return;}if(confirm('HWID Reset for 149₽?'))window.open(PAY,'_blank');}
+
+async function buy(id, days, price, name){
+  if(!token){alert('Sign in first');location.href='/login';return;}
+  
+  if(confirm(`${name} за ${price}₽?`)) {
+    // Use promocode if applied
+    if (currentPromocode) {
+      await fetch('/api/promocode/use', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: currentPromocode })
+      });
+    }
+    window.open(PAY,'_blank');
+  }
+}
 </script>
 </body></html>
