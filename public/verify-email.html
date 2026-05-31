@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="icon" href="https://i.imgur.com/ZRocgLJ.png" type="image/png">
+<title>Verify Email — Luminar</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><img src="https://i.imgur.com/ZRocgLJ.png" class="nav-brand-icon" alt="L"> Luminar</a>
+  <div class="nav-center"><a href="/">Home</a><a href="/buy">Products</a><a href="https://t.me/offersheart" target="_blank">Telegram</a></div>
+  <div class="nav-right"><button class="theme-toggle" onclick="toggleTheme()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button></div>
+</nav>
+
+<section class="sec" style="text-align:center;padding-top:120px;">
+  <span class="sec-badge">📧 Email Verification</span>
+  <h2>Подтвердите email</h2>
+  <p class="sec-desc">Мы отправили 6-значный код на вашу почту</p>
+
+  <div class="auth-card" style="max-width:400px;margin:40px auto;">
+    <div id="emailDisplay" style="font-size:14px;color:var(--text-3);margin-bottom:20px;"></div>
+    
+    <input type="text" id="codeInput" placeholder="Введите код" maxlength="6" style="width:100%;padding:16px;font-size:24px;text-align:center;letter-spacing:8px;font-weight:700;margin-bottom:16px;background:var(--surface);border:2px solid var(--border);border-radius:12px;color:var(--text);">
+    
+    <button class="btn btn-purple btn-block" onclick="verifyCode()" style="margin-bottom:12px;">Подтвердить</button>
+    
+    <button class="btn btn-dark btn-block" onclick="resendCode()">Отправить код повторно</button>
+    
+    <div id="message" style="margin-top:16px;font-size:14px;"></div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-col"><h4>📄 Pages</h4><a href="/">Home</a><a href="/buy">Products</a></div>
+    <div class="footer-col"><h4>💬 Communicate</h4><a href="https://t.me/offersheart">Telegram</a></div>
+    <div class="footer-col"><h4>🔐 Account</h4><a href="/login">Sign In</a><a href="/register">Sign Up</a></div>
+  </div>
+  <div class="footer-bottom"><span>© Luminar, 2026</span><span>All Rights Reserved</span></div>
+</footer>
+
+<script>
+function toggleTheme(){const t=document.documentElement;t.dataset.theme=t.dataset.theme==='light'?'':'light';localStorage.setItem('theme',t.dataset.theme);const btn=document.querySelector('.theme-toggle');btn.innerHTML=t.dataset.theme==='light'?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';}
+if(localStorage.getItem('theme')==='light'){document.documentElement.dataset.theme='light';document.querySelector('.theme-toggle').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';}
+
+// Get email from URL params
+const params = new URLSearchParams(window.location.search);
+const email = params.get('email');
+
+if (!email) {
+  location.href = '/register';
+}
+
+document.getElementById('emailDisplay').textContent = `Код отправлен на: ${email}`;
+
+// Auto-focus on code input
+document.getElementById('codeInput').focus();
+
+// Allow only numbers
+document.getElementById('codeInput').addEventListener('input', (e) => {
+  e.target.value = e.target.value.replace(/[^0-9]/g, '');
+});
+
+async function verifyCode() {
+  const code = document.getElementById('codeInput').value.trim();
+  const msg = document.getElementById('message');
+  
+  if (code.length !== 6) {
+    msg.innerHTML = '<span style="color:var(--danger);">Введите 6-значный код</span>';
+    return;
+  }
+  
+  try {
+    const res = await fetch('/api/verify-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, code })
+    });
+    
+    const data = await res.json();
+    
+    if (res.ok) {
+      localStorage.setItem('luminar_token', data.token);
+      msg.innerHTML = '<span style="color:var(--success);">✓ Email подтвержден! Перенаправление...</span>';
+      setTimeout(() => location.href = '/profile', 1500);
+    } else {
+      msg.innerHTML = `<span style="color:var(--danger);">${data.error || 'Неверный код'}</span>`;
+    }
+  } catch (e) {
+    msg.innerHTML = '<span style="color:var(--danger);">Ошибка сервера</span>';
+  }
+}
+
+async function resendCode() {
+  const msg = document.getElementById('message');
+  msg.innerHTML = '<span style="color:var(--text-3);">Отправка...</span>';
+  
+  try {
+    const res = await fetch('/api/resend-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    
+    const data = await res.json();
+    
+    if (res.ok) {
+      msg.innerHTML = '<span style="color:var(--success);">✓ Новый код отправлен!</span>';
+      // Show code if in development mode
+      if (data.code) {
+        msg.innerHTML += `<br><span style="color:var(--warning);">Dev mode: ${data.code}</span>`;
+      }
+    } else {
+      msg.innerHTML = `<span style="color:var(--danger);">${data.error || 'Ошибка'}</span>`;
+    }
+  } catch (e) {
+    msg.innerHTML = '<span style="color:var(--danger);">Ошибка сервера</span>';
+  }
+}
+
+// Allow Enter key to submit
+document.getElementById('codeInput').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') verifyCode();
+});
+</script>
+</body>
+</html>

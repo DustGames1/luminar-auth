@@ -23,7 +23,10 @@ document.getElementById('f').addEventListener('submit',async e=>{e.preventDefaul
 const u=document.getElementById('username').value.trim(),em=document.getElementById('email').value.trim(),p=document.getElementById('password').value,p2=document.getElementById('password2').value;
 if(p!==p2){msg.className='form-msg err';msg.textContent='Passwords mismatch';return;}
 try{const r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,email:em,password:p})});const d=await r.json();
-if(r.ok){localStorage.setItem('luminar_token',d.token);msg.className='form-msg ok';msg.textContent='Created!';setTimeout(()=>location.href='/buy',500);}
+if(r.ok){msg.className='form-msg ok';msg.textContent='Verification code sent! Redirecting...';
+// Show code if in development mode
+if(d.code){msg.textContent+=` (Dev: ${d.code})`;setTimeout(()=>location.href=`/verify-email?email=${encodeURIComponent(d.email)}`,2000);}
+else{setTimeout(()=>location.href=`/verify-email?email=${encodeURIComponent(d.email)}`,1000);}}
 else{msg.className='form-msg err';msg.textContent=d.error||'Error';}}catch{msg.className='form-msg err';msg.textContent='Network error';}});
 </script>
 </body></html>

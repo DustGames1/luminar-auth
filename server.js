@@ -19,11 +19,60 @@ const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
 const path = require('path');
 const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-production';
 const ADMIN_KEY = process.env.ADMIN_KEY || 'change-me-admin-key';
 const TOKEN_TTL = '7d';
+
+// Email configuration
+const EMAIL_USER = process.env.EMAIL_USER || '';
+const EMAIL_PASS = process.env.EMAIL_PASS || '';
+const EMAIL_FROM = process.env.EMAIL_FROM || 'noreply@luminar.com';
+
+// Create email transporter
+let transporter = null;
+if (EMAIL_USER && EMAIL_PASS) {
+  transporter = nodemailer.createTransport({
+    service: 'gmail', // or 'smtp.gmail.com'
+    auth: {
+      user: EMAIL_USER,
+      pass: EMAIL_PASS
+    }
+  });
+}
+
+// Helper function to send verification email
+async function sendVerificationEmail(email, code) {
+  if (!transporter) {
+    console.log('Email not configured, verification code:', code);
+    return false;
+  }
+  
+  try {
+    await transporter.sendMail({
+      from: EMAIL_FROM,
+      to: email,
+      subject: 'Luminar - Подтверждение email',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #4c9aff;">Подтверждение email</h2>
+          <p>Ваш код подтверждения:</p>
+          <div style="background: #f0f0f0; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 5px; margin: 20px 0;">
+            ${code}
+          </div>
+          <p>Код действителен в течение 10 минут.</p>
+          <p style="color: #666; font-size: 12px;">Если вы не регистрировались на Luminar, проигнорируйте это письмо.</p>
+        </div>
+      `
+    });
+    return true;
+  } catch (e) {
+    console.error('Email send error:', e);
+    return false;
+  }
+}
 
 // Robokassa configuration
 const ROBOKASSA_LOGIN = process.env.ROBOKASSA_LOGIN || '';
@@ -67,7 +116,18 @@ async function initDB() {
   try { await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT DEFAULT NULL'); } catch(e) {}
   try { await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS email TEXT DEFAULT NULL'); } catch(e) {}
   try { await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS prefix TEXT DEFAULT NULL'); } catch(e) {}
+  try { await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified INTEGER DEFAULT 0'); } catch(e) {}
   try { await pool.query('CREATE UNIQUE INDEX IF NOT EXISTS users_email_unique ON users(email) WHERE email IS NOT NULL'); } catch(e) {}
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS email_verifications (
+      id SERIAL PRIMARY KEY,
+      email TEXT NOT NULL,
+      code TEXT NOT NULL,
+      created_at BIGINT NOT NULL,
+      expires_at BIGINT NOT NULL,
+      used INTEGER DEFAULT 0
+    );
+  `);
   await pool.query(`
     CREATE TABLE IF NOT EXISTS changelog (
       id SERIAL PRIMARY KEY,
@@ -221,15 +281,124 @@ app.post('/api/register', async (req, res) => {
     const existsEmail = await pool.query('SELECT 1 FROM users WHERE email = $1', [email.toLowerCase().trim()]);
     if (existsEmail.rows.length > 0) return res.status(409).json({ error: 'Email already registered' });
 
+    // Generate 6-digit verification code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const now = Date.now();
+    const expiresAt = now + 10 * 60 * 1000; // 10 minutes
+
+    // Save verification code
+    await pool.query('INSERT INTO email_verifications (email, code, created_at, expires_at) VALUES ($1, $2, $3, $4)',
+      [email.toLowerCase().trim(), code, now, expiresAt]);
+
+    // Send verification email
+    const emailSent = await sendVerificationEmail(email, code);
+    
+    if (!emailSent && !transporter) {
+      // If email is not configured, return code in response (for development)
+      console.log('Verification code for', email, ':', code);
+    }
+
+    // Create user but mark as unverified
     const hash = await bcrypt.hash(password, 12);
-    // HWID is NOT saved on registration — will be set on first loader launch
-    await pool.query('INSERT INTO users (username, email, password_hash, hwid, created_at, sub_until) VALUES ($1, $2, $3, NULL, $4, 0)',
+    await pool.query('INSERT INTO users (username, email, password_hash, hwid, created_at, sub_until, email_verified) VALUES ($1, $2, $3, NULL, $4, 0, 0)',
       [username, email.toLowerCase().trim(), hash, Date.now()]);
 
-    const token = jwt.sign({ username, hwid: null }, JWT_SECRET, { expiresIn: TOKEN_TTL });
-    return res.json({ ok: true, token, subscription: { active: false, until: null, daysLeft: 0 } });
+    return res.json({ 
+      ok: true, 
+      message: 'Verification code sent to your email',
+      email: email.toLowerCase().trim(),
+      // Include code in response if email not configured (development only)
+      ...((!transporter) && { code })
+    });
   } catch (e) {
     console.error('register', e);
+    return res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Verify email endpoint
+app.post('/api/verify-email', async (req, res) => {
+  try {
+    const { email, code } = req.body || {};
+    if (!email || !code) return res.status(400).json({ error: 'Email and code required' });
+
+    // Find verification code
+    const result = await pool.query(
+      'SELECT * FROM email_verifications WHERE email = $1 AND code = $2 AND used = 0 ORDER BY created_at DESC LIMIT 1',
+      [email.toLowerCase().trim(), code]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ error: 'Invalid or expired code' });
+    }
+
+    const verification = result.rows[0];
+    
+    // Check if expired
+    if (verification.expires_at < Date.now()) {
+      return res.status(400).json({ error: 'Code expired' });
+    }
+
+    // Mark code as used
+    await pool.query('UPDATE email_verifications SET used = 1 WHERE id = $1', [verification.id]);
+
+    // Mark user as verified
+    await pool.query('UPDATE users SET email_verified = 1 WHERE email = $1', [email.toLowerCase().trim()]);
+
+    // Get user and create token
+    const userResult = await pool.query('SELECT * FROM users WHERE email = $1', [email.toLowerCase().trim()]);
+    const user = userResult.rows[0];
+
+    const token = jwt.sign({ username: user.username, hwid: null }, JWT_SECRET, { expiresIn: TOKEN_TTL });
+    const sub = getSubscription(user);
+
+    return res.json({ ok: true, token, subscription: sub });
+  } catch (e) {
+    console.error('verify-email', e);
+    return res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Resend verification code
+app.post('/api/resend-code', async (req, res) => {
+  try {
+    const { email } = req.body || {};
+    if (!email) return res.status(400).json({ error: 'Email required' });
+
+    // Check if user exists
+    const userResult = await pool.query('SELECT * FROM users WHERE email = $1', [email.toLowerCase().trim()]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const user = userResult.rows[0];
+    if (user.email_verified) {
+      return res.status(400).json({ error: 'Email already verified' });
+    }
+
+    // Generate new code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const now = Date.now();
+    const expiresAt = now + 10 * 60 * 1000;
+
+    // Save new code
+    await pool.query('INSERT INTO email_verifications (email, code, created_at, expires_at) VALUES ($1, $2, $3, $4)',
+      [email.toLowerCase().trim(), code, now, expiresAt]);
+
+    // Send email
+    const emailSent = await sendVerificationEmail(email, code);
+    
+    if (!emailSent && !transporter) {
+      console.log('Verification code for', email, ':', code);
+    }
+
+    return res.json({ 
+      ok: true, 
+      message: 'New code sent',
+      ...((!transporter) && { code })
+    });
+  } catch (e) {
+    console.error('resend-code', e);
     return res.status(500).json({ error: 'Server error' });
   }
 });
@@ -266,6 +435,11 @@ app.post('/api/login', async (req, res) => {
 
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
     if (user.banned) return res.status(403).json({ error: 'Account banned' });
+    
+    // Check email verification (only for web login, not loader)
+    if (!isLoader && user.email_verified === 0) {
+      return res.status(403).json({ error: 'Email not verified', needsVerification: true, email: user.email });
+    }
 
     const ok = await bcrypt.compare(password, user.password_hash);
     if (!ok) return res.status(401).json({ error: 'Invalid credentials' });
@@ -628,6 +802,7 @@ app.post('/api/me/activate', async (req, res) => {
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
 app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'public', 'register.html')));
+app.get('/verify-email', (req, res) => res.sendFile(path.join(__dirname, 'public', 'verify-email.html')));
 app.get('/profile', (req, res) => res.sendFile(path.join(__dirname, 'public', 'profile.html')));
 app.get('/buy', (req, res) => res.sendFile(path.join(__dirname, 'public', 'buy.html')));
 app.get('/admin-new', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin-new.html')));
