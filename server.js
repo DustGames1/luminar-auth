@@ -245,7 +245,7 @@ app.post('/api/verify', async (req, res) => {
 
     const payload = jwt.verify(token, JWT_SECRET);
 
-    const result = await pool.query('SELECT * FROM users WHERE username = $1', [payload.username]);
+    const result = await pool.query('SELECT * FROM users WHERE LOWER(username) = LOWER($1)', [payload.username]);
     const user = result.rows[0];
     if (!user || user.banned)
       return res.status(403).json({ error: 'Token invalid' });
@@ -253,8 +253,10 @@ app.post('/api/verify', async (req, res) => {
     // Only check HWID if token was issued for a loader session AND user has HWID locked
     const stored = (user.hwid || '').trim();
     if (payload.hwid && stored) {
+      // If HWID is set in DB, check if it matches
       if (!validHwid(hwid) || stored !== hwid) return res.status(403).json({ error: 'HWID mismatch' });
     }
+    // If stored HWID is empty (reset), allow login - it will be set on next login
 
     const sub = getSubscription(user);
     return res.json({ ok: true, username: user.username, uid: user.id, role: user.role || null, subscription: sub });
