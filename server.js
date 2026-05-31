@@ -18,18 +18,29 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
 const path = require('path');
-const { YooCheckout } = require('@a2seven/yoo-checkout');
-const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-production';
 const ADMIN_KEY = process.env.ADMIN_KEY || 'change-me-admin-key';
 const TOKEN_TTL = '7d';
 
-// YooKassa configuration
-const YOOKASSA_SHOP_ID = process.env.YOOKASSA_SHOP_ID || '';
-const YOOKASSA_SECRET_KEY = process.env.YOOKASSA_SECRET_KEY || '';
-const checkout = new YooCheckout({ shopId: YOOKASSA_SHOP_ID, secretKey: YOOKASSA_SECRET_KEY });
+// Robokassa configuration
+const ROBOKASSA_LOGIN = process.env.ROBOKASSA_LOGIN || '';
+const ROBOKASSA_PASSWORD1 = process.env.ROBOKASSA_PASSWORD1 || '';
+const ROBOKASSA_PASSWORD2 = process.env.ROBOKASSA_PASSWORD2 || '';
+const ROBOKASSA_TEST_MODE = process.env.ROBOKASSA_TEST_MODE === 'true';
+
+// Robokassa helper functions
+function generateRobokassaSignature(login, outSum, invId, password, receipt = '') {
+  const signatureString = `${login}:${outSum}:${invId}:${receipt}:${password}`;
+  return crypto.createHash('md5').update(signatureString).digest('hex');
+}
+
+function verifyRobokassaSignature(outSum, invId, signatureValue, password) {
+  const expectedSignature = crypto.createHash('md5').update(`${outSum}:${invId}:${password}`).digest('hex');
+  return expectedSignature.toLowerCase() === signatureValue.toLowerCase();
+}
 
 // ---- DB ----
 const pool = new Pool({
@@ -858,7 +869,7 @@ app.post('/api/admin/tickets/:id/close', adminOnly, async (req, res) => {
   res.json({ ok: true });
 });
 
-// ---- YooKassa Payment Integration ----
+// ---- Robokassa Payment Integration ----
 
 // Create payment
 app.post('/api/payment/create', async (req, res) => {
@@ -905,38 +916,33 @@ app.post('/api/payment/create', async (req, res) => {
       }
     }
     
-    // Create YooKassa payment
-    const idempotenceKey = uuidv4();
-    const payment = await checkout.createPayment({
-      amount: {
-        value: finalAmount.toFixed(2),
-        currency: 'RUB'
-      },
-      confirmation: {
-        type: 'redirect',
-        return_url: `${req.protocol}://${req.get('host')}/profile?payment=success`
-      },
-      capture: true,
-      description: `${product.name} - ${user.username}`,
-      metadata: {
-        user_id: user.id,
-        username: user.username,
-        product_id: product.id,
-        days: product.days,
-        promocode: promoCode || ''
-      }
-    }, idempotenceKey);
-    
-    // Save payment to database
-    await pool.query(
-      'INSERT INTO payments (user_id, username, product_id, product_name, amount, original_amount, discount, promocode, payment_id, status, days, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)',
-      [user.id, user.username, product.id, product.name, finalAmount, product.price, discount, promoCode, payment.id, 'pending', product.days, Date.now()]
+    // Create payment record
+    const paymentResult = await pool.query(
+      'INSERT INTO payments (user_id, username, product_id, product_name, amount, original_amount, discount, promocode, payment_id, status, days, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id',
+      [user.id, user.username, product.id, product.name, finalAmount, product.price, discount, promoCode, '', 'pending', product.days, Date.now()]
     );
+    
+    const paymentId = paymentResult.rows[0].id;
+    
+    // Update payment_id
+    await pool.query('UPDATE payments SET payment_id = $1 WHERE id = $2', [paymentId.toString(), paymentId]);
+    
+    // Generate Robokassa payment URL
+    const description = `${product.name} - ${user.username}`;
+    const signature = generateRobokassaSignature(
+      ROBOKASSA_LOGIN,
+      finalAmount.toFixed(2),
+      paymentId.toString(),
+      ROBOKASSA_PASSWORD1
+    );
+    
+    const baseUrl = ROBOKASSA_TEST_MODE ? 'https://auth.robokassa.ru/Merchant/Index/' : 'https://auth.robokassa.ru/Merchant/Index.aspx';
+    const paymentUrl = `${baseUrl}?MerchantLogin=${ROBOKASSA_LOGIN}&OutSum=${finalAmount.toFixed(2)}&InvId=${paymentId}&Description=${encodeURIComponent(description)}&SignatureValue=${signature}&IsTest=${ROBOKASSA_TEST_MODE ? 1 : 0}`;
     
     res.json({ 
       ok: true, 
-      paymentId: payment.id,
-      confirmationUrl: payment.confirmation.confirmation_url,
+      paymentId: paymentId.toString(),
+      confirmationUrl: paymentUrl,
       amount: finalAmount
     });
   } catch (e) {
@@ -945,59 +951,77 @@ app.post('/api/payment/create', async (req, res) => {
   }
 });
 
-// YooKassa webhook for payment notifications
-app.post('/api/payment/webhook', async (req, res) => {
+// Robokassa Result URL (payment success notification)
+app.post('/api/payment/result', async (req, res) => {
   try {
-    const { type, object } = req.body;
+    const { OutSum, InvId, SignatureValue } = req.body;
     
-    if (type === 'payment.succeeded') {
-      const paymentId = object.id;
-      const metadata = object.metadata;
+    // Verify signature
+    if (!verifyRobokassaSignature(OutSum, InvId, SignatureValue, ROBOKASSA_PASSWORD2)) {
+      console.error('Invalid Robokassa signature');
+      return res.status(400).send('bad sign');
+    }
+    
+    // Get payment from database
+    const paymentResult = await pool.query('SELECT * FROM payments WHERE payment_id = $1', [InvId]);
+    const payment = paymentResult.rows[0];
+    
+    if (!payment) {
+      console.error('Payment not found:', InvId);
+      return res.status(404).send('payment not found');
+    }
+    
+    if (payment.status === 'succeeded') {
+      // Already processed
+      return res.send(`OK${InvId}`);
+    }
+    
+    // Update payment status
+    await pool.query('UPDATE payments SET status = $1, paid_at = $2 WHERE payment_id = $3', 
+      ['succeeded', Date.now(), InvId]);
+    
+    // Add subscription to user
+    const userResult = await pool.query('SELECT * FROM users WHERE id = $1', [payment.user_id]);
+    const user = userResult.rows[0];
+    
+    if (user) {
+      const now = Date.now();
+      const base = (user.sub_until && user.sub_until > now) ? Number(user.sub_until) : now;
+      const newUntil = base + payment.days * 86400000;
       
-      // Get payment from database
-      const paymentResult = await pool.query('SELECT * FROM payments WHERE payment_id = $1', [paymentId]);
-      const payment = paymentResult.rows[0];
+      await pool.query('UPDATE users SET sub_until = $1 WHERE id = $2', [newUntil, user.id]);
       
-      if (!payment) {
-        console.error('Payment not found:', paymentId);
-        return res.status(404).json({ error: 'Payment not found' });
-      }
-      
-      if (payment.status === 'succeeded') {
-        // Already processed
-        return res.json({ ok: true });
-      }
-      
-      // Update payment status
-      await pool.query('UPDATE payments SET status = $1, paid_at = $2 WHERE payment_id = $3', 
-        ['succeeded', Date.now(), paymentId]);
-      
-      // Add subscription to user
-      const userResult = await pool.query('SELECT * FROM users WHERE id = $1', [payment.user_id]);
-      const user = userResult.rows[0];
-      
-      if (user) {
-        const now = Date.now();
-        const base = (user.sub_until && user.sub_until > now) ? Number(user.sub_until) : now;
-        const newUntil = base + payment.days * 86400000;
-        
-        await pool.query('UPDATE users SET sub_until = $1 WHERE id = $2', [newUntil, user.id]);
-        
-        // Use promocode if applied
-        if (payment.promocode) {
-          await pool.query(
-            'UPDATE promocodes SET uses_left = CASE WHEN uses_left IS NULL THEN NULL ELSE uses_left - 1 END WHERE code = $1',
-            [payment.promocode]
-          );
-        }
+      // Use promocode if applied
+      if (payment.promocode) {
+        await pool.query(
+          'UPDATE promocodes SET uses_left = CASE WHEN uses_left IS NULL THEN NULL ELSE uses_left - 1 END WHERE code = $1',
+          [payment.promocode]
+        );
       }
     }
     
-    res.json({ ok: true });
+    res.send(`OK${InvId}`);
   } catch (e) {
-    console.error('Webhook error:', e);
-    res.status(500).json({ error: 'Webhook processing failed' });
+    console.error('Robokassa result error:', e);
+    res.status(500).send('error');
   }
+});
+
+// Robokassa Success URL (user redirect after payment)
+app.get('/api/payment/success', async (req, res) => {
+  const { OutSum, InvId, SignatureValue } = req.query;
+  
+  // Verify signature
+  if (verifyRobokassaSignature(OutSum, InvId, SignatureValue, ROBOKASSA_PASSWORD1)) {
+    res.redirect('/profile?payment=success');
+  } else {
+    res.redirect('/profile?payment=error');
+  }
+});
+
+// Robokassa Fail URL (payment failed)
+app.get('/api/payment/fail', (req, res) => {
+  res.redirect('/profile?payment=failed');
 });
 
 // Check payment status
