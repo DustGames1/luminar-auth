@@ -643,6 +643,16 @@ app.get('/api/version', async (req, res) => {
   }
 });
 
+// Client version API endpoint for loader auto-update system
+app.get('/api/client-version', async (req, res) => {
+  const result = await pool.query("SELECT value FROM settings WHERE key = 'client_version'");
+  if (result.rows.length > 0) {
+    res.send(result.rows[0].value);
+  } else {
+    res.send('1.0.0');
+  }
+});
+
 app.post('/api/admin/version', adminOnly, async (req, res) => {
   const { version } = req.body || {};
   if (!version) return res.status(400).json({ error: 'version required' });

@@ -1116,27 +1116,27 @@
                 <div class="content-panel">
                     <div class="play-content" id="playContent">
                         <div class="version-list">
-                            <div class="version-item selected" data-version="release">
+                            <div class="version-item selected" data-version="1.16.5">
                                 <div class="version-header">
-                                    <div class="version-name" data-text="version_release">Luminar Release</div>
+                                    <div class="version-name" data-text="version_1165">Luminar 1.16.5</div>
                                 </div>
-                                <div class="version-description" data-text="version_release_desc">Stable version with optimized performance and all features tested. Recommended for most users who want reliable gameplay experience.</div>
+                                <div class="version-description" data-text="version_1165_desc">Stable version optimized for Minecraft 1.16.5. Recommended for best performance and compatibility.</div>
                             </div>
                             
-                            <div class="version-item" data-version="beta" id="betaVersion">
+                            <div class="version-item disabled" data-version="1.20.1" id="version1201">
                                 <div class="version-header">
-                                    <div class="version-name" data-text="version_beta">Luminar Beta</div>
-                                    <div class="version-status unavailable hidden" data-text="unavailable">Unavailable</div>
+                                    <div class="version-name" data-text="version_1201">Luminar 1.20.1</div>
+                                    <div class="version-status unavailable" data-text="coming_soon">COMING SOON</div>
                                 </div>
-                                <div class="version-description" data-text="version_beta_desc">Beta version with latest features and improvements. May contain minor bugs but includes cutting-edge functionality for testing.</div>
+                                <div class="version-description" data-text="version_1201_desc">Version for Minecraft 1.20.1. Currently in development and will be available soon.</div>
                             </div>
                             
-                            <div class="version-item" data-version="alpha" id="alphaVersion">
+                            <div class="version-item disabled" data-version="1.21.4" id="version1214">
                                 <div class="version-header">
-                                    <div class="version-name" data-text="version_alpha">Luminar Alpha</div>
-                                    <div class="version-status unavailable hidden" data-text="unavailable">Unavailable</div>
+                                    <div class="version-name" data-text="version_1214">Luminar 1.21.4</div>
+                                    <div class="version-status unavailable" data-text="coming_soon">COMING SOON</div>
                                 </div>
-                                <div class="version-description" data-text="version_alpha_desc">Experimental alpha version with newest features in development. Expect frequent updates and possible instability.</div>
+                                <div class="version-description" data-text="version_1214_desc">Version for Minecraft 1.21.4. Currently in development and will be available soon.</div>
                             </div>
                         </div>
                     </div>
@@ -1302,13 +1302,14 @@
                 goodbye: "Good bye!",
                 play: "Play",
                 changelogs: "ChangeLogs",
-                version_release: "Luminar Release",
-                version_beta: "Luminar Beta",
-                version_alpha: "Luminar Alpha",
-                version_release_desc: "Stable version with optimized performance and all features tested. Recommended for most users who want reliable gameplay experience.",
-                version_beta_desc: "Beta version with latest features and improvements. May contain minor bugs but includes cutting-edge functionality for testing.",
-                version_alpha_desc: "Experimental alpha version with newest features in development. Expect frequent updates and possible instability.",
+                version_1165: "Luminar 1.16.5",
+                version_1201: "Luminar 1.20.1",
+                version_1214: "Luminar 1.21.4",
+                version_1165_desc: "Stable version optimized for Minecraft 1.16.5. Recommended for best performance and compatibility.",
+                version_1201_desc: "Version for Minecraft 1.20.1. Currently in development and will be available soon.",
+                version_1214_desc: "Version for Minecraft 1.21.4. Currently in development and will be available soon.",
                 unavailable: "Unavailable",
+                coming_soon: "COMING SOON",
                 client_changelog: "Client Changelog",
                 release_210_1: "Improved rendering performance by 30%",
                 release_210_2: "Fixed memory leaks in texture loading",
@@ -1350,13 +1351,14 @@
                 goodbye: "До свидания!",
                 play: "Играть",
                 changelogs: "Изменения",
-                version_release: "Luminar Релиз",
-                version_beta: "Luminar Бета",
-                version_alpha: "Luminar Альфа",
-                version_release_desc: "Стабильная версия с оптимизированной производительностью и протестированными функциями. Рекомендуется для большинства пользователей, желающих надежный игровой опыт.",
-                version_beta_desc: "Бета-версия с новейшими функциями и улучшениями. Может содержать незначительные ошибки, но включает передовую функциональность для тестирования.",
-                version_alpha_desc: "Экспериментальная альфа-версия с новейшими функциями в разработке. Ожидайте частые обновления и возможную нестабильность.",
+                version_1165: "Luminar 1.16.5",
+                version_1201: "Luminar 1.20.1",
+                version_1214: "Luminar 1.21.4",
+                version_1165_desc: "Стабильная версия, оптимизированная для Minecraft 1.16.5. Рекомендуется для лучшей производительности и совместимости.",
+                version_1201_desc: "Версия для Minecraft 1.20.1. В настоящее время находится в разработке и скоро будет доступна.",
+                version_1214_desc: "Версия для Minecraft 1.21.4. В настоящее время находится в разработке и скоро будет доступна.",
                 unavailable: "Недоступно",
+                coming_soon: "СКОРО",
                 client_changelog: "История изменений клиента",
                 release_210_1: "Улучшена производительность рендеринга на 30%",
                 release_210_2: "Исправлены утечки памяти при загрузке текстур",
@@ -1396,7 +1398,7 @@
         };
 
         let currentLanguage = localStorage.getItem('language') || 'en';
-        let selectedVersion = 'release';
+        let selectedVersion = '1.16.5';
         let currentNickname = '';
 
         function updateLanguage(lang) {
@@ -1440,25 +1442,8 @@
         }
 
         function checkVersionAccess() {
-            const betaVersion = document.getElementById('betaVersion');
-            const alphaVersion = document.getElementById('alphaVersion');
-            
-            if (currentNickname === 'algorithm') {
-                betaVersion.classList.add('disabled');
-                alphaVersion.classList.add('disabled');
-                betaVersion.querySelector('.version-status').classList.remove('hidden');
-                alphaVersion.querySelector('.version-status').classList.remove('hidden');
-                if (selectedVersion === 'beta' || selectedVersion === 'alpha') {
-                    selectedVersion = 'release';
-                    updateVersionSelection();
-                }
-            } else {
-                betaVersion.classList.remove('disabled');
-                alphaVersion.classList.remove('disabled');
-                
-                betaVersion.querySelector('.version-status').classList.add('hidden');
-                alphaVersion.querySelector('.version-status').classList.add('hidden');
-            }
+            // All versions except 1.16.5 are disabled with "COMING SOON" badge
+            // No special access logic needed - 1.20.1 and 1.21.4 are always disabled
         }
 
         function updateVersionSelection() {
