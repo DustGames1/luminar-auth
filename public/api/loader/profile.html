@@ -1143,49 +1143,11 @@
 
                     <div class="changelog-box hidden" id="changelogContent">
                         <div class="changelog-title" data-text="client_changelog">Client Changelog</div>
-                        
-                        <div class="changelog-entry">
-                            <div class="changelog-header">
-                                <div class="changelog-version">Luminar Release v2.1.0</div>
-                                <div class="changelog-date">June 15, 2025</div>
+                        <div id="changelogEntries">
+                            <!-- Changelog entries will be loaded from server -->
+                            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                                <div style="font-size: 14px;">Loading changelog...</div>
                             </div>
-                            <div class="changelog-item" data-text="release_210_1">Improved rendering performance by 30%</div>
-                            <div class="changelog-item" data-text="release_210_2">Fixed memory leaks in texture loading</div>
-                            <div class="changelog-item" data-text="release_210_3">Added support for 4K resolution displays</div>
-                            <div class="changelog-item" data-text="release_210_4">Enhanced anti-cheat system integration</div>
-                        </div>
-
-                        <div class="changelog-entry">
-                            <div class="changelog-header">
-                                <div class="changelog-version">Luminar Beta v2.2.0</div>
-                                <div class="changelog-date">June 10, 2025</div>
-                            </div>
-                            <div class="changelog-item" data-text="beta_220_1">Experimental ray tracing support</div>
-                            <div class="changelog-item" data-text="beta_220_2">New UI framework implementation</div>
-                            <div class="changelog-item" data-text="beta_220_3">Advanced shader compilation system</div>
-                            <div class="changelog-item" data-text="beta_220_4">Improved network protocol efficiency</div>
-                        </div>
-
-                        <div class="changelog-entry">
-                            <div class="changelog-header">
-                                <div class="changelog-version">Luminar Alpha v2.3.0</div>
-                                <div class="changelog-date">June 5, 2025</div>
-                            </div>
-                            <div class="changelog-item" data-text="alpha_230_1">Experimental AI-powered optimization</div>
-                            <div class="changelog-item" data-text="alpha_230_2">New plugin architecture framework</div>
-                            <div class="changelog-item" data-text="alpha_230_3">Advanced debugging tools integration</div>
-                            <div class="changelog-item" data-text="alpha_230_4">Prototype cloud synchronization</div>
-                        </div>
-
-                        <div class="changelog-entry">
-                            <div class="changelog-header">
-                                <div class="changelog-version">Luminar Release v2.0.5</div>
-                                <div class="changelog-date">May 28, 2025</div>
-                            </div>
-                            <div class="changelog-item" data-text="release_205_1">Critical security vulnerability patches</div>
-                            <div class="changelog-item" data-text="release_205_2">Fixed crash on startup for some configurations</div>
-                            <div class="changelog-item" data-text="release_205_3">Improved compatibility with older hardware</div>
-                            <div class="changelog-item" data-text="release_205_4">Enhanced error reporting system</div>
                         </div>
                     </div>
                 </div>
@@ -1462,6 +1424,57 @@
             }
         }
 
+        // Load changelog from server
+        async function loadChangelog() {
+            try {
+                const response = await fetch('/api/changelog');
+                const data = await response.json();
+                
+                const changelogEntries = document.getElementById('changelogEntries');
+                
+                if (!data.entries || data.entries.length === 0) {
+                    changelogEntries.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                            <div style="font-size: 14px;">No changelog entries yet</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Clear loading message
+                changelogEntries.innerHTML = '';
+                
+                // Render each changelog entry
+                data.entries.forEach(entry => {
+                    const entryDiv = document.createElement('div');
+                    entryDiv.className = 'changelog-entry';
+                    
+                    // Parse text field for changelog items (split by newlines)
+                    const items = entry.text.split('\n').filter(item => item.trim());
+                    const itemsHtml = items.map(item => 
+                        `<div class="changelog-item">${item.trim()}</div>`
+                    ).join('');
+                    
+                    entryDiv.innerHTML = `
+                        <div class="changelog-header">
+                            <div class="changelog-version">${entry.version}</div>
+                            <div class="changelog-date">${entry.date}</div>
+                        </div>
+                        ${itemsHtml}
+                    `;
+                    
+                    changelogEntries.appendChild(entryDiv);
+                });
+            } catch (error) {
+                console.error('Failed to load changelog:', error);
+                document.getElementById('changelogEntries').innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                        <div style="font-size: 14px;">Failed to load changelog</div>
+                    </div>
+                `;
+            }
+        }
+
         const themeToggle = document.getElementById('themeToggle');
         const languageToggle = document.getElementById('languageToggle');
         const languageDropdown = document.getElementById('languageDropdown');
@@ -1733,6 +1746,10 @@
                 window.chrome.webview.postMessage('profile_loaded');
                 window.chrome.webview.postMessage('load_config');
                 checkVersionAccess();
+                
+                // Load changelog from server
+                loadChangelog();
+                
                 // Fetch real version from API
                 fetch('/api/version').then(r => r.text()).then(v => {
                     document.getElementById('clientVersion').textContent = v || '1.0.0';
