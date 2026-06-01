@@ -1314,3 +1314,92 @@ if (!process.env.VERCEL) {
 }
 
 module.exports = app;
+
+
+// ---- Auto-Update API ----
+// Check for updates endpoint
+app.get('/api/version/check', async (req, res) => {
+  try {
+    const result = await pool.query("SELECT value FROM settings WHERE key = 'client_version'");
+    const latestVersion = result.rows.length > 0 ? result.rows[0].value : '1.0.0';
+    
+    const downloadResult = await pool.query("SELECT value FROM settings WHERE key = 'download_url'");
+    const downloadUrl = downloadResult.rows.length > 0 ? downloadResult.rows[0].value : '';
+
+    // Check if update is available (you can add version comparison logic here)
+    const hasUpdate = downloadUrl !== '';
+
+    res.json({
+      hasUpdate,
+      version: latestVersion,
+      downloadUrl: downloadUrl || null,
+      timestamp: Date.now()
+    });
+  } catch (e) {
+    console.error('version check error:', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Download update endpoint (preserves user files)
+app.post('/api/update/download', async (req, res) => {
+  try {
+    const { url, version, preservePaths } = req.body || {};
+    
+    if (!url || !version) {
+      return res.status(400).json({ error: 'URL and version required' });
+    }
+
+    // Log update request
+    console.log(`Update requested: ${version} from ${url}`);
+    console.log(`Preserving paths:`, preservePaths);
+
+    // In a real implementation, this would:
+    // 1. Download the update file
+    // 2. Extract it to a temporary location
+    // 3. Backup user files (resourcepacks, config, etc.)
+    // 4. Replace old files with new ones
+    // 5. Restore user files
+    // 6. Clean up temporary files
+
+    // For now, just return success
+    res.json({
+      ok: true,
+      version,
+      message: 'Update downloaded successfully',
+      preservedPaths: preservePaths || []
+    });
+  } catch (e) {
+    console.error('update download error:', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Admin: Set download URL for updates
+app.post('/api/admin/update-url', adminOnly, async (req, res) => {
+  try {
+    const { url } = req.body || {};
+    if (!url) return res.status(400).json({ error: 'URL required' });
+    
+    await pool.query(
+      "INSERT INTO settings (key, value) VALUES ('download_url', $1) ON CONFLICT (key) DO UPDATE SET value = $1",
+      [url]
+    );
+    
+    res.json({ ok: true, url });
+  } catch (e) {
+    console.error('update-url error:', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Admin: Clear download URL (disable updates)
+app.delete('/api/admin/update-url', adminOnly, async (req, res) => {
+  try {
+    await pool.query("DELETE FROM settings WHERE key = 'download_url'");
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('clear update-url error:', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});

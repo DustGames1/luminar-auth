@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="https://i.imgur.com/ZRocgLJ.png" type="image/png">
+<title>Контакты - Luminar</title>
+<link rel="stylesheet" href="/style.css">
+<style>
+.contacts-page {
+  max-width: 900px;
+  margin: 80px auto 40px;
+  padding: 40px;
+  background: var(--card-bg);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+.contacts-page h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+.contacts-page .subtitle {
+  color: var(--text-muted);
+  margin-bottom: 40px;
+  font-size: 1.1rem;
+}
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+.contact-card {
+  padding: 25px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-align: center;
+}
+.contact-card .icon {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+}
+.contact-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+.contact-card p {
+  color: var(--text-muted);
+  margin-bottom: 15px;
+}
+.contact-card a {
+  color: var(--purple);
+  text-decoration: none;
+  font-weight: 500;
+}
+.contact-card a:hover {
+  text-decoration: underline;
+}
+.info-section {
+  margin-top: 40px;
+  padding: 30px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.info-section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+.info-section p {
+  line-height: 1.8;
+  color: var(--text-muted);
+  margin-bottom: 15px;
+}
+.info-section ul {
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+.info-section li {
+  line-height: 1.8;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+.info-section strong {
+  color: var(--text);
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-brand"><img src="https://i.imgur.com/ZRocgLJ.png" class="nav-brand-icon" alt="L"> Luminar</a>
+  <div class="nav-center">
+    <a href="/">Home</a>
+    <a href="/buy">Products</a>
+    <a href="https://t.me/offersheart" target="_blank">Telegram</a>
+  </div>
+  <div class="nav-right" id="navAuth">
+    <button class="theme-toggle" onclick="toggleTheme()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+    <a href="/login" class="btn btn-dark">Sign In</a>
+    <a href="/register" class="btn btn-purple">Sign Up</a>
+  </div>
+</nav>
+
+<div class="contacts-page">
+  <h1>📞 Контактная информация</h1>
+  <p class="subtitle">Свяжитесь с нами любым удобным способом. Мы всегда рады помочь!</p>
+
+  <div class="contact-grid">
+    <div class="contact-card">
+      <div class="icon">✈️</div>
+      <h3>Telegram</h3>
+      <p>Быстрая поддержка 24/7</p>
+      <a href="https://t.me/offersheart" target="_blank">@offersheart</a>
+    </div>
+
+    <div class="contact-card">
+      <div class="icon">📧</div>
+      <h3>Email</h3>
+      <p>Для официальных запросов</p>
+      <a href="mailto:support@luminar.shop">support@luminar.shop</a>
+    </div>
+
+    <div class="contact-card">
+      <div class="icon">🌐</div>
+      <h3>Сайт</h3>
+      <p>Наш официальный сайт</p>
+      <a href="https://luminar.shop">luminar.shop</a>
+    </div>
+  </div>
+
+  <div class="info-section">
+    <h2>📋 Юридическая информация</h2>
+    <p><strong>Название:</strong> Luminar</p>
+    <p><strong>ФИО:</strong> [Укажите ваше ФИО]</p>
+    <p><strong>ИНН:</strong> [Укажите ваш ИНН, если есть]</p>
+    <p><strong>Email для связи:</strong> support@luminar.shop</p>
+    <p><strong>Telegram:</strong> <a href="https://t.me/offersheart" target="_blank">@offersheart</a></p>
+  </div>
+
+  <div class="info-section">
+    <h2>⏰ Время работы поддержки</h2>
+    <p>Наша служба поддержки работает <strong>24/7</strong> и готова ответить на ваши вопросы в любое время.</p>
+    <p>Среднее время ответа:</p>
+    <ul>
+      <li><strong>Telegram:</strong> 5-30 минут</li>
+      <li><strong>Email:</strong> до 24 часов</li>
+    </ul>
+  </div>
+
+  <div class="info-section">
+    <h2>❓ По каким вопросам можно обращаться</h2>
+    <ul>
+      <li>Технические проблемы с клиентом или лоадером</li>
+      <li>Вопросы по оплате и активации подписки</li>
+      <li>Возврат средств</li>
+      <li>Использование промокодов</li>
+      <li>Сброс пароля или восстановление аккаунта</li>
+      <li>Предложения и пожелания</li>
+      <li>Сотрудничество и партнерство</li>
+    </ul>
+  </div>
+
+  <div class="info-section">
+    <h2>🔐 Безопасность</h2>
+    <p><strong>Важно:</strong> Мы никогда не попросим вас:</p>
+    <ul>
+      <li>Сообщить пароль от аккаунта</li>
+      <li>Перевести деньги на личные карты или кошельки</li>
+      <li>Установить стороннее ПО для "проверки"</li>
+    </ul>
+    <p>Если кто-то представляется нашим сотрудником и просит это — это мошенники. Свяжитесь с нами через официальные каналы для проверки.</p>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h4>📄 Документы</h4>
+      <a href="/terms">Условия использования</a>
+      <a href="/privacy">Политика конфиденциальности</a>
+      <a href="/contacts">Контакты</a>
+    </div>
+    <div class="footer-col">
+      <h4>📄 Pages</h4>
+      <a href="/">Home</a>
+      <a href="/buy">Products</a>
+    </div>
+    <div class="footer-col">
+      <h4>💬 Communicate</h4>
+      <a href="https://t.me/offersheart" target="_blank">Telegram</a>
+    </div>
+    <div class="footer-col">
+      <h4>🔐 Account Data</h4>
+      <a href="/login">Sign In</a>
+      <a href="/register">Sign Up</a>
+    </div>
+  </div>
+  <div class="footer-brand">
+    <h3><img src="https://i.imgur.com/ZRocgLJ.png" class="nav-brand-icon" style="width:22px;height:22px;" alt="L"> Luminar</h3>
+    <p>All the best is with us! Quickly join us!</p>
+  </div>
+  <div class="footer-bottom">
+    <span>Feedback: t.me/offersheart</span>
+    <span>© Luminar, 2026. All Rights Reserved</span>
+  </div>
+</footer>
+
+<script>
+function toggleTheme(){const t=document.documentElement;t.dataset.theme=t.dataset.theme==='light'?'':'light';localStorage.setItem('theme',t.dataset.theme);const btn=document.querySelector('.theme-toggle');btn.innerHTML=t.dataset.theme==='light'?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';}
+if(localStorage.getItem('theme')==='light'){document.documentElement.dataset.theme='light';document.querySelector('.theme-toggle').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';}
+const token=localStorage.getItem('luminar_token');
+if(token){fetch('/api/me',{headers:{'Authorization':'Bearer '+token}}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.user)document.getElementById('navAuth').innerHTML=`<button class="theme-toggle" onclick="toggleTheme()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button><a href="/profile" class="btn btn-purple">Profile</a>`;});}
+</script>
+</body>
+</html>

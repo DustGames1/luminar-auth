@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="https://i.imgur.com/ZRocgLJ.png" type="image/png">
+<title>Политика конфиденциальности - Luminar</title>
+<link rel="stylesheet" href="/style.css">
+<style>
+.legal-page {
+  max-width: 900px;
+  margin: 80px auto 40px;
+  padding: 40px;
+  background: var(--card-bg);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+.legal-page h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+.legal-page .update-date {
+  color: var(--text-muted);
+  margin-bottom: 30px;
+  font-size: 0.95rem;
+}
+.legal-page h2 {
+  font-size: 1.8rem;
+  margin-top: 40px;
+  margin-bottom: 15px;
+  color: var(--text);
+}
+.legal-page h3 {
+  font-size: 1.3rem;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+.legal-page p, .legal-page li {
+  line-height: 1.8;
+  color: var(--text-muted);
+  margin-bottom: 15px;
+}
+.legal-page ul {
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+.legal-page strong {
+  color: var(--text);
+}
+.legal-page a {
+  color: var(--purple);
+  text-decoration: none;
+}
+.legal-page a:hover {
+  text-decoration: underline;
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-brand"><img src="https://i.imgur.com/ZRocgLJ.png" class="nav-brand-icon" alt="L"> Luminar</a>
+  <div class="nav-center">
+    <a href="/">Home</a>
+    <a href="/buy">Products</a>
+    <a href="https://t.me/offersheart" target="_blank">Telegram</a>
+  </div>
+  <div class="nav-right" id="navAuth">
+    <button class="theme-toggle" onclick="toggleTheme()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+    <a href="/login" class="btn btn-dark">Sign In</a>
+    <a href="/register" class="btn btn-purple">Sign Up</a>
+  </div>
+</nav>
+
+<div class="legal-page">
+  <h1>🔒 Политика конфиденциальности</h1>
+  <p class="update-date">Последнее обновление: 2 июня 2026 г.</p>
+
+  <h2>1. Общие положения</h2>
+  <p>Настоящая Политика конфиденциальности определяет порядок обработки и защиты персональных данных пользователей сайта Luminar (далее — "Сайт").</p>
+  <p>Используя Сайт, вы соглашаетесь с условиями данной Политики конфиденциальности.</p>
+
+  <h2>2. Какие данные мы собираем</h2>
+  
+  <h3>2.1 Данные при регистрации</h3>
+  <ul>
+    <li><strong>Email:</strong> для создания аккаунта и связи с вами</li>
+    <li><strong>Логин (username):</strong> для идентификации в системе</li>
+    <li><strong>Пароль:</strong> хранится в зашифрованном виде (bcrypt)</li>
+  </ul>
+
+  <h3>2.2 Данные при оплате</h3>
+  <ul>
+    <li><strong>Сумма платежа</strong></li>
+    <li><strong>Дата и время транзакции</strong></li>
+    <li><strong>Идентификатор платежа</strong></li>
+  </ul>
+  <p><em>Примечание: Данные банковских карт мы НЕ собираем и НЕ храним. Обработка платежей осуществляется через платежную систему Robokassa.</em></p>
+
+  <h3>2.3 Технические данные</h3>
+  <ul>
+    <li><strong>IP-адрес:</strong> для безопасности и предотвращения мошенничества</li>
+    <li><strong>HWID (Hardware ID):</strong> для привязки подписки к устройству</li>
+    <li><strong>Информация о браузере и устройстве</strong></li>
+  </ul>
+
+  <h2>3. Как мы используем ваши данные</h2>
+  
+  <h3>3.1 Цели обработки</h3>
+  <ul>
+    <li>Создание и управление вашим аккаунтом</li>
+    <li>Обработка платежей и активация подписок</li>
+    <li>Предоставление доступа к цифровому продукту</li>
+    <li>Связь с вами по вопросам поддержки</li>
+    <li>Предотвращение мошенничества и нарушений</li>
+    <li>Улучшение качества сервиса</li>
+  </ul>
+
+  <h3>3.2 Правовые основания</h3>
+  <p>Обработка персональных данных осуществляется на основании:</p>
+  <ul>
+    <li>Вашего согласия (при регистрации)</li>
+    <li>Исполнения договора (предоставление услуг)</li>
+    <li>Законных интересов (безопасность, предотвращение мошенничества)</li>
+  </ul>
+
+  <h2>4. Как мы защищаем ваши данные</h2>
+  
+  <h3>4.1 Меры безопасности</h3>
+  <ul>
+    <li><strong>Шифрование паролей:</strong> используется алгоритм bcrypt</li>
+    <li><strong>HTTPS:</strong> все данные передаются по защищенному соединению</li>
+    <li><strong>JWT токены:</strong> для безопасной аутентификации</li>
+    <li><strong>Ограниченный доступ:</strong> только авторизованный персонал имеет доступ к данным</li>
+    <li><strong>Регулярные обновления:</strong> системы безопасности постоянно обновляются</li>
+  </ul>
+
+  <h3>4.2 Хранение данных</h3>
+  <p>Ваши данные хранятся на защищенных серверах. Мы используем современные технологии для предотвращения несанкционированного доступа.</p>
+
+  <h2>5. Передача данных третьим лицам</h2>
+  
+  <h3>5.1 Платежная система</h3>
+  <p>Для обработки платежей мы передаем минимально необходимые данные платежной системе <strong>Robokassa</strong>:</p>
+  <ul>
+    <li>Email</li>
+    <li>Сумма платежа</li>
+    <li>Описание товара</li>
+  </ul>
+  <p>Robokassa обрабатывает данные в соответствии со своей политикой конфиденциальности.</p>
+
+  <h3>5.2 Другие случаи</h3>
+  <p>Мы можем передать ваши данные третьим лицам только в следующих случаях:</p>
+  <ul>
+    <li>По требованию закона или государственных органов</li>
+    <li>Для защиты наших прав и безопасности</li>
+    <li>С вашего явного согласия</li>
+  </ul>
+
+  <h2>6. Ваши права</h2>
+  
+  <h3>6.1 Право на доступ</h3>
+  <p>Вы можете запросить информацию о том, какие данные мы храним о вас.</p>
+
+  <h3>6.2 Право на исправление</h3>
+  <p>Вы можете исправить неточные данные в личном кабинете или связавшись с нами.</p>
+
+  <h3>6.3 Право на удаление</h3>
+  <p>Вы можете запросить удаление ваших данных, связавшись с нами. Обратите внимание, что некоторые данные могут быть сохранены для выполнения юридических обязательств.</p>
+
+  <h3>6.4 Право на отзыв согласия</h3>
+  <p>Вы можете отозвать согласие на обработку персональных данных в любое время.</p>
+
+  <h2>7. Cookies и аналитика</h2>
+  
+  <h3>7.1 Использование cookies</h3>
+  <p>Мы используем cookies для:</p>
+  <ul>
+    <li>Сохранения сессии (JWT токен в localStorage)</li>
+    <li>Запоминания настроек (тема оформления)</li>
+    <li>Улучшения работы сайта</li>
+  </ul>
+
+  <h3>7.2 Управление cookies</h3>
+  <p>Вы можете отключить cookies в настройках браузера, но это может ограничить функциональность сайта.</p>
+
+  <h2>8. Срок хранения данных</h2>
+  <p>Мы храним ваши данные:</p>
+  <ul>
+    <li><strong>Данные аккаунта:</strong> до удаления аккаунта</li>
+    <li><strong>История платежей:</strong> 3 года (для бухгалтерского учета)</li>
+    <li><strong>Логи безопасности:</strong> 1 год</li>
+  </ul>
+
+  <h2>9. Дети</h2>
+  <p>Наш сервис не предназначен для лиц младше 14 лет. Мы не собираем намеренно данные детей. Если вы узнали, что ребенок предоставил нам свои данные, свяжитесь с нами для их удаления.</p>
+
+  <h2>10. Изменения в политике</h2>
+  <p>Мы можем обновлять данную Политику конфиденциальности. О существенных изменениях мы уведомим вас по email или через уведомление на сайте.</p>
+
+  <h2>11. Контактная информация</h2>
+  <p>Если у вас есть вопросы о нашей Политике конфиденциальности или вы хотите воспользоваться своими правами, свяжитесь с нами:</p>
+  <ul>
+    <li><strong>Email:</strong> support@luminar.shop</li>
+    <li><strong>Telegram:</strong> <a href="https://t.me/offersheart" target="_blank">@offersheart</a></li>
+  </ul>
+
+  <h2>12. Согласие на обработку персональных данных</h2>
+  <p>Регистрируясь на сайте и используя наши услуги, вы подтверждаете, что:</p>
+  <ul>
+    <li>Ознакомились с настоящей Политикой конфиденциальности</li>
+    <li>Согласны на обработку ваших персональных данных</li>
+    <li>Согласны на передачу данных платежной системе для обработки платежей</li>
+    <li>Понимаете свои права и способы их реализации</li>
+  </ul>
+
+  <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--border);">
+  
+  <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+    Мы серьезно относимся к защите ваших данных и соблюдаем требования законодательства РФ.<br>
+    Ваша конфиденциальность — наш приоритет.
+  </p>
+</div>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h4>📄 Документы</h4>
+      <a href="/terms">Условия использования</a>
+      <a href="/privacy">Политика конфиденциальности</a>
+      <a href="/contacts">Контакты</a>
+    </div>
+    <div class="footer-col">
+      <h4>📄 Pages</h4>
+      <a href="/">Home</a>
+      <a href="/buy">Products</a>
+    </div>
+    <div class="footer-col">
+      <h4>💬 Communicate</h4>
+      <a href="https://t.me/offersheart" target="_blank">Telegram</a>
+    </div>
+    <div class="footer-col">
+      <h4>🔐 Account Data</h4>
+      <a href="/login">Sign In</a>
+      <a href="/register">Sign Up</a>
+    </div>
+  </div>
+  <div class="footer-brand">
+    <h3><img src="https://i.imgur.com/ZRocgLJ.png" class="nav-brand-icon" style="width:22px;height:22px;" alt="L"> Luminar</h3>
+    <p>All the best is with us! Quickly join us!</p>
+  </div>
+  <div class="footer-bottom">
+    <span>Feedback: t.me/offersheart</span>
+    <span>© Luminar, 2026. All Rights Reserved</span>
+  </div>
+</footer>
+
+<script>
+function toggleTheme(){const t=document.documentElement;t.dataset.theme=t.dataset.theme==='light'?'':'light';localStorage.setItem('theme',t.dataset.theme);const btn=document.querySelector('.theme-toggle');btn.innerHTML=t.dataset.theme==='light'?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';}
+if(localStorage.getItem('theme')==='light'){document.documentElement.dataset.theme='light';document.querySelector('.theme-toggle').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';}
+const token=localStorage.getItem('luminar_token');
+if(token){fetch('/api/me',{headers:{'Authorization':'Bearer '+token}}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.user)document.getElementById('navAuth').innerHTML=`<button class="theme-toggle" onclick="toggleTheme()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button><a href="/profile" class="btn btn-purple">Profile</a>`;});}
+</script>
+</body>
+</html>
