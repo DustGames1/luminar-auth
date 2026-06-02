@@ -23,10 +23,13 @@ document.getElementById('f').addEventListener('submit',async e=>{e.preventDefaul
 const u=document.getElementById('username').value.trim(),em=document.getElementById('email').value.trim(),p=document.getElementById('password').value,p2=document.getElementById('password2').value;
 if(p!==p2){msg.className='form-msg err';msg.textContent='Passwords mismatch';return;}
 try{const r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,email:em,password:p})});const d=await r.json();
-if(r.ok){msg.className='form-msg ok';
-// Show code prominently if in development mode
-if(d.code){msg.innerHTML=`<div style="background:#fbbf24;color:#000;padding:12px;border-radius:8px;margin:12px 0;"><b>⚠️ DEV MODE</b><br>Ваш код: <span style="font-size:24px;font-weight:700;letter-spacing:4px;">${d.code}</span></div>Перенаправление...`;setTimeout(()=>location.href=`/verify-email?email=${encodeURIComponent(d.email)}`,3000);}
-else{msg.textContent='Verification code sent! Check your email';setTimeout(()=>location.href=`/verify-email?email=${encodeURIComponent(d.email)}`,1000);}}
+if(r.ok){
+  msg.className='form-msg ok';
+  msg.textContent='Registration successful! Redirecting...';
+  // Save token and redirect to profile
+  localStorage.setItem('token', d.token);
+  setTimeout(()=>location.href='/profile',1000);
+}
 else{msg.className='form-msg err';msg.textContent=d.error||'Error';}}catch{msg.className='form-msg err';msg.textContent='Network error';}});
 </script>
 </body></html>
