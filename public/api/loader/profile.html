@@ -1363,6 +1363,13 @@
         let selectedVersion = '1.16.5';
         let currentNickname = '';
 
+        // Safe wrapper for postMessage (checks if WebView is ready)
+        function safePostMessage(message) {
+            if (window.chrome && window.chrome.webview && window.chrome.webview.postMessage) {
+                window.chrome.webview.postMessage(message);
+            }
+        }
+
         function updateLanguage(lang) {
             currentLanguage = lang;
             localStorage.setItem('language', lang);
@@ -1389,7 +1396,7 @@
 
             bindLanguageDropdown();
             
-            window.chrome.webview.postMessage('language_changed:' + lang);
+            safePostMessage('language_changed:' + lang);
         }
 
         function bindLanguageDropdown() {
@@ -1567,7 +1574,7 @@
             }
             
             isDragging = true;
-            window.chrome.webview.postMessage('start_drag');
+            safePostMessage('start_drag');
         });
 
         document.addEventListener('mouseup', function() {
@@ -1575,7 +1582,7 @@
         });
 
         document.querySelector('.close-btn').addEventListener('click', function() {
-            window.chrome.webview.postMessage('close_window');
+            safePostMessage('close_window');
         });
 
         document.getElementById('logoutBtn').addEventListener('click', function() {
@@ -1583,8 +1590,8 @@
             logoutOverlay.classList.add('show');
             
             setTimeout(() => {
-                window.chrome.webview.postMessage('clear_remember_data');
-                window.chrome.webview.postMessage('logout');
+                safePostMessage('clear_remember_data');
+                safePostMessage('logout');
             }, 1500);
         });
 
@@ -1647,7 +1654,7 @@
         });
 
         browseBtn.addEventListener('click', function() {
-            window.chrome.webview.postMessage('browse_folder');
+            safePostMessage('browse_folder');
         });
 
         saveBtn.addEventListener('click', function() {
@@ -1666,7 +1673,7 @@
                 selectedVersion: selectedVersion
             };
             
-            window.chrome.webview.postMessage('save_config:' + JSON.stringify(config));
+            safePostMessage('save_config:' + JSON.stringify(config));
             
             const originalText = saveBtn.textContent;
             const savedText = currentLanguage === 'ru' ? 'Конфигурация сохранена!' : 'Configuration saved!';
@@ -1703,7 +1710,7 @@
             status.textContent = 'Initializing...';
             
             // Immediately send to C++ - it will handle all status updates
-            window.chrome.webview.postMessage('launch_app:' + selectedVersion);
+            safePostMessage('launch_app:' + selectedVersion);
         });
 
         window.addEventListener('message', function(event) {
@@ -1734,8 +1741,8 @@
             
             setTimeout(() => {
                 loadingOverlay.classList.add('hidden');
-                window.chrome.webview.postMessage('profile_loaded');
-                window.chrome.webview.postMessage('load_config');
+                safePostMessage('profile_loaded');
+                safePostMessage('load_config');
                 checkVersionAccess();
                 
                 // Load changelog from server
