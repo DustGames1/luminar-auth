@@ -316,6 +316,10 @@ textarea.input {
         <span class="menu-icon">▣</span>
         <span>Ченджлог</span>
       </div>
+      <div class="menu-item" data-page="version">
+        <span class="menu-icon">▣</span>
+        <span>Версия</span>
+      </div>
     </nav>
     <button class="logout-btn" onclick="logout()">Выйти</button>
   </aside>
@@ -419,6 +423,81 @@ textarea.input {
       </div>
       <div class="card">
         <div id="changelogContent">Загрузка...</div>
+      </div>
+    </div>
+
+    <div id="page-version" class="page hidden">
+      <div class="page-header">
+        <h1 class="page-title">▣ Версия клиента</h1>
+      </div>
+      
+      <!-- Current Version Card -->
+      <div class="card">
+        <h3 style="margin-bottom:16px;font-size:16px;">Текущая версия</h3>
+        <div style="display:flex;align-items:center;gap:20px;margin-bottom:20px;">
+          <div style="font-size:48px;font-weight:700;color:var(--primary);" id="currentVersion">...</div>
+          <button class="btn btn-primary" onclick="refreshVersion()">🔄 Обновить</button>
+        </div>
+        <div style="font-size:13px;color:var(--text-3);">
+          Все пользователи с версией ниже этой получат обновление при запуске лоадера
+        </div>
+      </div>
+
+      <!-- Update Version Card -->
+      <div class="card">
+        <h3 style="margin-bottom:16px;font-size:16px;">Обновить версию</h3>
+        <div style="background:var(--surface-2);padding:16px;border-radius:8px;margin-bottom:16px;border-left:3px solid var(--warning);">
+          <div style="font-size:13px;color:var(--warning);margin-bottom:8px;font-weight:600;">⚠️ ВАЖНО перед обновлением:</div>
+          <ol style="font-size:13px;color:var(--text-2);margin-left:20px;line-height:1.6;">
+            <li>Подготовьте новый <code>client.zip</code> с обновленными файлами</li>
+            <li>Загрузите <code>client.zip</code> на GitHub Releases</li>
+            <li>Убедитесь что URL доступен: <code style="color:var(--primary);">https://github.com/DustGames1/luminar-auth/releases/download/luminar/client.zip</code></li>
+            <li>Установите новую версию ниже</li>
+          </ol>
+        </div>
+        
+        <div style="display:flex;gap:12px;align-items:end;">
+          <div style="flex:1;">
+            <label class="form-label">Новая версия</label>
+            <input type="text" id="newVersion" class="input" placeholder="1.0.0" style="font-size:18px;font-weight:600;">
+            <div style="font-size:12px;color:var(--text-3);margin-top:6px;">Формат: X.Y.Z (например: 1.0.0, 1.1.0, 2.0.0)</div>
+          </div>
+          <button class="btn btn-primary" onclick="updateVersion()" style="padding:12px 24px;">
+            <span style="font-size:16px;">✓</span> Обновить версию
+          </button>
+        </div>
+      </div>
+
+      <!-- What Gets Updated Card -->
+      <div class="card">
+        <h3 style="margin-bottom:16px;font-size:16px;">Что обновляет лоадер</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--success);margin-bottom:12px;">✅ Обновляется:</div>
+            <ul style="font-size:13px;color:var(--text-2);line-height:1.8;list-style:none;padding:0;">
+              <li style="padding:6px 0;border-bottom:1px solid var(--border);">📦 <code>jar/client.jar</code></li>
+              <li style="padding:6px 0;border-bottom:1px solid var(--border);">📚 <code>game/libraries/*.jar</code></li>
+              <li style="padding:6px 0;border-bottom:1px solid var(--border);">🔧 <code>game/natives/*.dll</code></li>
+              <li style="padding:6px 0;">☕ <code>java/</code> (если включен)</li>
+            </ul>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--primary);margin-bottom:12px;">💾 Сохраняется:</div>
+            <ul style="font-size:13px;color:var(--text-2);line-height:1.8;list-style:none;padding:0;">
+              <li style="padding:6px 0;border-bottom:1px solid var(--border);">🎨 <code>game/resourcepacks/</code></li>
+              <li style="padding:6px 0;border-bottom:1px solid var(--border);">✨ <code>game/shaderpacks/</code></li>
+              <li style="padding:6px 0;border-bottom:1px solid var(--border);">⚙️ <code>game/config/</code></li>
+              <li style="padding:6px 0;border-bottom:1px solid var(--border);">🎮 <code>game/options.txt</code></li>
+              <li style="padding:6px 0;">💾 <code>game/saves/</code></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Version History -->
+      <div class="card">
+        <h3 style="margin-bottom:16px;font-size:16px;">История изменений версии</h3>
+        <div id="versionHistory" style="font-size:13px;color:var(--text-3);">Загрузка...</div>
       </div>
     </div>
   </main>
@@ -1109,8 +1188,90 @@ document.querySelectorAll('.menu-item').forEach(item => {
     else if (page === 'promocodes') loadPromocodes();
     else if (page === 'changelog') loadChangelog();
     else if (page === 'bans') loadBans();
+    else if (page === 'version') loadVersion();
   });
 });
+
+// Version Management
+async function loadVersion() {
+  await refreshVersion();
+}
+
+async function refreshVersion() {
+  const r = await api('GET', '/api/client-version');
+  if (r.ok) {
+    const version = await fetch('/api/client-version').then(res => res.text());
+    document.getElementById('currentVersion').textContent = version.trim() || '1.0.0';
+  } else {
+    document.getElementById('currentVersion').textContent = 'Ошибка';
+  }
+  
+  // Load version history from changelog
+  const changelogR = await api('GET', '/api/changelog');
+  if (changelogR.ok) {
+    const entries = changelogR.data.entries;
+    if (entries.length === 0) {
+      document.getElementById('versionHistory').innerHTML = '<div style="text-align:center;padding:20px;">История пуста</div>';
+    } else {
+      let html = '<div class="table-container"><table><thead><tr><th>Версия</th><th>Дата</th><th>Изменения</th></tr></thead><tbody>';
+      for (const entry of entries.slice(0, 10)) {
+        html += `<tr>
+          <td><b>${entry.version}</b></td>
+          <td>${entry.date}</td>
+          <td style="font-size:12px;max-width:500px;white-space:pre-wrap;">${entry.text}</td>
+        </tr>`;
+      }
+      html += '</tbody></table></div>';
+      document.getElementById('versionHistory').innerHTML = html;
+    }
+  }
+}
+
+async function updateVersion() {
+  const newVersion = document.getElementById('newVersion').value.trim();
+  
+  if (!newVersion) {
+    alert('❌ Введите новую версию');
+    return;
+  }
+  
+  // Validate version format (basic check)
+  if (!/^\d+\.\d+\.\d+$/.test(newVersion)) {
+    alert('❌ Неверный формат версии. Используйте формат X.Y.Z (например: 1.0.0)');
+    return;
+  }
+  
+  // Get current version
+  const currentVersion = document.getElementById('currentVersion').textContent.trim();
+  
+  if (currentVersion === newVersion) {
+    alert('⚠️ Новая версия совпадает с текущей');
+    return;
+  }
+  
+  // Confirm update
+  const confirmMsg = `Вы уверены что хотите обновить версию?\n\n` +
+    `Текущая версия: ${currentVersion}\n` +
+    `Новая версия: ${newVersion}\n\n` +
+    `⚠️ Убедитесь что client.zip загружен на GitHub!\n` +
+    `URL: https://github.com/DustGames1/luminar-auth/releases/download/luminar/client.zip\n\n` +
+    `После обновления все пользователи получат новую версию при запуске лоадера.`;
+  
+  if (!confirm(confirmMsg)) {
+    return;
+  }
+  
+  // Update version
+  const r = await api('POST', '/api/admin/version', { version: newVersion });
+  
+  if (r.ok) {
+    alert(`✅ Версия успешно обновлена!\n\nНовая версия: ${newVersion}\n\nВсе пользователи получат обновление при следующем запуске лоадера.`);
+    document.getElementById('newVersion').value = '';
+    await refreshVersion();
+  } else {
+    alert('❌ Ошибка обновления версии: ' + (r.data.error || 'Unknown'));
+  }
+}
 </script>
 </body>
 </html>
