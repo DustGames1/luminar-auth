@@ -94,20 +94,21 @@ async function sendVerificationEmail(email, code) {
   }
 }
 
-// Robokassa configuration
-const ROBOKASSA_LOGIN = process.env.ROBOKASSA_LOGIN || '';
-const ROBOKASSA_PASSWORD1 = process.env.ROBOKASSA_PASSWORD1 || '';
-const ROBOKASSA_PASSWORD2 = process.env.ROBOKASSA_PASSWORD2 || '';
-const ROBOKASSA_TEST_MODE = process.env.ROBOKASSA_TEST_MODE === 'true';
+// Enot.io configuration
+const ENOT_SHOP_ID = process.env.ENOT_SHOP_ID || '';
+const ENOT_SECRET_KEY = process.env.ENOT_SECRET_KEY || '';
+const ENOT_SECRET_KEY_2 = process.env.ENOT_SECRET_KEY_2 || '';
 
-// Robokassa helper functions
-function generateRobokassaSignature(login, outSum, invId, password, receipt = '') {
-  const signatureString = `${login}:${outSum}:${invId}:${receipt}:${password}`;
+// Enot.io helper functions
+function generateEnotSignature(shopId, amount, orderId, secretKey) {
+  // Enot.io signature format: MD5(shop_id:amount:secret_key:order_id)
+  const signatureString = `${shopId}:${amount}:${secretKey}:${orderId}`;
   return crypto.createHash('md5').update(signatureString).digest('hex');
 }
 
-function verifyRobokassaSignature(outSum, invId, signatureValue, password) {
-  const expectedSignature = crypto.createHash('md5').update(`${outSum}:${invId}:${password}`).digest('hex');
+function verifyEnotSignature(shopId, amount, orderId, signatureValue, secretKey) {
+  // Enot.io verification format: MD5(shop_id:amount:secret_key:order_id)
+  const expectedSignature = crypto.createHash('md5').update(`${shopId}:${amount}:${secretKey}:${orderId}`).digest('hex');
   return expectedSignature.toLowerCase() === signatureValue.toLowerCase();
 }
 
@@ -1127,7 +1128,7 @@ app.post('/api/admin/tickets/:id/close', adminOnly, async (req, res) => {
   res.json({ ok: true });
 });
 
-// ---- Robokassa Payment Integration ----
+// ---- Enot.io Payment Integration ----
 
 // Create payment
 app.post('/api/payment/create', async (req, res) => {
@@ -1185,17 +1186,16 @@ app.post('/api/payment/create', async (req, res) => {
     // Update payment_id
     await pool.query('UPDATE payments SET payment_id = $1 WHERE id = $2', [paymentId.toString(), paymentId]);
     
-    // Generate Robokassa payment URL
-    const description = `${product.name} - ${user.username}`;
-    const signature = generateRobokassaSignature(
-      ROBOKASSA_LOGIN,
+    // Generate Enot.io payment URL
+    const signature = generateEnotSignature(
+      ENOT_SHOP_ID,
       finalAmount.toFixed(2),
       paymentId.toString(),
-      ROBOKASSA_PASSWORD1
+      ENOT_SECRET_KEY
     );
     
-    const baseUrl = ROBOKASSA_TEST_MODE ? 'https://auth.robokassa.ru/Merchant/Index/' : 'https://auth.robokassa.ru/Merchant/Index.aspx';
-    const paymentUrl = `${baseUrl}?MerchantLogin=${ROBOKASSA_LOGIN}&OutSum=${finalAmount.toFixed(2)}&InvId=${paymentId}&Description=${encodeURIComponent(description)}&SignatureValue=${signature}&IsTest=${ROBOKASSA_TEST_MODE ? 1 : 0}`;
+    // Enot.io payment form URL
+    const paymentUrl = `https://enot.io/pay?m=${ENOT_SHOP_ID}&oa=${finalAmount.toFixed(2)}&o=${paymentId}&s=${signature}&c=${encodeURIComponent(product.name)}`;
     
     res.json({ 
       ok: true, 
@@ -1209,34 +1209,34 @@ app.post('/api/payment/create', async (req, res) => {
   }
 });
 
-// Robokassa Result URL (payment success notification)
+// Enot.io Result URL (payment success notification)
 app.post('/api/payment/result', async (req, res) => {
   try {
-    const { OutSum, InvId, SignatureValue } = req.body;
+    const { merchant, amount, merchant_id, order_id, sign } = req.body;
     
     // Verify signature
-    if (!verifyRobokassaSignature(OutSum, InvId, SignatureValue, ROBOKASSA_PASSWORD2)) {
-      console.error('Invalid Robokassa signature');
+    if (!verifyEnotSignature(merchant || ENOT_SHOP_ID, amount, order_id, sign, ENOT_SECRET_KEY_2)) {
+      console.error('Invalid Enot.io signature');
       return res.status(400).send('bad sign');
     }
     
     // Get payment from database
-    const paymentResult = await pool.query('SELECT * FROM payments WHERE payment_id = $1', [InvId]);
+    const paymentResult = await pool.query('SELECT * FROM payments WHERE payment_id = $1', [order_id]);
     const payment = paymentResult.rows[0];
     
     if (!payment) {
-      console.error('Payment not found:', InvId);
+      console.error('Payment not found:', order_id);
       return res.status(404).send('payment not found');
     }
     
     if (payment.status === 'succeeded') {
       // Already processed
-      return res.send(`OK${InvId}`);
+      return res.send('OK');
     }
     
     // Update payment status
     await pool.query('UPDATE payments SET status = $1, paid_at = $2 WHERE payment_id = $3', 
-      ['succeeded', Date.now(), InvId]);
+      ['succeeded', Date.now(), order_id]);
     
     // Add subscription to user
     const userResult = await pool.query('SELECT * FROM users WHERE id = $1', [payment.user_id]);
@@ -1258,26 +1258,25 @@ app.post('/api/payment/result', async (req, res) => {
       }
     }
     
-    res.send(`OK${InvId}`);
+    res.send('OK');
   } catch (e) {
-    console.error('Robokassa result error:', e);
+    console.error('Enot.io result error:', e);
     res.status(500).send('error');
   }
 });
 
-// Robokassa Success URL (user redirect after payment)
+// Enot.io Success URL (user redirect after payment)
 app.get('/api/payment/success', async (req, res) => {
-  const { OutSum, InvId, SignatureValue } = req.query;
+  const { order_id } = req.query;
   
-  // Verify signature
-  if (verifyRobokassaSignature(OutSum, InvId, SignatureValue, ROBOKASSA_PASSWORD1)) {
+  if (order_id) {
     res.redirect('/profile?payment=success');
   } else {
     res.redirect('/profile?payment=error');
   }
 });
 
-// Robokassa Fail URL (payment failed)
+// Enot.io Fail URL (payment failed)
 app.get('/api/payment/fail', (req, res) => {
   res.redirect('/profile?payment=failed');
 });
