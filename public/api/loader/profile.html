@@ -1697,22 +1697,10 @@
             const status = document.getElementById('modalStatus');
             
             modal.classList.add('show');
+            status.textContent = 'Initializing...';
             
-            status.textContent = translations[currentLanguage].checking;
-            
-            setTimeout(() => {
-                const fileName = generateRandomHash();
-                status.innerHTML = `${translations[currentLanguage].downloading} <span class="file-name">${fileName}</span>`;
-                
-                setTimeout(() => {
-                    status.textContent = translations[currentLanguage].launching;
-                    
-                    setTimeout(() => {
-                        modal.classList.remove('show');
-                        window.chrome.webview.postMessage('launch_app:' + selectedVersion);
-                    }, 2000);
-                }, 3000);
-            }, 2000);
+            // Immediately send to C++ - it will handle all status updates
+            window.chrome.webview.postMessage('launch_app:' + selectedVersion);
         });
 
         window.addEventListener('message', function(event) {
