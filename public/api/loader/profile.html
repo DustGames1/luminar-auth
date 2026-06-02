@@ -1690,8 +1690,11 @@
             return result;
         }
 
+        let isLaunching = false;
+        
         document.getElementById('launchBtn').addEventListener('click', function() {
-            if (this.disabled) return;
+            if (this.disabled || isLaunching) return;
+            isLaunching = true;
             
             const modal = document.getElementById('launchModal');
             const status = document.getElementById('modalStatus');
