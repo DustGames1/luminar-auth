@@ -2,7 +2,7 @@
 chcp 65001 >nul
 cd /d "%~dp0"
 echo ============================================
-echo    Luminar Site - Deploy
+echo    Exclusive Site - Deploy
 echo ============================================
 echo.
 
@@ -53,6 +53,6 @@ endlocal
 echo.
 echo ============================================
 echo    Pushed. Vercel auto-deploy in ~30s
-echo    https://luminar-five-drab.vercel.app
+echo    https://Exclusive-five-drab.vercel.app
 echo ============================================
 pause

@@ -2,7 +2,7 @@
 chcp 65001 >nul
 cd /d "%~dp0"
 echo ============================================
-echo    Luminar Site - Auto Deploy
+echo    Exclusive Site - Auto Deploy
 echo ============================================
 
 git diff --quiet --cached
@@ -36,4 +36,4 @@ endlocal
 
 echo.
 echo Pushed. Vercel deploys in ~30s
-echo https://luminar-five-drab.vercel.app
+echo https://Exclusive-five-drab.vercel.app

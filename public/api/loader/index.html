@@ -610,10 +610,10 @@
             <button class="social-btn" data-url="https://discord.gg/tFXU3ZhEzB">
                 <img src="discord.svg" alt="Discord">
             </button>
-            <button class="social-btn" data-url="https://t.me/luminarclient">
+            <button class="social-btn" data-url="https://t.me/Exclusiveclient">
                 <img src="telegram.svg" alt="Telegram">
             </button>
-            <button class="social-btn" data-url="https://luminar-five-drab.vercel.app/">
+            <button class="social-btn" data-url="https://Exclusive-five-drab.vercel.app/">
                 <img src="site.svg" alt="Website">
             </button>
         </div>
@@ -860,8 +860,8 @@
                 if (data.ok) {
                     showNotification(translations[currentLanguage].correct_data, 'success');
                     // Save token for profile page
-                    if (data.token) localStorage.setItem('luminar_token', data.token);
-                    if (data.username) localStorage.setItem('luminar_username', data.username);
+                    if (data.token) localStorage.setItem('Exclusive_token', data.token);
+                    if (data.username) localStorage.setItem('Exclusive_username', data.username);
                     
                     if (isRememberChecked) {
                         window.chrome.webview.postMessage('save_remember_data:' + JSON.stringify({

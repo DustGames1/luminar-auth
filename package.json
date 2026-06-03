@@ -1,7 +1,7 @@
 {
-  "name": "luminar-auth",
+  "name": "Exclusive-auth",
   "version": "1.0.0",
-  "description": "Auth backend for Luminar loader",
+  "description": "Auth backend for Exclusive loader",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

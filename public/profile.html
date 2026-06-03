@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="icon" href="https://i.imgur.com/ZRocgLJ.png" type="image/png"><title>Profile — Luminar</title><link rel="stylesheet" href="/style.css"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="icon" href="https://i.imgur.com/ZRocgLJ.png" type="image/png"><title>Profile — Exclusive</title><link rel="stylesheet" href="/style.css"></head>
 <body>
 <nav class="nav">
-  <a href="/" class="nav-brand"><img src="https://i.imgur.com/ZRocgLJ.png" class="nav-brand-icon" alt="L"> Luminar</a>
+  <a href="/" class="nav-brand"><img src="https://i.imgur.com/ZRocgLJ.png" class="nav-brand-icon" alt="L"> Exclusive</a>
   <div class="nav-center"><a href="/">Home</a><a href="/buy">Products</a></div>
   <div class="nav-right"><button class="theme-toggle" onclick="toggleTheme()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button><a href="/profile" class="btn btn-purple" id="navUser">Profile</a></div>
 </nav>
@@ -84,15 +84,15 @@
     <div class="footer-col"><h4>💬 Communicate</h4><a href="https://t.me/offersheart">Telegram</a></div>
     <div class="footer-col"><h4>🔐 Account</h4><a href="#" onclick="logout()">Logout</a></div>
   </div>
-  <div class="footer-bottom"><span>© Luminar, 2026</span><span>All Rights Reserved</span></div>
+  <div class="footer-bottom"><span>© Exclusive, 2026</span><span>All Rights Reserved</span></div>
 </footer>
 
 <script>
 function toggleTheme(){const t=document.documentElement;t.dataset.theme=t.dataset.theme==='light'?'':'light';localStorage.setItem('theme',t.dataset.theme);const btn=document.querySelector('.theme-toggle');btn.innerHTML=t.dataset.theme==='light'?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';}
 if(localStorage.getItem('theme')==='light'){document.documentElement.dataset.theme='light';document.querySelector('.theme-toggle').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';}
 
-const token=localStorage.getItem('luminar_token');if(!token)location.href='/login';let userData=null;
-async function loadProfile(){const r=await fetch('/api/me',{headers:{'Authorization':'Bearer '+token}});if(!r.ok){localStorage.removeItem('luminar_token');location.href='/login';return;}const data=await r.json();userData=data.user;const u=userData;
+const token=localStorage.getItem('Exclusive_token');if(!token)location.href='/login';let userData=null;
+async function loadProfile(){const r=await fetch('/api/me',{headers:{'Authorization':'Bearer '+token}});if(!r.ok){localStorage.removeItem('Exclusive_token');location.href='/login';return;}const data=await r.json();userData=data.user;const u=userData;
 document.getElementById('username').innerHTML=u.username+' <span style="color:var(--text-3)">['+u.id+']</span>';
 document.getElementById('navUser').textContent=u.username;
 document.getElementById('regDate').textContent=new Date(Number(u.created_at)).toLocaleDateString();
@@ -113,7 +113,7 @@ async function uploadAvatar(){const msg=document.getElementById('avatarMsg');con
 async function setEmail(){const em=document.getElementById('emailInput').value.trim(),msg=document.getElementById('emailMsg');if(!em||!em.includes('@')){msg.className='form-msg err';msg.textContent='Enter valid email';return;}const r=await fetch('/api/me/email',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({email:em})});const d=await r.json();if(r.ok){msg.className='form-msg ok';msg.textContent='Email saved!';document.getElementById('emailBlock').style.display='none';document.getElementById('emailVal').textContent=em;setTimeout(loadProfile,500);}else{msg.className='form-msg err';msg.textContent=d.error||'Error';}}
 async function activate(){const key=document.getElementById('licenseKey').value.trim(),msg=document.getElementById('activateMsg');if(!key){msg.className='form-msg err';msg.textContent='Enter key';return;}const r=await fetch('/api/me/activate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({key})});const d=await r.json();if(r.ok){msg.className='form-msg ok';msg.textContent='+'+d.days+' days!';document.getElementById('licenseKey').value='';setTimeout(loadProfile,500);}else{msg.className='form-msg err';msg.textContent=d.error||'Error';}}
 function downloadLoader(){const msg=document.getElementById('downloadMsg');if(!userData||!userData.subscription||!userData.subscription.active){msg.className='form-msg err';msg.textContent='Need subscription';setTimeout(()=>location.href='/buy',1200);return;}msg.className='form-msg ok';msg.textContent='Starting...';window.location.href='/api/download/loader?token='+encodeURIComponent(token);}
-function logout(){localStorage.removeItem('luminar_token');location.href='/';}
+function logout(){localStorage.removeItem('Exclusive_token');location.href='/';}
 loadProfile();
 </script>
 </body></html>

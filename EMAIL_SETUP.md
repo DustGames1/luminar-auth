@@ -23,7 +23,7 @@
 
 1. **Создайте почту на Mail.ru** (если нет):
    - Перейдите на https://mail.ru
-   - Зарегистрируйте новую почту (например: `luminar@mail.ru`)
+   - Зарегистрируйте новую почту (например: `Exclusive@mail.ru`)
 
 2. **Включите SMTP в настройках:**
    - Войдите в почту
@@ -35,9 +35,9 @@
    - Добавьте:
    ```
    EMAIL_SERVICE=mail.ru
-   EMAIL_USER=luminar@mail.ru
+   EMAIL_USER=Exclusive@mail.ru
    EMAIL_PASS=ваш_пароль_от_почты
-   EMAIL_FROM=Luminar <luminar@mail.ru>
+   EMAIL_FROM=Exclusive <Exclusive@mail.ru>
    ```
    - Нажмите **Save**
    - Сделайте **Redeploy**
@@ -56,9 +56,9 @@
 3. Добавьте на Vercel:
    ```
    EMAIL_SERVICE=yandex
-   EMAIL_USER=luminar@yandex.ru
+   EMAIL_USER=Exclusive@yandex.ru
    EMAIL_PASS=ваш_пароль
-   EMAIL_FROM=Luminar <luminar@yandex.ru>
+   EMAIL_FROM=Exclusive <Exclusive@yandex.ru>
    ```
 
 ---
@@ -75,7 +75,7 @@
    EMAIL_SERVICE=gmail
    EMAIL_USER=your-email@gmail.com
    EMAIL_PASS=app-password-16-chars
-   EMAIL_FROM=Luminar <noreply@luminar.com>
+   EMAIL_FROM=Exclusive <noreply@Exclusive.com>
    ```
 
 ---
@@ -94,7 +94,7 @@
    SMTP_SECURE=false
    EMAIL_USER=postmaster@your-domain.mailgun.org
    EMAIL_PASS=your-mailgun-password
-   EMAIL_FROM=Luminar <noreply@your-domain.com>
+   EMAIL_FROM=Exclusive <noreply@your-domain.com>
    ```
 
 ---
@@ -113,7 +113,7 @@
    SMTP_SECURE=false
    EMAIL_USER=apikey
    EMAIL_PASS=your-sendgrid-api-key
-   EMAIL_FROM=Luminar <noreply@your-domain.com>
+   EMAIL_FROM=Exclusive <noreply@your-domain.com>
    ```
 
 ---

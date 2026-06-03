@@ -1,5 +1,5 @@
 /**
- * Luminar Auth Backend v3 — PostgreSQL
+ * Exclusive Auth Backend v3 — PostgreSQL
  * ------------------------------------
  * Uses PostgreSQL instead of SQLite for persistent storage on Render.
  *
@@ -29,7 +29,7 @@ const TOKEN_TTL = '7d';
 // Email configuration
 const EMAIL_USER = process.env.EMAIL_USER || '';
 const EMAIL_PASS = process.env.EMAIL_PASS || '';
-const EMAIL_FROM = process.env.EMAIL_FROM || 'noreply@luminar.com';
+const EMAIL_FROM = process.env.EMAIL_FROM || 'noreply@Exclusive.com';
 const EMAIL_SERVICE = process.env.EMAIL_SERVICE || 'gmail'; // gmail, mail.ru, yandex, custom
 
 // Create email transporter
@@ -74,7 +74,7 @@ async function sendVerificationEmail(email, code) {
     await transporter.sendMail({
       from: EMAIL_FROM,
       to: email,
-      subject: 'Luminar - Подтверждение email',
+      subject: 'Exclusive - Подтверждение email',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #4c9aff;">Подтверждение email</h2>
@@ -83,7 +83,7 @@ async function sendVerificationEmail(email, code) {
             ${code}
           </div>
           <p>Код действителен в течение 10 минут.</p>
-          <p style="color: #666; font-size: 12px;">Если вы не регистрировались на Luminar, проигнорируйте это письмо.</p>
+          <p style="color: #666; font-size: 12px;">Если вы не регистрировались на Exclusive, проигнорируйте это письмо.</p>
         </div>
       `
     });
@@ -636,7 +636,7 @@ app.get('/api/avatar/:username', async (req, res) => {
 });
 
 // Download loader — only for active subscribers
-const LOADER_DOWNLOAD_URL = process.env.LOADER_URL || 'https://github.com/DustGames1/luminar-auth/releases/download/luminar/LuminarLoader.exe';
+const LOADER_DOWNLOAD_URL = process.env.LOADER_URL || 'https://github.com/DustGames1/Exclusive-auth/releases/download/Exclusive/ExclusiveLoader.exe';
 
 app.get('/api/download/loader', async (req, res) => {
   try {
@@ -1216,7 +1216,7 @@ app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 
 if (!process.env.VERCEL) {
   initDB().then(() => {
-    app.listen(PORT, () => console.log(`Luminar auth listening on :${PORT}`));
+    app.listen(PORT, () => console.log(`Exclusive auth listening on :${PORT}`));
   }).catch(err => {
     console.error('Failed to init DB:', err);
     process.exit(1);

@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <link rel="icon" href="https://i.imgur.com/ZRocgLJ.png" type="image/png">
-<title>Verify Email — Luminar</title>
+<title>Verify Email — Exclusive</title>
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <nav class="nav">
-  <a href="/" class="nav-brand"><img src="https://i.imgur.com/ZRocgLJ.png" class="nav-brand-icon" alt="L"> Luminar</a>
+  <a href="/" class="nav-brand"><img src="https://i.imgur.com/ZRocgLJ.png" class="nav-brand-icon" alt="L"> Exclusive</a>
   <div class="nav-center"><a href="/">Home</a><a href="/buy">Products</a><a href="https://t.me/offersheart" target="_blank">Telegram</a></div>
   <div class="nav-right"><button class="theme-toggle" onclick="toggleTheme()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button></div>
 </nav>
@@ -38,7 +38,7 @@
     <div class="footer-col"><h4>💬 Communicate</h4><a href="https://t.me/offersheart">Telegram</a></div>
     <div class="footer-col"><h4>🔐 Account</h4><a href="/login">Sign In</a><a href="/register">Sign Up</a></div>
   </div>
-  <div class="footer-bottom"><span>© Luminar, 2026</span><span>All Rights Reserved</span></div>
+  <div class="footer-bottom"><span>© Exclusive, 2026</span><span>All Rights Reserved</span></div>
 </footer>
 
 <script>
@@ -82,7 +82,7 @@ async function verifyCode() {
     const data = await res.json();
     
     if (res.ok) {
-      localStorage.setItem('luminar_token', data.token);
+      localStorage.setItem('Exclusive_token', data.token);
       msg.innerHTML = '<span style="color:var(--success);">✓ Email подтвержден! Перенаправление...</span>';
       setTimeout(() => location.href = '/profile', 1500);
     } else {

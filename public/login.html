@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="icon" href="https://i.imgur.com/ZRocgLJ.png" type="image/png"><title>Sign In — Luminar</title><link rel="stylesheet" href="/style.css"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="icon" href="https://i.imgur.com/ZRocgLJ.png" type="image/png"><title>Sign In — Exclusive</title><link rel="stylesheet" href="/style.css"></head>
 <body>
 <div class="auth-page">
   <div class="auth-box">
@@ -20,7 +20,7 @@
 document.getElementById('f').addEventListener('submit',async e=>{e.preventDefault();const msg=document.getElementById('msg');msg.className='form-msg';msg.textContent='';
 const em=document.getElementById('email').value.trim(),p=document.getElementById('password').value;
 try{const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,password:p,source:'web'})});const d=await r.json();
-if(r.ok){localStorage.setItem('luminar_token',d.token);msg.className='form-msg ok';msg.textContent='Успешно!';setTimeout(()=>location.href='/profile',500);}
+if(r.ok){localStorage.setItem('Exclusive_token',d.token);msg.className='form-msg ok';msg.textContent='Успешно!';setTimeout(()=>location.href='/profile',500);}
 else{msg.className='form-msg err';msg.textContent=d.error||'Error';}}catch{msg.className='form-msg err';msg.textContent='Network error';}});
 </script>
 </body></html>

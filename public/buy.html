@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="icon" href="https://i.imgur.com/ZRocgLJ.png" type="image/png"><title>Products — Luminar</title><link rel="stylesheet" href="/style.css"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="icon" href="https://i.imgur.com/ZRocgLJ.png" type="image/png"><title>Products — Exclusive</title><link rel="stylesheet" href="/style.css"></head>
 <body>
 <nav class="nav">
-  <a href="/" class="nav-brand"><img src="https://i.imgur.com/ZRocgLJ.png" class="nav-brand-icon" alt="L"> Luminar</a>
+  <a href="/" class="nav-brand"><img src="https://i.imgur.com/ZRocgLJ.png" class="nav-brand-icon" alt="L"> Exclusive</a>
   <div class="nav-center"><a href="/">Home</a><a href="/buy" class="active">Products</a><a href="https://t.me/offersheart" target="_blank">Telegram</a></div>
   <div class="nav-right" id="navAuth"><button class="theme-toggle" onclick="toggleTheme()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button><a href="/login" class="btn btn-dark">Sign In</a><a href="/register" class="btn btn-purple">Sign Up</a></div>
 </nav>
@@ -111,13 +111,13 @@
     <div class="footer-col"><h4>💬 Communicate</h4><a href="https://t.me/offersheart" target="_blank">Telegram</a></div>
     <div class="footer-col"><h4>🔐 Account</h4><a href="/login">Sign In</a><a href="/register">Sign Up</a></div>
   </div>
-  <div class="footer-bottom"><span>Feedback: t.me/offersheart</span><span>© Luminar, 2026. All Rights Reserved</span></div>
+  <div class="footer-bottom"><span>Feedback: t.me/offersheart</span><span>© Exclusive, 2026. All Rights Reserved</span></div>
 </footer>
 
 <script>
 function toggleTheme(){const t=document.documentElement;t.dataset.theme=t.dataset.theme==='light'?'':'light';localStorage.setItem('theme',t.dataset.theme);const btn=document.querySelector('.theme-toggle');btn.innerHTML=t.dataset.theme==='light'?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';}
 if(localStorage.getItem('theme')==='light'){document.documentElement.dataset.theme='light';document.querySelector('.theme-toggle').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';}
-const PAY='https://funpay.com/users/19926313/',token=localStorage.getItem('luminar_token');
+const PAY='https://funpay.com/users/19926313/',token=localStorage.getItem('Exclusive_token');
 let products = [];
 let currentDiscount = 0;
 let currentPromocode = null;
@@ -125,7 +125,7 @@ let selectedProduct = null;
 let selectedPaymentMethod = 'card';
 let userEmail = '';
 
-if(token){fetch('/api/me',{headers:{'Authorization':'Bearer '+token}}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.user){document.getElementById('navAuth').innerHTML=`<button class="theme-toggle" onclick="toggleTheme()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button><a href="/profile" class="btn btn-purple">${d.user.username}</a>`;userEmail=d.user.email||d.user.username+'@luminar.com';document.getElementById('userEmail').textContent=userEmail;}});}
+if(token){fetch('/api/me',{headers:{'Authorization':'Bearer '+token}}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.user){document.getElementById('navAuth').innerHTML=`<button class="theme-toggle" onclick="toggleTheme()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button><a href="/profile" class="btn btn-purple">${d.user.username}</a>`;userEmail=d.user.email||d.user.username+'@Exclusive.com';document.getElementById('userEmail').textContent=userEmail;}});}
 
 // Load products
 fetch('/api/products').then(r=>r.json()).then(d=>{

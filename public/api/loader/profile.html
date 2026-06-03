@@ -1118,14 +1118,14 @@
                         <div class="version-list">
                             <div class="version-item selected" data-version="1.16.5">
                                 <div class="version-header">
-                                    <div class="version-name" data-text="version_1165">Luminar 1.16.5</div>
+                                    <div class="version-name" data-text="version_1165">Exclusive 1.16.5</div>
                                 </div>
                                 <div class="version-description" data-text="version_1165_desc">Stable version optimized for Minecraft 1.16.5. Recommended for best performance and compatibility.</div>
                             </div>
                             
                             <div class="version-item disabled" data-version="1.20.1" id="version1201">
                                 <div class="version-header">
-                                    <div class="version-name" data-text="version_1201">Luminar 1.20.1</div>
+                                    <div class="version-name" data-text="version_1201">Exclusive 1.20.1</div>
                                     <div class="version-status unavailable" data-text="coming_soon">COMING SOON</div>
                                 </div>
                                 <div class="version-description" data-text="version_1201_desc">Version for Minecraft 1.20.1. Currently in development and will be available soon.</div>
@@ -1133,7 +1133,7 @@
                             
                             <div class="version-item disabled" data-version="1.21.4" id="version1214">
                                 <div class="version-header">
-                                    <div class="version-name" data-text="version_1214">Luminar 1.21.4</div>
+                                    <div class="version-name" data-text="version_1214">Exclusive 1.21.4</div>
                                     <div class="version-status unavailable" data-text="coming_soon">COMING SOON</div>
                                 </div>
                                 <div class="version-description" data-text="version_1214_desc">Version for Minecraft 1.21.4. Currently in development and will be available soon.</div>
@@ -1225,7 +1225,7 @@
                         <div class="setting-description" data-text="directory_desc">Select the folder where your game is installed</div>
                         
                         <div class="setting-control">
-                            <div class="folder-display" id="folderDisplay">C:\\Luminar</div>
+                            <div class="folder-display" id="folderDisplay">C:\\Exclusive</div>
                             <button class="browse-btn" id="browseBtn" data-text="browse">Browse</button>
                         </div>
                     </div>
@@ -1264,9 +1264,9 @@
                 goodbye: "Good bye!",
                 play: "Play",
                 changelogs: "ChangeLogs",
-                version_1165: "Luminar 1.16.5",
-                version_1201: "Luminar 1.20.1",
-                version_1214: "Luminar 1.21.4",
+                version_1165: "Exclusive 1.16.5",
+                version_1201: "Exclusive 1.20.1",
+                version_1214: "Exclusive 1.21.4",
                 version_1165_desc: "Stable version optimized for Minecraft 1.16.5. Recommended for best performance and compatibility.",
                 version_1201_desc: "Version for Minecraft 1.20.1. Currently in development and will be available soon.",
                 version_1214_desc: "Version for Minecraft 1.21.4. Currently in development and will be available soon.",
@@ -1313,9 +1313,9 @@
                 goodbye: "До свидания!",
                 play: "Играть",
                 changelogs: "Изменения",
-                version_1165: "Luminar 1.16.5",
-                version_1201: "Luminar 1.20.1",
-                version_1214: "Luminar 1.21.4",
+                version_1165: "Exclusive 1.16.5",
+                version_1201: "Exclusive 1.20.1",
+                version_1214: "Exclusive 1.21.4",
                 version_1165_desc: "Стабильная версия, оптимизированная для Minecraft 1.16.5. Рекомендуется для лучшей производительности и совместимости.",
                 version_1201_desc: "Версия для Minecraft 1.20.1. В настоящее время находится в разработке и скоро будет доступна.",
                 version_1214_desc: "Версия для Minecraft 1.21.4. В настоящее время находится в разработке и скоро будет доступна.",
@@ -1757,7 +1757,7 @@
                 // Fetch user data from API using stored credentials
                 const nickname = document.getElementById('userNickname').textContent;
                 // Try to get token from login response stored in localStorage
-                const token = localStorage.getItem('luminar_token');
+                const token = localStorage.getItem('Exclusive_token');
                 if (token) {
                     fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } })
                         .then(r => r.json())

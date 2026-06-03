@@ -9,12 +9,12 @@
 
 ### 1. Подготовка нового клиента
 1. Загрузите новый `client.zip` на GitHub Releases
-2. URL должен быть: `https://github.com/DustGames1/luminar-auth/releases/download/luminar/client.zip`
+2. URL должен быть: `https://github.com/DustGames1/Exclusive-auth/releases/download/Exclusive/client.zip`
 
 ### 2. Установка новой версии через админ панель
 
 #### Вариант A: Через веб-интерфейс (если добавлен в админ панель)
-1. Откройте: `https://luminar-five-drab.vercel.app/admin`
+1. Откройте: `https://Exclusive-five-drab.vercel.app/admin`
 2. Введите ADMIN_KEY
 3. Найдите раздел "Client Version"
 4. Измените версию (например: `1.0.0` → `1.1.0`)
@@ -23,7 +23,7 @@
 #### Вариант B: Через API напрямую
 ```bash
 # С помощью curl (замените YOUR_ADMIN_KEY на ваш ключ)
-curl -X POST https://luminar-five-drab.vercel.app/api/admin/version \
+curl -X POST https://Exclusive-five-drab.vercel.app/api/admin/version \
   -H "Content-Type: application/json" \
   -H "x-admin-key: YOUR_ADMIN_KEY" \
   -d '{"version": "1.1.0"}'
@@ -39,7 +39,7 @@ $body = @{
     version = "1.1.0"
 } | ConvertTo-Json
 
-Invoke-RestMethod -Uri "https://luminar-five-drab.vercel.app/api/admin/version" `
+Invoke-RestMethod -Uri "https://Exclusive-five-drab.vercel.app/api/admin/version" `
     -Method POST `
     -Headers $headers `
     -Body $body
@@ -48,7 +48,7 @@ Invoke-RestMethod -Uri "https://luminar-five-drab.vercel.app/api/admin/version" 
 ### 3. Проверка
 Проверьте что версия обновилась:
 ```bash
-curl https://luminar-five-drab.vercel.app/api/client-version
+curl https://Exclusive-five-drab.vercel.app/api/client-version
 # Должно вернуть: 1.1.0
 ```
 
@@ -56,12 +56,12 @@ curl https://luminar-five-drab.vercel.app/api/client-version
 
 ## 🚀 Что происходит после обновления версии:
 
-1. **Пользователь запускает LuminarLoader.exe**
+1. **Пользователь запускает ExclusiveLoader.exe**
 2. **Лоадер проверяет**: `/api/client-version` возвращает `1.1.0`
-3. **Сравнивает** с локальной версией в `C:\Luminar\version.txt` (например `1.0.0`)
+3. **Сравнивает** с локальной версией в `C:\Exclusive\version.txt` (например `1.0.0`)
 4. **Видит что версии разные** → начинает обновление
 5. **Скачивает** `client.zip` с GitHub
-6. **Распаковывает во временную папку** `C:\Luminar\temp_update`
+6. **Распаковывает во временную папку** `C:\Exclusive\temp_update`
 7. **Обновляет ТОЛЬКО**:
    - ✅ `jar\client.jar`
    - ✅ `game\libraries\*.jar`
@@ -109,7 +109,7 @@ client.zip
 
 ### Проверить текущую версию на сервере:
 ```bash
-curl https://luminar-five-drab.vercel.app/api/client-version
+curl https://Exclusive-five-drab.vercel.app/api/client-version
 ```
 
 ### Проверить версию в базе данных (PostgreSQL):
@@ -139,7 +139,7 @@ ON CONFLICT (key) DO UPDATE SET value = '1.1.0';
 
 - [ ] Новый `client.jar` готов и протестирован
 - [ ] Создан `client.zip` с правильной структурой
-- [ ] `client.zip` загружен на GitHub Releases: `https://github.com/DustGames1/luminar-auth/releases/download/luminar/client.zip`
+- [ ] `client.zip` загружен на GitHub Releases: `https://github.com/DustGames1/Exclusive-auth/releases/download/Exclusive/client.zip`
 - [ ] Проверен доступ к client.zip (можно скачать по URL)
 - [ ] Выбран новый номер версии (например: `1.1.0`)
 - [ ] Обновлена версия через API или админ панель
