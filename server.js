@@ -636,7 +636,7 @@ app.get('/api/avatar/:username', async (req, res) => {
 });
 
 // Download loader — only for active subscribers
-const LOADER_DOWNLOAD_URL = process.env.LOADER_URL || 'https://github.com/DustGames1/Exclusive-auth/releases/download/Exclusive/ExclusiveLoader.exe';
+const LOADER_DOWNLOAD_URL = process.env.LOADER_URL || 'https://github.com/DustGames1/luminar-auth/releases/download/luminar/LuminarLoader.exe';
 
 app.get('/api/download/loader', async (req, res) => {
   try {
