@@ -239,6 +239,14 @@ async function initDB() {
       paid_at BIGINT
     );
   `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS security_violations (
+      id SERIAL PRIMARY KEY,
+      hwid TEXT NOT NULL,
+      violation TEXT NOT NULL,
+      timestamp TIMESTAMP DEFAULT NOW()
+    );
+  `);
   console.log('Database initialized');
 }
 
@@ -1312,4 +1320,53 @@ app.delete('/api/admin/update-url', adminOnly, async (req, res) => {
     console.error('clear update-url error:', e);
     res.status(500).json({ error: 'Server error' });
   }
+});
+
+
+// ============ ENCRYPTION API ============
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || '';
+
+app.get('/api/encryption-key', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token) return res.status(401).json({ error: 'No token' });
+    
+    const payload = jwt.verify(token, JWT_SECRET);
+    const result = await pool.query('SELECT * FROM users WHERE username = $1', [payload.username]);
+    const user = result.rows[0];
+    
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (user.banned) return res.status(403).json({ error: 'Banned' });
+    
+    const sub = getSubscription(user);
+    if (!sub.active) return res.status(403).json({ error: 'No active subscription' });
+    
+    const hwid = req.headers['x-hwid'];
+    if (!hwid || hwid !== user.hwid) {
+      return res.status(403).json({ error: 'HWID mismatch' });
+    }
+    
+    console.log(`[Encryption Key] User: ${user.username}, HWID: ${hwid}`);
+    res.json({ key: ENCRYPTION_KEY });
+  } catch (e) {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+});
+
+app.post('/api/security/report', async (req, res) => {
+  const { hwid, violation } = req.body;
+  if (!hwid || !violation) return res.status(400).json({ error: 'Missing data' });
+  
+  console.error(`[SECURITY VIOLATION] HWID: ${hwid}, Details: ${violation}`);
+  
+  try {
+    await pool.query(
+      'INSERT INTO security_violations (hwid, violation, timestamp) VALUES ($1, $2, NOW())',
+      [hwid, violation]
+    ).catch(() => {});
+  } catch (e) {
+    // Игнорируем ошибки БД
+  }
+  
+  res.json({ ok: true });
 });
