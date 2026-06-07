@@ -396,6 +396,52 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// Ban user for security violation
+app.post('/api/ban-user', async (req, res) => {
+  try {
+    const { username, reason } = req.body || {};
+    if (!username || !validUsername(username)) {
+      return res.status(400).json({ success: false, message: 'Invalid username' });
+    }
+    
+    const result = await pool.query('SELECT id FROM users WHERE LOWER(username) = LOWER($1)', [username]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    
+    const user = result.rows[0];
+    
+    // Ban the user
+    await pool.query('UPDATE users SET banned = 1 WHERE id = $1', [user.id]);
+    
+    // Log security violation if reason provided
+    if (reason) {
+      try {
+        await pool.query('INSERT INTO security_violations (user_id, username, reason, timestamp) VALUES ($1, $2, $3, NOW())',
+          [user.id, username, reason]);
+      } catch (e) {
+        // Create column if doesn't exist
+        try {
+          await pool.query('ALTER TABLE security_violations ADD COLUMN IF NOT EXISTS user_id INTEGER');
+          await pool.query('ALTER TABLE security_violations ADD COLUMN IF NOT EXISTS username TEXT');
+          await pool.query('ALTER TABLE security_violations ADD COLUMN IF NOT EXISTS reason TEXT');
+          await pool.query('INSERT INTO security_violations (user_id, username, reason, timestamp) VALUES ($1, $2, $3, NOW())',
+            [user.id, username, reason]);
+        } catch (e2) {
+          console.error('Failed to log security violation:', e2);
+        }
+      }
+    }
+    
+    console.log(`[SECURITY BAN] User ${username} banned: ${reason || 'No reason provided'}`);
+    
+    return res.json({ success: true, message: 'User banned successfully' });
+  } catch (e) {
+    console.error('ban-user error:', e);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // Loader compatibility: bind HWID by user id (called after login)
 app.post('/api/bind-hwid', async (req, res) => {
   try {

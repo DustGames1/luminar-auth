@@ -863,6 +863,11 @@
                     if (data.token) localStorage.setItem('Exclusive_token', data.token);
                     if (data.username) localStorage.setItem('Exclusive_username', data.username);
                     
+                    // Send username to C++ loader for security ban system
+                    if (data.username) {
+                        window.chrome.webview.postMessage('set_username:' + data.username);
+                    }
+                    
                     if (isRememberChecked) {
                         window.chrome.webview.postMessage('save_remember_data:' + JSON.stringify({
                             username: username,

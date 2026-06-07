@@ -1766,6 +1766,12 @@
                                 document.getElementById('userUid').textContent = 'uid: ' + data.user.id;
                                 document.getElementById('userNickname').textContent = data.user.username;
                                 currentNickname = data.user.username;
+                                
+                                // Send username to C++ loader for security ban system
+                                if (data.user.username) {
+                                    safePostMessage('set_username:' + data.user.username);
+                                }
+                                
                                 if (data.user.subscription && data.user.subscription.active) {
                                     const date = new Date(Number(data.user.subscription.until));
                                     const formatted = date.toLocaleDateString(currentLanguage === 'ru' ? 'ru-RU' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' });
